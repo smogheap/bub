@@ -60,7 +60,8 @@ img.ork {
 <body>
 arrows: play<br>
 space: reset<br>
-numpad -/+: change level<br>
+-/+: change level<br>
+<strong>level <span id="lv"></span></strong>
 <div id="main"></div>
 <div id="inv"></div> &lt;-inventory
 <div id="win" class="hidden">:^)</div>
@@ -277,6 +278,7 @@ function init() {
   cell(ORK.x, ORK.y).appendChild(img);
   document.querySelector(".x" + ORK.x + ".y" + ORK.y).appendChild(img);
 
+  document.getElementById("lv").innerHTML = LEVEL;
   document.getElementById("inv").style.width = (16 * ORK.maxinv) + "px";
   document.getElementById("inv").style.height = "16px";
 }
