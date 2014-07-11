@@ -1,0 +1,454 @@
+<html>
+<head>
+<title>Bub</title>
+<style>
+body.dark {
+  background: black;
+}
+table {
+  border-collapse: collapse;
+}
+td {
+  padding: 0;
+  width: 64px;
+  height: 64px;
+}
+td.bubble {
+  background: url("image/bubble01.png");
+  background-size: 64px;
+}
+td.wall {
+  background: url("image/wall01.png");
+  background-size: 64px;
+}
+td.ladder {
+  background: url("image/ladder01.png");
+  background-size: 64px;
+}
+td.key {
+  background: url("image/key01.png");
+  background-size: 64px;
+}
+td.door {
+  background: url("image/door01.png");
+  background-size: 64px;
+}
+td.flag {
+  background: url("image/flag01.png");
+  background-size: 64px;
+}
+img.ork {
+  width: 64px;
+  height: 64px;
+}
+#inv {
+  border: 2px dotted grey;
+  display: inline-block;
+}
+#win {
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: 1000%;
+  color: yellow;
+}
+.hidden {
+  display: none;
+}
+</style>
+</head>
+<body>
+<div id="main"></div>
+<div id="inv"></div> &lt;-inventory.
+<br>
+arrows: move<br>
+space: reset<br>
+numpad -/+: change level
+<div id="win" class="hidden">:^)</div>
+<script>
+var LEVELS = [
+/* easy */
+  {
+    start: { x: 1, y: 6 },
+    difficulty: 2,
+    level: [
+      ["", "", "door", "flag", "", "", "", ""],
+      ["wall", "ladder", "wall", "wall", "wall", "", "", ""],
+      ["", "ladder", "", "", "", "", "", ""],
+      ["", "ladder", "", "", "", "", "", ""],
+      ["", "ladder", "", "", "", "", "", "key"],
+      ["", "", "", "", "", "", "bubble", ""],
+      ["", "", "", "", "bubble", "bubble", "bubble", "bubble"],
+      ["wall", "wall", "wall", "wall", "wall", "wall", "wall", "wall"]
+    ]
+  },
+  {
+    start: { x: 1, y: 6 },
+    difficulty: 3,
+    level: [
+      ["", "", "door", "flag", "", "", "", ""],
+      ["wall", "ladder", "wall", "wall", "wall", "", "", ""],
+      ["", "ladder", "", "", "", "", "", ""],
+      ["", "ladder", "", "", "", "", "", ""],
+      ["", "ladder", "", "", "", "", "", "key"],
+      ["", "", "", "", "", "", "bubble", ""],
+      ["", "", "", "", "", "", "bubble", ""],
+      ["wall", "wall", "wall", "wall", "wall", "wall", "wall", "wall"]
+    ]
+  },
+/* end easy */
+
+/* intermediate */
+  {
+    start: { x: 4, y: 4 },
+    difficulty: 5,
+    level: [
+      " w  k   ",
+      " w      ",
+      " d   wlw",
+      " www  l ",
+      " w    l ",
+      " w bw l ",
+      "fw b  l ",
+      "wwwwwwww"
+    ]
+  },
+  {
+    start: { x: 4, y: 4 },
+    difficulty: 7,
+    level: [
+      " ## -   ",
+      " ##    o",
+      " XX  #H#",
+      " ###  H ",
+      " #-   H ",
+      " # o# H ",
+      "4#    H ",
+      "########"
+    ]
+  },
+/* end intermediate */
+
+/* beginner */
+  {
+    start: { x: 2, y: 6 },
+    difficulty: 1,
+    level: [
+      "4       ",
+      "#H      ",
+      " H # o  ",
+      " H # o  ",
+      "######H#",
+      "      H ",
+      "o   # H ",
+      "########"
+    ]
+  },
+  {
+    start: { x: 0, y: 6 },
+    difficulty: 1,
+    level: [
+      "       4",
+      "     ###",
+      "      o ",
+      "    ooo ",
+      "  o oo  ",
+      " oo     ",
+      "    o   ",
+      "########"
+    ]
+  },
+  {
+    start: { x: 3, y: 1 },
+    difficulty: 1,
+    level: [
+      "     # 4",
+      "     #H#",
+      " # - #H ",
+      " #####H ",
+      "    X H ",
+      " o- # H ",
+      "########",
+      "########"
+    ]
+  },
+  {
+    start: { x: 2, y: 3 },
+    difficulty: 1,
+    secret: true,
+    level: [
+      "     4  ",
+      "    ###H",
+      "o    ##H",
+      "o     XH",
+      "#####H##",
+      "#####H##",
+      "##-  H##",
+      "########"
+    ]
+  },
+/* end beginner */
+
+  {
+    start: { x: 0, y: 0 },
+    difficulty: 0,
+    level: [
+      "        ",
+      "        ",
+      "        ",
+      "        ",
+      "        ",
+      "        ",
+      "        ",
+      "########"
+    ]
+  }
+];
+var LEVEL = 0;
+var ORK = {};
+
+function init() {
+  ORK = {
+    x: LEVELS[LEVEL].start.x,
+    y: LEVELS[LEVEL].start.y,
+    key: 0,
+    bub: 0,
+    maxinv: 2,
+    gameover: false
+  };
+  var grid = LEVELS[LEVEL].level;
+  var table = document.createElement("table");
+  var quick = {
+    " ": "",
+    "w": "wall",
+    "l": "ladder",
+    "b": "bubble",
+    "k": "key",
+    "d": "door",
+    "f": "flag",
+
+    " ": "",
+    "#": "wall",
+    "H": "ladder",
+    "o": "bubble",
+    "-": "key",
+    "X": "door",
+    "4": "flag"
+  };
+  for(var i = 0; i < grid.length; i++) {
+    var tr = document.createElement("tr");
+    table.appendChild(tr);
+    for(var j = 0; j < grid[i].length; j++) {
+      var td = document.createElement("td");
+      td.className = quick[grid[i][j]] || grid[i][j];
+      td.className += (td.className ? " " : "") + "x" + j + " y" + i;
+      tr.appendChild(td);
+    }
+  }
+  var main = document.getElementById("main");
+  while(main.firstChild) {
+    main.removeChild(main.firstChild);
+  }
+  main.appendChild(table);
+  document.getElementById("win").className = "hidden";
+
+  var img = document.createElement("img");
+  img.src = "image/ork-stand01.png";
+  img.className = "ork";
+  cell(ORK.x, ORK.y).appendChild(img);
+  document.querySelector(".x" + ORK.x + ".y" + ORK.y).appendChild(img);
+
+  document.getElementById("inv").style.width = (16 * ORK.maxinv) + "px";
+  document.getElementById("inv").style.height = "16px";
+}
+init();
+
+function cell(x, y) {
+  return document.querySelector(".x" + x + ".y" + y);
+}
+
+function inv() {
+  var div = document.getElementById("inv");
+  while(div.firstChild) {
+    div.removeChild(div.firstChild);
+  }
+  var img = null;
+  for(var i = 0; i < ORK.bub; i++) {
+    img = document.createElement("img");
+    img.src = "image/bubble01.png";
+    div.appendChild(img);
+  }
+  for(var i = 0; i < ORK.key; i++) {
+    img = document.createElement("img");
+    img.src = "image/key01.png";
+    div.appendChild(img);
+  }
+}
+
+function moveto(x, y) {
+  var stay = false;
+  var ork = document.querySelector("img.ork");
+  var targ = cell(x, y)
+  if(!targ || targ.className.indexOf("wall") >= 0) {
+    console.log("bump");
+    return;
+  } else if(targ.className.indexOf("bubble") >= 0) {
+    if(ORK.bub + ORK.key < ORK.maxinv) {
+      targ.className = targ.className.replace("bubble", "").trim();
+      console.log("slurp!");
+      stay = true;
+      ORK.bub++;
+      inv();
+    } else {
+      console.log("full!");
+      return;
+    }
+  } else if(targ.className.indexOf("key") >= 0) {
+    if(ORK.bub + ORK.key < ORK.maxinv) {
+      targ.className = targ.className.replace("key", "").trim();
+      console.log("slurp!");
+      stay = true;
+      ORK.key++;
+      inv();
+    } else {
+      console.log("full!");
+      return;
+    }
+  } else if(targ.className.indexOf("door") >= 0) {
+    if(!ORK.key) {
+      console.log("locked!");
+      return;
+    }
+    stay = true;
+    ORK.key--;
+    targ.className = targ.className.replace("door", "").trim();
+    inv();
+  }
+
+  if(stay) {
+    return;
+  }
+
+  ORK.x = x;
+  ORK.y = y;
+  targ.appendChild(ork);
+  if(targ.className.indexOf("flag") >= 0) {
+    ORK.gameover = true;
+    document.getElementById("win").className = "";
+  }
+}
+
+function fall() {
+  if(cell(ORK.x, ORK.y).className.indexOf("ladder") >= 0) {
+    return;
+  }
+  var below = cell(ORK.x, ORK.y + 1);
+  while(below &&
+        below.className.split(" ").indexOf("bubble") < 0 &&
+        below.className.split(" ").indexOf("wall") < 0 &&
+        below.className.split(" ").indexOf("key") < 0 &&
+        below.className.split(" ").indexOf("door") < 0 &&
+        below.className.split(" ").indexOf("ladder") < 0) {
+    moveto(ORK.x, ORK.y + 1);
+    below = cell(ORK.x, ORK.y + 1);
+  }
+}
+
+function up() {
+  document.querySelector("img.ork").src = "image/ork-up01.png";
+  if(cell(ORK.x, ORK.y).className.indexOf("ladder") >= 0) {
+    moveto(ORK.x, ORK.y - 1);
+    return;
+  }
+}
+function down() {
+  document.querySelector("img.ork").src = "image/ork-down01.png";
+  if(cell(ORK.x, ORK.y).className.indexOf("ladder") >= 0) {
+    if(cell(ORK.x, ORK.y + 1).className.indexOf("wall") < 0 &&
+       cell(ORK.x, ORK.y + 1).className.indexOf("bubble") < 0) {
+      moveto(ORK.x, ORK.y + 1);
+      fall();
+    }
+    return;
+  } else if(cell(ORK.x, ORK.y + 1).className.indexOf("ladder") >= 0) {
+    moveto(ORK.x, ORK.y + 1);
+    return;
+  }
+
+  if(!ORK.bub && !ORK.key) {
+    fall();
+    console.log("cough!");
+    return;
+  }
+  var targ = cell(ORK.x, ORK.y - 1);
+  if(!targ ||
+     targ.className.indexOf("bubble") >= 0 ||
+     targ.className.indexOf("key") >= 0 ||
+     targ.className.indexOf("wall") >= 0) {
+    console.log("bonk");
+    return;
+  }
+  if(ORK.bub) {
+    cell(ORK.x, ORK.y).className += " bubble";
+    ORK.bub--;
+  } else if(ORK.key) {
+    cell(ORK.x, ORK.y).className += " key";
+    ORK.key--;
+  }
+  inv();
+  moveto(ORK.x, ORK.y - 1);
+  fall();
+}
+function left() {
+  document.querySelector("img.ork").src = "image/ork-stand02.png";
+  moveto(ORK.x - 1, ORK.y);
+  fall();
+}
+function right() {
+  document.querySelector("img.ork").src = "image/ork-stand01.png";
+  moveto(ORK.x + 1, ORK.y);
+  fall();
+}
+
+
+window.addEventListener("keydown", function(e) {
+  var handler = {
+    "Up": up,
+    "Down": down,
+    "Left": left,
+    "Right": right,
+    "Add": function() {
+      LEVEL++;
+      if(LEVEL > LEVELS.length - 1) {
+        LEVEL = 0;
+      }
+      init();
+    },
+    "Subtract": function() {
+      LEVEL--;
+      if(LEVEL < 0) {
+        LEVEL = LEVELS.length - 1;
+      }
+      init();
+    },
+    "Spacebar": function() {
+      init();
+      return;
+
+      if(document.body.className) {
+        document.body.className = "";
+      } else {
+        document.body.className = "dark";
+      }
+    }
+  };
+  if(handler[e.key]) {
+    handler[e.key]();
+  } else {
+    console.log(e.key);
+  }
+});
+
+</script>
+</body>
+</html>
