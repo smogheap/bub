@@ -4,6 +4,7 @@
 <style>
 body.dark {
   background: black;
+  color: silver;
 }
 table {
   border-collapse: collapse;
@@ -44,6 +45,11 @@ img.ork {
 #inv {
   border: 2px dotted grey;
   display: inline-block;
+  vertical-align: middle;
+}
+#inv img {
+  width: 32px;
+  height: 32px;
 }
 #win {
   position: absolute;
@@ -59,8 +65,7 @@ img.ork {
 </head>
 <body>
 arrows: play<br>
-space: reset<br>
--/+: change level<br>
+space: reset &nbsp; -/+: change level &nbsp; ~: light/dark<br>
 <strong>level <span id="lv"></span></strong>
 <div id="main"></div>
 <div id="inv"></div> &lt;-inventory
@@ -279,8 +284,8 @@ function init() {
   document.querySelector(".x" + ORK.x + ".y" + ORK.y).appendChild(img);
 
   document.getElementById("lv").innerHTML = LEVEL;
-  document.getElementById("inv").style.width = (16 * ORK.maxinv) + "px";
-  document.getElementById("inv").style.height = "16px";
+  document.getElementById("inv").style.width = (32 * ORK.maxinv) + "px";
+  document.getElementById("inv").style.height = "32px";
 }
 init();
 
@@ -445,6 +450,13 @@ function prev() {
   }
   init();
 }
+function dark() {
+  if(document.body.className) {
+    document.body.className = "";
+  } else {
+    document.body.className = "dark";
+  }
+}
 
 window.addEventListener("keydown", function(e) {
   switch(e.keyCode) {
@@ -474,6 +486,9 @@ window.addEventListener("keydown", function(e) {
   case 109: //num-
   case 173: //-
     prev();
+    break;
+  case 27:  //~
+    dark();
     break;
   default:
     console.log(e.keyCode);
