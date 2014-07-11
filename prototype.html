@@ -65,6 +65,11 @@ numpad -/+: change level<br>
 <div id="inv"></div> &lt;-inventory
 <div id="win" class="hidden">:^)</div>
 <script>
+console = console || {
+  log: function() {},
+  error: function() {}
+};
+
 var LEVELS = [
 /* easy */
   {
@@ -424,45 +429,55 @@ function right() {
   fall();
 }
 
+function next() {
+  LEVEL++;
+  if(LEVEL > LEVELS.length - 1) {
+    LEVEL = 0;
+  }
+  init();
+}
+function prev() {
+  LEVEL--;
+  if(LEVEL < 0) {
+    LEVEL = LEVELS.length - 1;
+  }
+  init();
+}
 
 window.addEventListener("keydown", function(e) {
-  var handler = {
-    "Up": up,
-    "Down": down,
-    "Left": left,
-    "Right": right,
-    "Add": function() {
-      LEVEL++;
-      if(LEVEL > LEVELS.length - 1) {
-        LEVEL = 0;
-      }
-      init();
-    },
-    "Subtract": function() {
-      LEVEL--;
-      if(LEVEL < 0) {
-        LEVEL = LEVELS.length - 1;
-      }
-      init();
-    },
-    "Spacebar": function() {
-      init();
-      return;
-
-      if(document.body.className) {
-        document.body.className = "";
-      } else {
-        document.body.className = "dark";
-      }
-    }
-  };
-  if(handler[e.key]) {
-    handler[e.key]();
-  } else {
-    console.log(e.key);
+  switch(e.keyCode) {
+  case 38:  //up
+  case 104: //num8
+    up();
+    break;
+  case 40:  //down
+  case 98:  //num2
+    down();
+    break;
+  case 37:  //left
+  case 100: //num4
+    left();
+    break;
+  case 39:  //right
+  case 102: //num6
+    right();
+    break;
+  case 32:  //space
+    init();
+    break;
+  case 61:  //+
+  case 107: //num+
+    next();
+    break;
+  case 109: //num-
+  case 173: //-
+    prev();
+    break;
+  default:
+    console.log(e.keyCode);
+    break;
   }
 });
-
 </script>
 </body>
 </html>
