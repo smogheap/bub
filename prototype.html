@@ -77,6 +77,66 @@ console = console || {
 };
 
 var LEVELS = [
+/* beginner */
+  {
+    start: { x: 0, y: 5},
+    difficulty: 1,
+    level: [
+      "        ",
+      "    4   ",
+      "  H###H ",
+      "  H   H ",
+      "      H ",
+      "  o o H ",
+      "########",
+      "########"
+    ]
+  },
+  {
+    start: { x: 2, y: 6 },
+    difficulty: 1,
+    level: [
+      "4       ",
+      "#H      ",
+      " H # o  ",
+      " H # o  ",
+      "######H#",
+      "      H ",
+      "o   # H ",
+      "########"
+    ]
+  },
+  {
+    start: { x: 2, y: 3 },
+    difficulty: 1,
+    secret: true,
+    level: [
+      "     4  ",
+      "    ###H",
+      "o    ##H",
+      "o     XH",
+      "#####H##",
+      "#####H##",
+      "##-  H##",
+      "########"
+    ]
+  },
+  {
+    start: { x: 4, y: 1 },
+    difficulty: 1,
+    level: [
+      "      4 ",
+      "      #H",
+      "  # - #H",
+      "  #####H",
+      "    X  H",
+      " o- #  H",
+      "########",
+      "########"
+    ]
+  },
+/* end beginner */
+
 /* easy */
   {
     start: { x: 1, y: 6 },
@@ -137,26 +197,23 @@ var LEVELS = [
       "########"
     ]
   },
-/* end intermediate */
-
-/* beginner */
   {
-    start: { x: 2, y: 6 },
-    difficulty: 1,
+    start: { x: 0, y: 6 },
+    difficulty: 5,
     level: [
-      "4       ",
-      "#H      ",
-      " H # o  ",
-      " H # o  ",
-      "######H#",
-      "      H ",
-      "o   # H ",
+      "       4",
+      "     ###",
+      "   o o  ",
+      "   o    ",
+      "     o  ",
+      " o      ",
+      "    o   ",
       "########"
     ]
   },
   {
     start: { x: 0, y: 6 },
-    difficulty: 1,
+    difficulty: 7,
     level: [
       "       4",
       "     ###",
@@ -168,36 +225,7 @@ var LEVELS = [
       "########"
     ]
   },
-  {
-    start: { x: 4, y: 1 },
-    difficulty: 1,
-    level: [
-      "      4 ",
-      "      #H",
-      "  # - #H",
-      "  #####H",
-      "    X  H",
-      " o- #  H",
-      "########",
-      "########"
-    ]
-  },
-  {
-    start: { x: 2, y: 3 },
-    difficulty: 1,
-    secret: true,
-    level: [
-      "     4  ",
-      "    ###H",
-      "o    ##H",
-      "o     XH",
-      "#####H##",
-      "#####H##",
-      "##-  H##",
-      "########"
-    ]
-  },
-/* end beginner */
+/* end intermediate */
 
   {
     start: { x: 1, y: 6 },
@@ -487,7 +515,7 @@ window.addEventListener("keydown", function(e) {
   case 173: //-
     prev();
     break;
-  case 27:  //~
+  case 192: //~
     dark();
     break;
   default:
