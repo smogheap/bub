@@ -2,16 +2,17 @@
 <head>
 <title>Bub</title>
 <style>
-body.dark {
-  background: black;
-  color: silver;
-}
 body {
+  margin: 0;
   image-rendering: -moz-crisp-edges;
   image-rendering: -o-crisp-edges;
   image-rendering: -webkit-optimize-contrast;
   image-rendering: crisp-edges;
   -ms-interpolation-mode: nearest-neighbor;
+}
+body.dark {
+  background: black;
+  color: silver;
 }
 table {
   border-collapse: collapse;
@@ -49,6 +50,20 @@ img.ork {
   width: 64px;
   height: 64px;
 }
+#tools {
+  padding: 0.5em;
+  background: #444 linear-gradient(to bottom, #666, #222);
+  color: silver;
+}
+#tools a {
+  margin-left: 0.5em;
+  padding: 0.25em 0.5em;
+  color: #222;
+  text-decoration: none;
+  background: #ccc linear-gradient(to bottom, #ccc, #888);
+  border: 1px solid #222;
+  border-radius: 0.25em;
+}
 #inv {
   border: 2px dotted grey;
   display: inline-block;
@@ -60,7 +75,7 @@ img.ork {
 }
 #win {
   position: absolute;
-  top: 0;
+  top: 64px;
   left: 0;
   font-size: 1000%;
   color: yellow;
@@ -70,10 +85,15 @@ img.ork {
 }
 </style>
 </head>
-<body>
-arrows: play<br>
-space: reset &nbsp; -/+: change level &nbsp; ~: light/dark<br>
+<body class="dark">
+<div id="tools">
 <strong>level <span id="lv"></span></strong>
+<a href="#" onclick="init(); return false;">reset</a>
+<a href="#" onclick="dark(); return false;">dark</a>
+<a href="#" onclick="prev(); return false;">prev</a>
+<a href="#" onclick="next(); return false;">next</a>
+<a href="#" onclick="help(); return false;">help</a>
+</div>
 <div id="main"></div>
 <div id="inv"></div> &lt;-inventory
 <div id="win" class="hidden">:^)</div>
@@ -492,6 +512,12 @@ function dark() {
     document.body.className = "dark";
   }
 }
+function help() {
+  alert(["arrows: play\n",
+         "space: reset\n",
+         "-/+: change level\n",
+         "~: light/dark"].join(""));
+}
 
 function click(e) {
   var x = e.clientX || 0;
@@ -568,7 +594,13 @@ window.addEventListener("keydown", function(e) {
   }
 });
 window.addEventListener("click", function(e) {
+  if(e.target && e.target.tagName &&
+     e.target.tagName.toLowerCase() === "a") {
+    return;
+  }
   click(e);
+  e.preventDefault();
+  return false;
 });
 </script>
 </body>
