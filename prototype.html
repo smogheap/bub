@@ -7,11 +7,11 @@ body.dark {
   color: silver;
 }
 body {
-  image-rendering: -moz-crisp-edges;         /* Firefox */
-  image-rendering:   -o-crisp-edges;         /* Opera */
-  image-rendering: -webkit-optimize-contrast;/* Webkit (non-standard naming) */
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -o-crisp-edges;
+  image-rendering: -webkit-optimize-contrast;
   image-rendering: crisp-edges;
-  -ms-interpolation-mode: nearest-neighbor;  /* IE (non-standard property) */
+  -ms-interpolation-mode: nearest-neighbor;
 }
 table {
   border-collapse: collapse;
@@ -493,6 +493,42 @@ function dark() {
   }
 }
 
+function click(e) {
+  var x = e.clientX || 0;
+  var y = e.clientY || 0;
+  var ork = document.querySelector("img.ork");
+  var orkx = 0;
+  var orky = 0;
+  var elm = ork;
+  while(elm && elm.offsetLeft !== undefined) {
+    if(elm.nodeName.toLowerCase() === "tr") {
+      elm = elm.parentNode;
+      continue;
+    }
+console.log(elm, elm.offsetTop );
+    orkx += elm.offsetLeft;
+    orky += elm.offsetTop;
+    elm = elm.parentNode;
+  }
+
+console.log(x - orkx, y - orky);
+  if(Math.abs(y - orky) < Math.abs(x - orkx)) {
+    // more horizontal
+    if(x - orkx < 0) {
+      left();
+    } else {
+      right();
+    }
+  } else {
+    // more vertical
+    if(y - orky < 0) {
+      up();
+    } else {
+      down();
+    }
+  }
+}
+
 window.addEventListener("keydown", function(e) {
   switch(e.keyCode) {
   case 38:  //up
@@ -527,9 +563,12 @@ window.addEventListener("keydown", function(e) {
     break;
   case 27:  //esc
   default:
-    console.log(e.keyCode);
+//    console.log(e.keyCode);
     break;
   }
+});
+window.addEventListener("click", function(e) {
+  click(e);
 });
 </script>
 </body>
