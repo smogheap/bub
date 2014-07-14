@@ -52,7 +52,7 @@ img.ork {
 }
 #tools {
   padding: 0.5em;
-  background: linear-gradient(to bottom, #666, #222) #444;
+  background: #444 linear-gradient(to bottom, #666, #222);
   color: silver;
 }
 #tools a {
@@ -60,11 +60,12 @@ img.ork {
   padding: 0.25em 0.5em;
   color: #222;
   text-decoration: none;
-  background: linear-gradient(to bottom, #ccc, #888) #ccc;
+  background: #ccc linear-gradient(to bottom, #ccc, #888);
   border: 1px solid #222;
   border-radius: 0.25em;
 }
 #inv {
+  margin: 4px;
   border: 2px dotted grey;
   display: inline-block;
   vertical-align: middle;
@@ -72,6 +73,9 @@ img.ork {
 #inv img {
   width: 32px;
   height: 32px;
+}
+#inv :first-child {
+  outline: 4px solid green;
 }
 #win {
   position: absolute;
@@ -116,6 +120,20 @@ var LEVELS = [
       "      H ",
       "  o o H ",
       "########",
+      "########"
+    ]
+  },
+  {
+    start: { x: 0, y: 2 },
+    difficulty: 1,
+    level: [
+      "        ",
+      "        ",
+      "        ",
+      "o       ",
+      "oo    4 ",
+      "ooo  ###",
+      "oooo ###",
       "########"
     ]
   },
@@ -180,6 +198,20 @@ var LEVELS = [
     ]
   },
   {
+    start: { x: 0, y: 4 },
+    difficulty: 3,
+    level: [
+      "     4  ",
+      " H## ##H",
+      " H #   H",
+      " H #   H",
+      " H #    ",
+      "#  #  o ",
+      "#  #  oo",
+      "########"
+    ]
+  },
+  {
     start: { x: 1, y: 6 },
     difficulty: 3,
     level: [
@@ -196,6 +228,20 @@ var LEVELS = [
 /* end easy */
 
 /* intermediate */
+  {
+    start: { x: 7, y: 6 },
+    difficulty: 5,
+    level: [
+      "    # 4 ",
+      " H# # # ",
+      "H - # X ",
+      "H   o##H ",
+      " H o   H",
+      "H o    H",
+      "H       ",
+      "########"
+    ]
+  },
   {
     start: { x: 4, y: 4 },
     difficulty: 5,
@@ -270,6 +316,35 @@ var LEVELS = [
   },
 
   {
+    start: { x: 2, y: 6 },
+    difficulty: 0,
+    level: [
+      "   ##   ",
+      "  #  #  ",
+      "    ##  ",
+      "    #   ",
+      "    o   ",
+      "        ",
+      "o      4",
+      "###  ###"
+    ]
+  },
+  {
+    start: { x: 4, y: 6 },
+    difficulty: 0,
+    level: [
+      "########",
+      "-   o   ",
+      " H ## H ",
+      "H # 4# H",
+      " H#X #H ",
+      "H o#H  H",
+      "H      H",
+      "########"
+    ]
+  },
+
+  {
     start: { x: 0, y: 0 },
     difficulty: 0,
     level: [
@@ -286,6 +361,28 @@ var LEVELS = [
 ];
 var LEVEL = 0;
 var ORK = {};
+
+function cell(x, y) {
+  return document.querySelector(".x" + x + ".y" + y);
+}
+
+function inv() {
+  var div = document.getElementById("inv");
+  while(div.firstChild) {
+    div.removeChild(div.firstChild);
+  }
+  var img = null;
+  for(var i = 0; i < ORK.bub; i++) {
+    img = document.createElement("img");
+    img.src = "image/bubble01.png";
+    div.appendChild(img);
+  }
+  for(var i = 0; i < ORK.key; i++) {
+    img = document.createElement("img");
+    img.src = "image/key01.png";
+    div.appendChild(img);
+  }
+}
 
 function init() {
   ORK = {
@@ -337,34 +434,13 @@ function init() {
   img.className = "ork";
   cell(ORK.x, ORK.y).appendChild(img);
   document.querySelector(".x" + ORK.x + ".y" + ORK.y).appendChild(img);
+  inv();
 
   document.getElementById("lv").innerHTML = LEVEL;
   document.getElementById("inv").style.width = (32 * ORK.maxinv) + "px";
   document.getElementById("inv").style.height = "32px";
 }
 init();
-
-function cell(x, y) {
-  return document.querySelector(".x" + x + ".y" + y);
-}
-
-function inv() {
-  var div = document.getElementById("inv");
-  while(div.firstChild) {
-    div.removeChild(div.firstChild);
-  }
-  var img = null;
-  for(var i = 0; i < ORK.bub; i++) {
-    img = document.createElement("img");
-    img.src = "image/bubble01.png";
-    div.appendChild(img);
-  }
-  for(var i = 0; i < ORK.key; i++) {
-    img = document.createElement("img");
-    img.src = "image/key01.png";
-    div.appendChild(img);
-  }
-}
 
 function moveto(x, y) {
   var stay = false;
@@ -444,15 +520,18 @@ function up() {
 }
 function down() {
   document.querySelector("img.ork").src = "image/ork-down01.png";
-  if(cell(ORK.x, ORK.y).className.indexOf("ladder") >= 0) {
+  if(!cell(ORK.x, ORK.y + 1)) {
+
+  } else if(cell(ORK.x, ORK.y + 1).className.indexOf("ladder") >= 0) {
+    moveto(ORK.x, ORK.y + 1);
+    return;
+  } else if(cell(ORK.x, ORK.y).className.indexOf("ladder") >= 0) {
     if(cell(ORK.x, ORK.y + 1).className.indexOf("wall") < 0 &&
+       cell(ORK.x, ORK.y + 1).className.indexOf("key") < 0 &&
        cell(ORK.x, ORK.y + 1).className.indexOf("bubble") < 0) {
       moveto(ORK.x, ORK.y + 1);
       fall();
     }
-    return;
-  } else if(cell(ORK.x, ORK.y + 1).className.indexOf("ladder") >= 0) {
-    moveto(ORK.x, ORK.y + 1);
     return;
   }
 
