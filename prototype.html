@@ -4,6 +4,8 @@
 <style>
 body {
   margin: 0;
+  text-align: center;
+  vertical-align: top;
   image-rendering: -moz-crisp-edges;
   image-rendering: -o-crisp-edges;
   image-rendering: -webkit-optimize-contrast;
@@ -14,8 +16,18 @@ body.dark {
   background: black;
   color: silver;
 }
+#main {
+  display: inline-block;
+  padding: 16px;
+  background: url("image/wall01.png");
+  background-size: 64px;
+}
 table {
+  background: white;
   border-collapse: collapse;
+}
+body.dark table {
+  background: black;
 }
 td {
   padding: 0;
@@ -65,10 +77,14 @@ img.ork {
   border-radius: 0.25em;
 }
 #inv {
+  text-align: left;
+  background: white;
   margin: 4px;
   border: 2px dotted grey;
   display: inline-block;
-  vertical-align: middle;
+}
+body.dark #inv {
+  background: black;
 }
 #inv img {
   width: 32px;
@@ -80,7 +96,8 @@ img.ork {
 #win {
   position: absolute;
   top: 64px;
-  left: 0;
+  left: auto;
+  right: auto;
   font-size: 1000%;
   color: yellow;
 }
@@ -99,7 +116,8 @@ img.ork {
 <a href="#" onclick="help(); return false;">help</a>
 </div>
 <div id="main"></div>
-<div id="inv"></div> &lt;-inventory
+<br>
+<div id="inv"></div>
 <div id="win" class="hidden">:^)</div>
 <script>
 console = console || {
@@ -184,20 +202,6 @@ var LEVELS = [
 
 /* easy */
   {
-    start: { x: 1, y: 6 },
-    difficulty: 2,
-    level: [
-      ["", "", "door", "flag", "", "", "", ""],
-      ["wall", "ladder", "wall", "wall", "wall", "", "", ""],
-      ["", "ladder", "", "", "", "", "", ""],
-      ["", "ladder", "", "", "", "", "", ""],
-      ["", "ladder", "", "", "", "", "", "key"],
-      ["", "", "", "", "", "", "bubble", ""],
-      ["", "", "", "", "bubble", "bubble", "bubble", "bubble"],
-      ["wall", "wall", "wall", "wall", "wall", "wall", "wall", "wall"]
-    ]
-  },
-  {
     start: { x: 0, y: 4 },
     difficulty: 3,
     level: [
@@ -213,6 +217,20 @@ var LEVELS = [
   },
   {
     start: { x: 1, y: 6 },
+    difficulty: 2,
+    level: [
+      ["", "", "door", "flag", "", "", "", ""],
+      ["wall", "ladder", "wall", "wall", "wall", "", "", ""],
+      ["", "ladder", "", "", "", "", "", ""],
+      ["", "ladder", "", "", "", "", "", ""],
+      ["", "ladder", "", "", "", "", "", "key"],
+      ["", "", "", "", "", "", "bubble", ""],
+      ["", "", "", "", "bubble", "bubble", "bubble", "bubble"],
+      ["wall", "wall", "wall", "wall", "wall", "wall", "wall", "wall"]
+    ]
+  },
+  {
+    start: { x: 1, y: 6 },
     difficulty: 3,
     level: [
       ["", "", "door", "flag", "", "", "", ""],
@@ -225,21 +243,49 @@ var LEVELS = [
       ["wall", "wall", "wall", "wall", "wall", "wall", "wall", "wall"]
     ]
   },
+  {
+    start: { x: 4, y: 6 },
+    difficulty: 3,
+    level: [
+      "########",
+      "-   o   ",
+      " H ## H ",
+      "H # 4# H",
+      " H#X #H ",
+      "H o#H  H",
+      "H      H",
+      "########"
+    ]
+  },
+  {
+    start: { x: 0, y: 4},
+    difficulty: 3,
+    level: [
+      "########",
+      "########",
+      "#####   ",
+      "   ooooo",
+      "  ooooo4",
+      "########",
+      "########",
+      "########"
+    ]
+  },
 /* end easy */
 
 /* intermediate */
   {
-    start: { x: 7, y: 6 },
-    difficulty: 5,
+    start: { x: 0, y: 7 },
+    difficulty: 4,
     level: [
-      "    # 4 ",
-      " H# # # ",
-      "H - # X ",
-      "H   o##H ",
-      " H o   H",
-      "H o    H",
-      "H       ",
-      "########"
+      "   -    ",
+      "  ooo   ",
+      " ooooo  ",
+      "#     #H",
+      " # X # H",
+      "  #4#  H",
+      "   #   H",
+      "       H"
     ]
   },
   {
@@ -298,51 +344,95 @@ var LEVELS = [
       "########"
     ]
   },
+  {
+    start: { x: 7, y: 6 },
+    difficulty: 6,
+    level: [
+      "    # 4 ",
+      " H# # # ",
+      "H - # X ",
+      "H   o##H",
+      " H o   H",
+      "H o    H",
+      "H       ",
+      "########"
+    ]
+  },
+  {
+    start: { x: 0, y: 0 },
+    difficulty: 5,
+    level: [
+      "       4",
+      "##o   ##",
+      "  o     ",
+      "  o     ",
+      "  o     ",
+      "  o     ",
+      "  o     ",
+      "  o     "
+    ]
+  },
 /* end intermediate */
 
+/* advanced */
+  {
+    start: { x: 0, y: 0 },
+    difficulty: 7,
+    level: [
+      "       4",
+      "##    ##",
+      "        ",
+      "        ",
+      "        ",
+      "        ",
+      "        ",
+      "ooooooo "
+    ]
+  },
   {
     start: { x: 1, y: 6 },
-    difficulty: 0,
+    difficulty: 7,
     level: [
       "-   # - ",
       "  o X   ",
-      "  # ###H",
+      "  # ### ",
       "H###oHHH",
-      "H   # # ",
-      "H  o# ##",
-      "   o# X4",
-      "########"
+      "H       ",
+      "H  o  ##",
+      "   o  X4",
+      "##### ##"
+    ]
+  },
+  {
+    start: { x: 0, y: 7 },
+    difficulty: 8,
+    level: [
+      "        ",
+      "       4",
+      "      ##",
+      "        ",
+      "    ##  ",
+      "        ",
+      "  ## ooo",
+      "     ooo"
+    ]
+  },
+  {
+    start: { x: 0, y: 7 },
+    difficulty: 8,
+    level: [
+      "       4",
+      "      ##",
+      "        ",
+      "        ",
+      "    ##  ",
+      "      o ",
+      "  ## ooo",
+      "     ooo"
     ]
   },
 
-  {
-    start: { x: 2, y: 6 },
-    difficulty: 0,
-    level: [
-      "   ##   ",
-      "  #  #  ",
-      "    ##  ",
-      "    #   ",
-      "    o   ",
-      "        ",
-      "o      4",
-      "###  ###"
-    ]
-  },
-  {
-    start: { x: 4, y: 6 },
-    difficulty: 0,
-    level: [
-      "########",
-      "-   o   ",
-      " H ## H ",
-      "H # 4# H",
-      " H#X #H ",
-      "H o#H  H",
-      "H      H",
-      "########"
-    ]
-  },
+/* end advanced */
 
   {
     start: { x: 0, y: 0 },
@@ -355,7 +445,7 @@ var LEVELS = [
       "        ",
       "        ",
       "        ",
-      "########"
+      "        "
     ]
   }
 ];
