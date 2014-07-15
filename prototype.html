@@ -277,10 +277,10 @@ var LEVELS = [
     level: [
       "     #4 ",
       "  X   #H",
-      "  # -o#H",
+      "  # oo#H",
       "  #####H",
-      "o   X  H",
-      " o- #   ",
+      "    X  H",
+      "-o- #   ",
       "########",
       "########"
     ]
@@ -863,6 +863,8 @@ function up() {
   if(cell(ORK.x, ORK.y).className.indexOf("ladder") >= 0) {
     moveto(ORK.x, ORK.y - 1);
     return;
+  } else if(!cell(ORK.x, ORK.y + 1)) {
+    down();
   } else if(cell(ORK.x, ORK.y + 1) &&
             cell(ORK.x, ORK.y + 1).className.indexOf("ladder") < 0) {
     down();
