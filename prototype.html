@@ -692,18 +692,18 @@ function click(e) {
   var x = e.clientX || 0;
   var y = e.clientY || 0;
   var ork = document.querySelector("img.ork");
-  var orkx = 0;
-  var orky = 0;
+  var orkx = ork.width / 2;
+  var orky = ork.height / 2;
   var elm = ork;
   while(elm && elm.offsetLeft !== undefined) {
-    if(elm.nodeName.toLowerCase() === "tr") {
-      elm = elm.parentNode;
+    if(0 && elm.nodeName.toLowerCase() === "tr") {
+      elm = elm.offsetParent;
       continue;
     }
 console.log(elm, elm.offsetTop );
     orkx += elm.offsetLeft;
     orky += elm.offsetTop;
-    elm = elm.parentNode;
+    elm = elm.offsetParent;
   }
 
 console.log(x - orkx, y - orky);
