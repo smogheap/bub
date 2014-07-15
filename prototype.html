@@ -863,8 +863,10 @@ function up() {
   if(cell(ORK.x, ORK.y).className.indexOf("ladder") >= 0) {
     moveto(ORK.x, ORK.y - 1);
     return;
+  } else if(cell(ORK.x, ORK.y + 1) &&
+            cell(ORK.x, ORK.y + 1).className.indexOf("ladder") < 0) {
+    down();
   }
-  down();
 }
 function down() {
   document.querySelector("img.ork").src = "image/ork-down01.png";
