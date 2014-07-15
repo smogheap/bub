@@ -557,10 +557,13 @@ init();
 
 function customlevel() {
   var data = [];
-  var raw = document.getElementById("level").value.trim();
+  var raw = document.getElementById("level").value;
   raw = raw.split("\n");
   while(raw.length < 8) {
     raw.push("");
+  }
+  while(raw.length > 8) {
+    raw.pop();
   }
   for(var i = 0; i < raw.length; i++) {
     while(raw[i].length < 8) {
