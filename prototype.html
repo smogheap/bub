@@ -16,6 +16,10 @@ body.dark {
   background: black;
   color: silver;
 }
+body.evil {
+  background: #300;
+  color: silver;
+}
 #main {
   display: inline-block;
   padding: 16px;
@@ -28,6 +32,9 @@ table {
 }
 body.dark table {
   background: black;
+}
+body.evil table {
+  background: #300;
 }
 td {
   padding: 0;
@@ -86,6 +93,9 @@ a {
 body.dark #inv {
   background: black;
 }
+body.evil #inv {
+  background: #300;
+}
 #inv img {
   width: 32px;
   height: 32px;
@@ -135,7 +145,7 @@ var LEVELS = [
 /* beginner */
   {
     start: { x: 0, y: 5},
-    difficulty: 1,
+    difficulty: 0,
     level: [
       "        ",
       "    4   ",
@@ -148,8 +158,22 @@ var LEVELS = [
     ]
   },
   {
-    start: { x: 0, y: 2 },
+    start: { x: 0, y: 5},
     difficulty: 1,
+    level: [
+      "        ",
+      "    4   ",
+      "  H###  ",
+      "  H     ",
+      "        ",
+      "  o o   ",
+      "########",
+      "########"
+    ]
+  },
+  {
+    start: { x: 0, y: 2 },
+    difficulty: 0,
     level: [
       "        ",
       "        ",
@@ -162,8 +186,22 @@ var LEVELS = [
     ]
   },
   {
-    start: { x: 2, y: 6 },
+    start: { x: 0, y: 4 },
     difficulty: 1,
+    level: [
+      "        ",
+      "        ",
+      "        ",
+      "        ",
+      "      4 ",
+      "o    ###",
+      "o    ###",
+      "########"
+    ]
+  },
+  {
+    start: { x: 2, y: 6 },
+    difficulty: 0,
     level: [
       "4       ",
       "#H      ",
@@ -172,6 +210,35 @@ var LEVELS = [
       "######H#",
       "      H ",
       "o   # H ",
+      "########"
+    ]
+  },
+  {
+    start: { x: 0, y: 0 },
+    difficulty: 1,
+    level: [
+      "        ",
+      "#H      ",
+      "oH #    ",
+      "oH # o  ",
+      "######H#",
+      "      H ",
+      "  4 # H ",
+      "########"
+    ]
+  },
+  {
+    start: { x: 2, y: 3 },
+    difficulty: 0,
+    secret: true,
+    level: [
+      "     4  ",
+      "    ###H",
+      "o    ##H",
+      "o     XH",
+      "#####H##",
+      "#####H##",
+      "##-  H##",
       "########"
     ]
   },
@@ -186,13 +253,13 @@ var LEVELS = [
       "o     XH",
       "#####H##",
       "#####H##",
-      "##-  H##",
+      "##o  H##",
       "########"
     ]
   },
   {
     start: { x: 4, y: 1 },
-    difficulty: 1,
+    difficulty: 0,
     level: [
       "      4 ",
       "      #H",
@@ -204,20 +271,76 @@ var LEVELS = [
       "########"
     ]
   },
+  {
+    start: { x: 4, y: 1 },
+    difficulty: 1,
+    level: [
+      "      4 ",
+      "  X   #H",
+      "  # -o#H",
+      "  #####H",
+      "o   X  H",
+      " o- #   ",
+      "########",
+      "########"
+    ]
+  },
+  {
+    start: { x: 0, y: 6 },
+    difficulty: 0,
+    level: [
+      "4       ",
+      "####### ",
+      " oo     ",
+      " #######",
+      "     oo ",
+      "####### ",
+      " oo     ",
+      "########"
+    ]
+  },
+  {
+    start: { x: 0, y: 6 },
+    difficulty: 1,
+    level: [
+      "4       ",
+      "######o ",
+      "  o     ",
+      " o######",
+      "     o  ",
+      "######o ",
+      "  o     ",
+      "########"
+    ]
+  },
 /* end beginner */
 
 /* easy */
   {
     start: { x: 0, y: 4 },
-    difficulty: 3,
+    difficulty: 2,
     level: [
       "     4  ",
       " H## ##H",
       " H #   H",
       " H #   H",
-      " H #    ",
+      " H #  o ",
       "#  #  o ",
-      "#  #  oo",
+      "#  #   o",
+      "########"
+    ]
+  },
+  {
+    start: { x: 0, y: 4 },
+    difficulty: 3,
+    level: [
+      "   X 4  ",
+      " H## ##H",
+      " H #   H",
+      " H #   H",
+      " H #  o ",
+      "o  #  o ",
+      "o -#   o",
       "########"
     ]
   },
@@ -225,33 +348,33 @@ var LEVELS = [
     start: { x: 1, y: 6 },
     difficulty: 2,
     level: [
-      ["", "", "door", "flag", "", "", "", ""],
-      ["wall", "ladder", "wall", "wall", "wall", "", "", ""],
-      ["", "ladder", "", "", "", "", "", ""],
-      ["", "ladder", "", "", "", "", "", ""],
-      ["", "ladder", "", "", "", "", "", "key"],
-      ["", "", "", "", "", "", "bubble", ""],
-      ["", "", "", "", "bubble", "bubble", "bubble", "bubble"],
-      ["wall", "wall", "wall", "wall", "wall", "wall", "wall", "wall"]
+      "  X4    ",
+      "#H###   ",
+      " H      ",
+      " H      ",
+      " H     -",
+      "      o ",
+      "    oooo",
+      "########"
     ]
   },
   {
     start: { x: 1, y: 6 },
-    difficulty: 3,
+    difficulty: 7,
     level: [
-      ["", "", "door", "flag", "", "", "", ""],
-      ["wall", "ladder", "wall", "wall", "wall", "", "", ""],
-      ["", "ladder", "", "", "", "", "", ""],
-      ["", "ladder", "", "", "", "", "", ""],
-      ["", "ladder", "", "", "", "", "", "key"],
-      ["", "", "", "", "", "", "bubble", ""],
-      ["", "", "", "", "", "", "bubble", ""],
-      ["wall", "wall", "wall", "wall", "wall", "wall", "wall", "wall"]
+      "  X4    ",
+      "#####   ",
+      " H      ",
+      " H      ",
+      " H     -",
+      "      o ",
+      "    oooo",
+      "########"
     ]
   },
   {
     start: { x: 4, y: 6 },
-    difficulty: 3,
+    difficulty: 4,
     level: [
       "########",
       "-   o   ",
@@ -264,14 +387,42 @@ var LEVELS = [
     ]
   },
   {
+    start: { x: 4, y: 6 },
+    difficulty: 5,
+    level: [
+      "########",
+      "o  #-   ",
+      " H ## H ",
+      "H # 4# H",
+      " H#X #H ",
+      "H o#H  H",
+      "H      H",
+      "########"
+    ]
+  },
+  {
     start: { x: 0, y: 4},
-    difficulty: 3,
+    difficulty: 4,
     level: [
       "########",
       "########",
       "#####   ",
       "   ooooo",
       "  ooooo4",
+      "########",
+      "########",
+      "########"
+    ]
+  },
+  {
+    start: { x: 0, y: 4},
+    difficulty: 5,
+    level: [
+      "########",
+      "########",
+      "   #####",
+      "  ooooo ",
+      " oooooo4",
       "########",
       "########",
       "########"
@@ -295,8 +446,22 @@ var LEVELS = [
     ]
   },
   {
-    start: { x: 4, y: 4 },
+    start: { x: 0, y: 7 },
     difficulty: 5,
+    level: [
+      "   -    ",
+      "  ooo   ",
+      " o   o  ",
+      "#     #H",
+      " # X # H",
+      "  #4#  H",
+      "   #   H",
+      "   o   H"
+    ]
+  },
+  {
+    start: { x: 4, y: 4 },
+    difficulty: 6,
     level: [
       " w  k   ",
       " w      ",
@@ -324,7 +489,7 @@ var LEVELS = [
   },
   {
     start: { x: 0, y: 6 },
-    difficulty: 5,
+    difficulty: 6,
     level: [
       "       4",
       "     ###",
@@ -354,6 +519,20 @@ var LEVELS = [
     start: { x: 7, y: 6 },
     difficulty: 6,
     level: [
+      "o   # 4 ",
+      " H# # # ",
+      "H - # X ",
+      "H   o##H",
+      " H o   H",
+      "H o    H",
+      "H       ",
+      "########"
+    ]
+  },
+  {
+    start: { x: 7, y: 6 },
+    difficulty: 7,
+    level: [
       "    # 4 ",
       " H# # # ",
       "H - # X ",
@@ -366,7 +545,7 @@ var LEVELS = [
   },
   {
     start: { x: 0, y: 0 },
-    difficulty: 5,
+    difficulty: 6,
     level: [
       "       4",
       "##o   ##",
@@ -378,9 +557,6 @@ var LEVELS = [
       "  o     "
     ]
   },
-/* end intermediate */
-
-/* advanced */
   {
     start: { x: 0, y: 0 },
     difficulty: 7,
@@ -395,46 +571,63 @@ var LEVELS = [
       "ooooooo "
     ]
   },
+/* end intermediate */
+
+/* advanced */
   {
     start: { x: 1, y: 6 },
-    difficulty: 7,
+    difficulty: 8,
+    level: [
+      "-   # - ",
+      "  o X   ",
+      "  # ###H",
+      "H###oHHH",
+      "H   # # ",
+      "H  o# ##",
+      "   o# X4",
+      "########"
+    ]
+  },
+  {
+    start: { x: 1, y: 6 },
+    difficulty: 9,
     level: [
       "-   # - ",
       "  o X   ",
       "  # ### ",
-      "H###oHHH",
-      "H       ",
+      "H###oHH ",
+      "H     H ",
       "H  o  ##",
       "   o  X4",
       "##### ##"
     ]
   },
   {
-    start: { x: 0, y: 7 },
+    start: { x: 0, y: 6 },
     difficulty: 8,
     level: [
-      "        ",
       "       4",
       "      ##",
       "        ",
       "    ##  ",
       "        ",
       "  ## ooo",
-      "     ooo"
+      "     ooo",
+      "########"
     ]
   },
   {
-    start: { x: 0, y: 7 },
-    difficulty: 8,
+    start: { x: 0, y: 6 },
+    difficulty: 9,
     level: [
-      "       4",
+      "-     X4",
       "      ##",
       "        ",
-      "        ",
       "    ##  ",
-      "      o ",
+      "        ",
       "  ## ooo",
-      "     ooo"
+      "     ooo",
+      "########"
     ]
   },
 
@@ -551,9 +744,21 @@ function init() {
   document.getElementById("startx").value = ORK.x;
   document.getElementById("starty").value = ORK.y;
 
-  dark();
+  if(LEVELS[LEVEL].difficulty % 2) {
+    evil();
+  } else {
+    dark();
+  }
 }
 init();
+
+function resize() {
+  var size = 0;
+  var body = document.body;
+  var tools = document.getElementById("tools");
+  size = Math.min(body.offsetWidth,
+                  body.offsetHeight - tools.offsetHeight);
+}
 
 function customlevel() {
   var data = [];
@@ -659,6 +864,7 @@ function up() {
     moveto(ORK.x, ORK.y - 1);
     return;
   }
+  down();
 }
 function down() {
   document.querySelector("img.ork").src = "image/ork-down01.png";
@@ -732,6 +938,9 @@ function light() {
 }
 function dark() {
  document.body.className = "dark";
+}
+function evil() {
+ document.body.className = "evil";
 }
 
 function edit() {
