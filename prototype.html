@@ -53,6 +53,14 @@ td.ladder {
   background: url("image/ladder01.png");
   background-size: 64px;
 }
+td.left {
+  background: url("image/left01.png");
+  background-size: 64px;
+}
+td.right {
+  background: url("image/right01.png");
+  background-size: 64px;
+}
 td.key {
   background: url("image/key01.png");
   background-size: 64px;
@@ -135,6 +143,9 @@ y:<input id="starty" size=2 value="0">
 <a href="#" onclick="customlevel(); return false;">add</a>
 </div>
 <div id="win" class="hidden">:^)</div>
+<div class="sounds">
+<audio loop controls preload="auto" src="sound/8bitloop01.ogg"></audio>
+</div>
 <script>
 console = console || {
   log: function() {},
@@ -690,6 +701,125 @@ var LEVELS = [
 /* end advanced */
 
   {
+    start: { x: 7, y: 0 },
+    difficulty: 0,
+    level: [
+      "######  ",
+      "   Xoo #",
+      " o#### 4",
+      "oo   # H",
+      "###H # H",
+      "    -# H",
+      "H#####  ",
+      "H    <  "
+    ]
+  },
+  {
+    start: { x: 7, y: 0 },
+    difficulty: 1,
+    level: [
+      "######  ",
+      "    o# #",
+      "  #### 4",
+      "oo   o #",
+      "###H # H",
+      "    o# H",
+      "H#####  ",
+      "H       "
+    ]
+  },
+
+
+  {
+    start: { x: 0, y: 0 },
+    difficulty: 0,
+    level: [
+      "       4",
+      "oooooo  ",
+      "        ",
+      " ooooooo",
+      "        ",
+      "ooooooo ",
+      "        ",
+      " ooooooo"
+    ]
+  },
+  {
+    start: { x: 0, y: 0 },
+    difficulty: 1,
+    level: [
+      "       4",
+      "o#o#o#  ",
+      "        ",
+      " ooo#o#o",
+      "        ",
+      "o#o#ooo ",
+      "        ",
+      " ooo#o#o"
+    ]
+  },
+  {
+    start: { x: 4, y: 7 },
+    difficulty: 0,
+    level: [
+      "o #    4",
+      "o #     ",
+      "o #     ",
+      "o #     ",
+      "o #     ",
+      "o #     ",
+      "o #     ",
+      "o       "
+    ]
+  },
+  {
+    start: { x: 4, y: 7 },
+    difficulty: 1,
+    level: [
+      "o #    4",
+      "o #     ",
+      "o ####  ",
+      "o #     ",
+      "o #  ###",
+      "o #     ",
+      "o ####  ",
+      "o       "
+    ]
+  },
+  {
+    start: { x: 3, y: 7 },
+    difficulty: 0,
+    level: [
+      "4ooooooo",
+      "oo  oooo",
+      " oooo o ",
+      "o oooo o",
+      "ooo oooo",
+      "ooo o oo",
+      " ooooooo",
+      " oo oo o"
+    ]
+  },
+  {
+    start: { x: 3, y: 7 },
+    difficulty: 1,
+    level: [
+      "4ooooooo",
+      "oo  oooo",
+      " #ooo o ",
+      "o oooo o",
+      "ooo oooo",
+      "ooo o oo",
+      " ooooooo",
+      " oo oo o"
+    ]
+  },
+
+/*
+
+*/
+
+  {
     start: { x: 0, y: 0 },
     difficulty: 0,
     level: [
@@ -748,6 +878,8 @@ function init() {
     "k": "key",
     "d": "door",
     "f": "flag",
+    "l": "left",
+    "r": "right",
 
     " ": "",
     "#": "wall",
@@ -755,7 +887,9 @@ function init() {
     "o": "bubble",
     "-": "key",
     "X": "door",
-    "4": "flag"
+    "4": "flag",
+    "<": "left",
+    ">": "right"
   };
   var long = {
     "": " ",
@@ -764,7 +898,9 @@ function init() {
     "bubble": "o",
     "key": "-",
     "door": "X",
-    "flag": "4"
+    "flag": "4",
+    "left": "<",
+    "right": ">"
   };
   var str = "";
   for(var i = 0; i < grid.length; i++) {
@@ -935,8 +1071,15 @@ console.log("fix");
 function down() {
   var moved = false;
   document.querySelector("img.ork").src = "image/ork-down01.png";
-  if(!cell(ORK.x, ORK.y + 1)) {
-
+  if(cell(ORK.x, ORK.y).className.indexOf("left") >= 0 ||
+            cell(ORK.x, ORK.y).className.indexOf("right") >= 0) {
+    return;
+  } else if(!cell(ORK.x, ORK.y + 1)) {
+    if(cell(ORK.x, ORK.y).className.indexOf("ladder") >= 0) {
+      fall();
+      console.log("bonk");
+      return;
+    }
   } else if(cell(ORK.x, ORK.y + 1).className.indexOf("ladder") >= 0) {
     moveto(ORK.x, ORK.y + 1);
     return;
@@ -976,11 +1119,21 @@ function down() {
   return true;
 }
 function left() {
+  if(!cell(ORK.x - 1, ORK.y) ||
+     cell(ORK.x - 1, ORK.y).className.indexOf("right") >= 0) {
+    console.log("bonk");
+    return;
+  }
   document.querySelector("img.ork").src = "image/ork-stand02.png";
   moveto(ORK.x - 1, ORK.y);
   fall();
 }
 function right() {
+  if(!cell(ORK.x + 1, ORK.y) ||
+     cell(ORK.x + 1, ORK.y).className.indexOf("left") >= 0) {
+    console.log("bonk");
+    return;
+  }
   document.querySelector("img.ork").src = "image/ork-stand01.png";
   moveto(ORK.x + 1, ORK.y);
   fall();
@@ -1066,38 +1219,47 @@ window.addEventListener("keydown", function(e) {
   }
   if(ORK.gameover) {
     next();
+    e.preventDefault();
     return;
   }
   switch(e.keyCode) {
   case 38:  //up
   case 104: //num8
     up();
+    e.preventDefault();
     break;
   case 40:  //down
   case 98:  //num2
     down();
+    e.preventDefault();
     break;
   case 37:  //left
   case 100: //num4
     left();
+    e.preventDefault();
     break;
   case 39:  //right
   case 102: //num6
     right();
+    e.preventDefault();
     break;
   case 32:  //space
     init();
+    e.preventDefault();
     break;
   case 61:  //+
   case 107: //num+
     next();
+    e.preventDefault();
     break;
   case 109: //num-
   case 173: //-
     prev();
+    e.preventDefault();
     break;
   case 192: //~
     dark();
+    e.preventDefault();
     break;
   case 27:  //esc
   default:
@@ -1107,7 +1269,8 @@ window.addEventListener("keydown", function(e) {
 });
 window.addEventListener("click", function(e) {
   if(e.target && e.target.tagName &&
-     e.target.tagName.toLowerCase() === "a") {
+     e.target.tagName.toLowerCase() === "a" ||
+     e.target.tagName.toLowerCase() === "audio") {
     return;
   }
   if(document.activeElement.id === "level") {
@@ -1121,6 +1284,163 @@ window.addEventListener("click", function(e) {
   e.preventDefault();
   return false;
 });
+
+
+
+
+
+
+
+
+    //--------------
+    // Audio Object
+    //--------------
+    var audio = {
+        buffer: {},
+        compatibility: {},
+        files: [
+            "sound/8bitloop01.ogg"
+        ],
+        proceed: true,
+        source_loop: {},
+        source_once: {}
+    };
+
+    //-----------------
+    // Audio Functions
+    //-----------------
+    audio.findSync = function(n) {
+        var first = 0,
+            current = 0,
+            offset = 0;
+
+        // Find the audio source with the earliest startTime to sync all others to
+        for (var i in audio.source_loop) {
+            current = audio.source_loop[i]._startTime;
+            if (current > 0) {
+                if (current < first || first === 0) {
+                    first = current;
+                }
+            }
+        }
+
+        if (audio.context.currentTime > first) {
+            offset = (audio.context.currentTime - first) % audio.buffer[n].duration;
+        }
+
+        return offset;
+    };
+
+    audio.play = function(n) {
+        if (audio.source_loop[n]._playing) {
+            audio.stop(n);
+        } else {
+            audio.source_loop[n] = audio.context.createBufferSource();
+            audio.source_loop[n].buffer = audio.buffer[n];
+            audio.source_loop[n].loop = true;
+            audio.source_loop[n].connect(audio.context.destination);
+
+            var offset = audio.findSync(n);
+            audio.source_loop[n]._startTime = audio.context.currentTime;
+
+            if (audio.compatibility.start === 'noteOn') {
+                /*
+                The depreciated noteOn() function does not support offsets.
+                Compensate by using noteGrainOn() with an offset to play once and then schedule a noteOn() call to loop after that.
+                */
+                audio.source_once[n] = audio.context.createBufferSource();
+                audio.source_once[n].buffer = audio.buffer[n];
+                audio.source_once[n].connect(audio.context.destination);
+                audio.source_once[n].noteGrainOn(0, offset, audio.buffer[n].duration - offset); // currentTime, offset, duration
+                /*
+                Note about the third parameter of noteGrainOn().
+                If your sound is 10 seconds long, your offset 5 and duration 5 then you'll get what you expect.
+                If your sound is 10 seconds long, your offset 5 and duration 10 then the sound will play from the start instead of the offset.
+                */
+
+                // Now queue up our looping sound to start immediatly after the source_once audio plays.
+                audio.source_loop[n][audio.compatibility.start](audio.context.currentTime + (audio.buffer[n].duration - offset));
+            } else {
+                audio.source_loop[n][audio.compatibility.start](0, offset);
+            }
+
+            audio.source_loop[n]._playing = true;
+        }
+    };
+
+    audio.stop = function(n) {
+        if (audio.source_loop[n]._playing) {
+            audio.source_loop[n][audio.compatibility.stop](0);
+            audio.source_loop[n]._playing = false;
+            audio.source_loop[n]._startTime = 0;
+            if (audio.compatibility.start === 'noteOn') {
+                audio.source_once[n][audio.compatibility.stop](0);
+            }
+        }
+    };
+
+    //-----------------------------
+    // Check Web Audio API Support
+    //-----------------------------
+    try {
+        // More info at http://caniuse.com/#feat=audio-api
+        window.AudioContext = window.AudioContext || window.webkitAudioContext;
+        audio.context = new window.AudioContext();
+    } catch(e) {
+        audio.proceed = false;
+        alert('Web Audio API not supported in this browser.');
+    }
+
+    if (audio.proceed) {
+        //---------------
+        // Compatibility
+        //---------------
+        (function() {
+            var start = 'start',
+                stop = 'stop',
+                buffer = audio.context.createBufferSource();
+
+            if (typeof buffer.start !== 'function') {
+                start = 'noteOn';
+            }
+            audio.compatibility.start = start;
+
+            if (typeof buffer.stop !== 'function') {
+                stop = 'noteOff';
+            }
+            audio.compatibility.stop = stop;
+        })();
+
+        //-------------------------------
+        // Setup Audio Files and Buttons
+        //-------------------------------
+        for (var a in audio.files) {
+            (function() {
+                var i = parseInt(a) + 1;
+                var req = new XMLHttpRequest();
+                req.open('GET', audio.files[i - 1], true); // array starts with 0 hence the -1
+                req.responseType = 'arraybuffer';
+                req.onload = function() {
+                    audio.context.decodeAudioData(
+                        req.response,
+                        function(buffer) {
+                            audio.buffer[i] = buffer;
+                            audio.source_loop[i] = {};
+//                            var button = document.getElementById('button-loop-' + i);
+//                            button.addEventListener('click', function(e) {
+//                                e.preventDefault();
+ ////                               audio.play(1);
+//                            });
+                        },
+                        function() {
+                            console.log('Error decoding audio "' + audio.files[i - 1] + '".');
+                        }
+                    );
+                };
+                req.send();
+            })();
+        }
+    }
 </script>
 </body>
 </html>
