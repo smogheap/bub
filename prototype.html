@@ -228,6 +228,34 @@ var LEVELS = [
     ]
   },
   {
+    start: { x: 0, y: 6 },
+    difficulty: 0,
+    level: [
+      "4       ",
+      "####### ",
+      " oo     ",
+      " #######",
+      "     oo ",
+      "####### ",
+      " oo     ",
+      "########"
+    ]
+  },
+  {
+    start: { x: 0, y: 6 },
+    difficulty: 1,
+    level: [
+      "4       ",
+      "######o ",
+      "  o     ",
+      " o######",
+      "     o  ",
+      "######o ",
+      "  o     ",
+      "########"
+    ]
+  },
+  {
     start: { x: 2, y: 3 },
     difficulty: 0,
     secret: true,
@@ -282,34 +310,6 @@ var LEVELS = [
       "    X  H",
       "-o- #   ",
       "########",
-      "########"
-    ]
-  },
-  {
-    start: { x: 0, y: 6 },
-    difficulty: 0,
-    level: [
-      "4       ",
-      "####### ",
-      " oo     ",
-      " #######",
-      "     oo ",
-      "####### ",
-      " oo     ",
-      "########"
-    ]
-  },
-  {
-    start: { x: 0, y: 6 },
-    difficulty: 1,
-    level: [
-      "4       ",
-      "######o ",
-      "  o     ",
-      " o######",
-      "     o  ",
-      "######o ",
-      "  o     ",
       "########"
     ]
   },
@@ -571,6 +571,62 @@ var LEVELS = [
       "ooooooo "
     ]
   },
+  {
+    start: { x: 0, y: 0 },
+    difficulty: 6,
+    level: [
+      "  -X-X-X",
+      "X--XX-- ",
+      " X---XXX",
+      "####### ",
+      "----    ",
+      "  -     ",
+      "  ######",
+      "  XXXXX4"
+    ]
+  },
+  {
+    start: { x: 0, y: 0 },
+    difficulty: 7,
+    level: [
+      " o-X-X-X",
+      "X--XX-- ",
+      " X---XXX",
+      "####### ",
+      "----    ",
+      "  -     ",
+      "       #",
+      "  XXXXX4"
+    ]
+  },
+  {
+    start: { x: 5, y: 2 },
+    difficulty: 6,
+    level: [
+      " 4 ##   ",
+      " ####   ",
+      "  -##   ",
+      "  # ##  ",
+      "  # ##  ",
+      "  # ### ",
+      "   oo   ",
+      "  oooo  "
+    ]
+  },
+  {
+    start: { x: 1, y: 0 },
+    difficulty: 7,
+    level: [
+      "   o#   ",
+      " ####   ",
+      "  -##   ",
+      "  # ##  ",
+      "  # ##4 ",
+      "  # ### ",
+      "   oo   ",
+      "  oooo  "
+    ]
+  },
 /* end intermediate */
 
 /* advanced */
@@ -829,7 +885,7 @@ function moveto(x, y) {
   }
 
   if(stay) {
-    return;
+    return false;
   }
 
   ORK.x = x;
@@ -840,6 +896,7 @@ function moveto(x, y) {
     light();
     //document.getElementById("win").className = "";
   }
+  return true;
 }
 
 function fall() {
@@ -859,18 +916,24 @@ function fall() {
 }
 
 function up() {
+  var moved = false;
   document.querySelector("img.ork").src = "image/ork-up01.png";
   if(cell(ORK.x, ORK.y).className.indexOf("ladder") >= 0) {
     moveto(ORK.x, ORK.y - 1);
     return;
   } else if(!cell(ORK.x, ORK.y + 1)) {
-    down();
+    moved = down(true);
   } else if(cell(ORK.x, ORK.y + 1) &&
             cell(ORK.x, ORK.y + 1).className.indexOf("ladder") < 0) {
-    down();
+    moved = down(true);
+  }
+  if(!moved) {
+console.log("fix");
+    document.querySelector("img.ork").src = "image/ork-up01.png";
   }
 }
 function down() {
+  var moved = false;
   document.querySelector("img.ork").src = "image/ork-down01.png";
   if(!cell(ORK.x, ORK.y + 1)) {
 
@@ -881,10 +944,10 @@ function down() {
     if(cell(ORK.x, ORK.y + 1).className.indexOf("wall") < 0 &&
        cell(ORK.x, ORK.y + 1).className.indexOf("key") < 0 &&
        cell(ORK.x, ORK.y + 1).className.indexOf("bubble") < 0) {
-      moveto(ORK.x, ORK.y + 1);
+       moved = moveto(ORK.x, ORK.y + 1);
       fall();
     }
-    return;
+    return moved;
   }
 
   if(!ORK.bub && !ORK.key) {
@@ -910,6 +973,7 @@ function down() {
   inv();
   moveto(ORK.x, ORK.y - 1);
   fall();
+  return true;
 }
 function left() {
   document.querySelector("img.ork").src = "image/ork-stand02.png";
@@ -1044,6 +1108,13 @@ window.addEventListener("keydown", function(e) {
 window.addEventListener("click", function(e) {
   if(e.target && e.target.tagName &&
      e.target.tagName.toLowerCase() === "a") {
+    return;
+  }
+  if(document.activeElement.id === "level") {
+    return;
+  }
+  if(ORK.gameover) {
+    next();
     return;
   }
   click(e);
