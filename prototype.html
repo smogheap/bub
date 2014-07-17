@@ -145,6 +145,9 @@ y:<input id="starty" size=2 value="0">
 <div id="win" class="hidden">:^)</div>
 <div class="sounds">
 <audio loop controls preload="auto" src="sound/8bitloop01.ogg"></audio>
+<audio id="slurp" preload="auto" src="sound/slurp01.ogg"></audio>
+<audio id="plop" preload="auto" src="sound/plop01.ogg"></audio>
+<audio id="cough" preload="auto" src="sound/cough01.ogg"></audio>
 </div>
 <script>
 console = console || {
@@ -991,6 +994,8 @@ function moveto(x, y) {
     if(ORK.bub + ORK.key < ORK.maxinv) {
       targ.className = targ.className.replace("bubble", "").trim();
       console.log("slurp!");
+      document.getElementById("slurp").currentTime = 0;
+      document.getElementById("slurp").play();
       stay = true;
       ORK.bub++;
       inv();
@@ -1002,6 +1007,8 @@ function moveto(x, y) {
     if(ORK.bub + ORK.key < ORK.maxinv) {
       targ.className = targ.className.replace("key", "").trim();
       console.log("slurp!");
+      document.getElementById("slurp").currentTime = 0;
+      document.getElementById("slurp").play();
       stay = true;
       ORK.key++;
       inv();
@@ -1096,6 +1103,8 @@ function down() {
   if(!ORK.bub && !ORK.key) {
     fall();
     console.log("cough!");
+      document.getElementById("cough").currentTime = 0;
+      document.getElementById("cough").play();
     return;
   }
   var targ = cell(ORK.x, ORK.y - 1);
@@ -1109,9 +1118,13 @@ function down() {
   if(ORK.bub) {
     cell(ORK.x, ORK.y).className += " bubble";
     ORK.bub--;
+    document.getElementById("plop").currentTime = 0;
+    document.getElementById("plop").play();
   } else if(ORK.key) {
     cell(ORK.x, ORK.y).className += " key";
     ORK.key--;
+    document.getElementById("plop").currentTime = 0;
+    document.getElementById("plop").play();
   }
   inv();
   moveto(ORK.x, ORK.y - 1);
