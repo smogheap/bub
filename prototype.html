@@ -61,6 +61,10 @@ td.right {
   background: url("image/right01.png");
   background-size: 64px;
 }
+td.crate {
+  background: url("image/crate01.png");
+  background-size: 64px;
+}
 td.key {
   background: url("image/key01.png");
   background-size: 64px;
@@ -818,6 +822,36 @@ var LEVELS = [
     ]
   },
 
+
+  {
+    start: { x: 0, y: 0 },
+    difficulty: 0,
+    level: [
+      "        ",
+      "  =     ",
+      "#H#     ",
+      " H      ",
+      " H=   4 ",
+      "#### ###",
+      "#### ###",
+      "########"
+    ]
+  },
+  {
+    start: { x: 0, y: 0 },
+    difficulty: 0,
+    level: [
+      "        ",
+      "        ",
+      "        ",
+      "        ",
+      "        ",
+      "        ",
+      "        ",
+      "        "
+    ]
+  },
+
 /*
 
 */
@@ -883,6 +917,7 @@ function init() {
     "f": "flag",
     "l": "left",
     "r": "right",
+    "c": "crate",
 
     " ": "",
     "#": "wall",
@@ -892,7 +927,8 @@ function init() {
     "X": "door",
     "4": "flag",
     "<": "left",
-    ">": "right"
+    ">": "right",
+    "=": "crate"
   };
   var long = {
     "": " ",
@@ -903,7 +939,8 @@ function init() {
     "door": "X",
     "flag": "4",
     "left": "<",
-    "right": ">"
+    "right": ">",
+    "crate": "="
   };
   var str = "";
   for(var i = 0; i < grid.length; i++) {
@@ -1073,6 +1110,8 @@ function up() {
   if(!moved) {
 console.log("fix");
     document.querySelector("img.ork").src = "image/ork-up01.png";
+    document.getElementById("cough").currentTime = 0;
+    document.getElementById("cough").play();
   }
 }
 function down() {
@@ -1401,7 +1440,7 @@ window.addEventListener("click", function(e) {
         audio.context = new window.AudioContext();
     } catch(e) {
         audio.proceed = false;
-        alert('Web Audio API not supported in this browser.');
+//        alert('Web Audio API not supported in this browser.');
     }
 
     if (audio.proceed) {
