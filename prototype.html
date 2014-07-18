@@ -139,10 +139,16 @@ y:<input id="starty" size=2 value="0">
 <a href="#" onclick="customlevel(); return false;">add</a>
 </div>
 <div class="sounds">
+<input id="sfx" type="checkbox" checked>sfx
 <audio loop controls preload="auto" src="sound/8bitloop01.ogg"></audio>
 <audio id="slurp" preload="auto" src="sound/slurp01.ogg"></audio>
 <audio id="plop" preload="auto" src="sound/plop01.ogg"></audio>
 <audio id="cough" preload="auto" src="sound/cough01.ogg"></audio>
+<audio id="oof" preload="auto" src="sound/oof01.ogg"></audio>
+<audio id="step" preload="auto" src="sound/step01.ogg"></audio>
+<audio id="climb" preload="auto" src="sound/climb01.ogg"></audio>
+<audio id="flag" preload="auto" src="sound/flag01.ogg"></audio>
+<audio id="unlock" preload="auto" src="sound/unlock01.ogg"></audio>
 </div>
 <script>
 console = console || {
@@ -999,10 +1005,12 @@ function resize() {
 }
 
 function sfx(sound) {
-  try {
-    document.getElementById(sound).currentTime = 0;
-    document.getElementById(sound).play();
-  } catch(ignore) {}
+  if(document.getElementById("sfx").checked) {
+    try {
+      document.getElementById(sound).currentTime = 0;
+      document.getElementById(sound).play();
+    } catch(ignore) {}
+  }
 }
 
 function customlevel() {
@@ -1040,7 +1048,7 @@ function isempty(td) {
   }
   var cls = td.className.trim().split(" ");
   for(var i in cls) {
-    if(cls[i][0] !== "x" && cls[i][0] !== "y") {
+    if(cls[i] !== "flag" && cls[i][0] !== "x" && cls[i][0] !== "y") {
       emp = false;
     }
   }
@@ -1059,6 +1067,7 @@ function moveto(x, y, img) {
   } else {
     if(!targ || targ.className.indexOf("wall") >= 0) {
       console.log("bump");
+      sfx("oof");
       return;
     } else if(targ.className.indexOf("bubble") >= 0) {
       if(ORK.bub + ORK.key < ORK.maxinv) {
@@ -1087,11 +1096,13 @@ function moveto(x, y, img) {
     } else if(targ.className.indexOf("door") >= 0) {
       if(!ORK.key) {
         console.log("locked!");
+        sfx("oof");
         return;
       }
       stay = true;
       ORK.key--;
       targ.className = targ.className.replace("door", "").trim();
+      sfx("unlock");
       inv();
     }
   }
@@ -1108,6 +1119,7 @@ function moveto(x, y, img) {
     targ.appendChild(ork);
     if(targ.className.indexOf("flag") >= 0) {
       ORK.gameover = true;
+      sfx("flag");
       light();
     }
   }
@@ -1148,16 +1160,19 @@ function fall(img) {
   }
 
   var below = cell(x, y + 1);
-var i = 0;
-  while(below && isempty(below) && i++ < 10) {
-console.log(below, isempty(below), i);
+  var fell = 0;
+  while(below && isempty(below)) {
     if(moveto(x, y + 1, img)) {
       y++;
+      fell++
       below = cell(x, y + 1);
-console.log("moved,", below);
     } else {
       below = null;
     }
+  }
+
+  if(fell) {
+    sfx("oof");
   }
 }
 
@@ -1166,6 +1181,7 @@ function up() {
   document.querySelector("img.ork").src = "image/ork-up01.png";
   if(cell(ORK.x, ORK.y).className.indexOf("ladder") >= 0) {
     moveto(ORK.x, ORK.y - 1);
+    sfx("climb");
     return;
   } else if(!cell(ORK.x, ORK.y + 1)) {
     moved = down(true);
@@ -1188,10 +1204,12 @@ function down() {
     if(cell(ORK.x, ORK.y).className.indexOf("ladder") >= 0) {
       fall();
       console.log("bonk");
+      sfx("oof");
       return;
     }
   } else if(cell(ORK.x, ORK.y + 1).className.indexOf("ladder") >= 0) {
     moveto(ORK.x, ORK.y + 1);
+    sfx("climb");
     return;
   } else if(cell(ORK.x, ORK.y).className.indexOf("ladder") >= 0) {
     if(cell(ORK.x, ORK.y + 1).className.indexOf("wall") < 0 &&
@@ -1215,6 +1233,7 @@ function down() {
      targ.className.indexOf("key") >= 0 ||
      targ.className.indexOf("wall") >= 0) {
     console.log("bonk");
+    sfx("oof");
     return;
   }
   if(ORK.bub) {
@@ -1235,34 +1254,42 @@ function left() {
   if(!cell(ORK.x - 1, ORK.y) ||
      cell(ORK.x - 1, ORK.y).className.indexOf("right") >= 0) {
     console.log("bonk");
+    sfx("oof");
     return;
   }
   var kick = cell(ORK.x - 1, ORK.y).querySelector("img.crate");
   if(kick) {
+    document.querySelector("img.ork").src = "image/ork-down02.png";
     console.log("boot");
     moveto(ORK.x - 2, ORK.y, kick);
     fall(kick);
     return;
   }
   document.querySelector("img.ork").src = "image/ork-stand02.png";
-  moveto(ORK.x - 1, ORK.y);
+  if(moveto(ORK.x - 1, ORK.y)) {
+    sfx("step");
+  }
   fall();
 }
 function right() {
   if(!cell(ORK.x + 1, ORK.y) ||
      cell(ORK.x + 1, ORK.y).className.indexOf("left") >= 0) {
     console.log("bonk");
+    sfx("oof");
     return;
   }
   var kick = cell(ORK.x + 1, ORK.y).querySelector("img.crate");
   if(kick) {
+    document.querySelector("img.ork").src = "image/ork-down01.png";
     console.log("boot");
     moveto(ORK.x + 2, ORK.y, kick);
     fall(kick);
     return;
   }
   document.querySelector("img.ork").src = "image/ork-stand01.png";
-  moveto(ORK.x + 1, ORK.y);
+  if(moveto(ORK.x + 1, ORK.y)) {
+    sfx("step");
+  }
   fall();
 }
 
@@ -1342,11 +1369,11 @@ console.log(x - orkx, y - orky);
 
 window.addEventListener("keydown", function(e) {
   if(document.activeElement.id === "level") {
+    e.preventDefault();
     return;
   }
   if(ORK.gameover) {
     next();
-    e.preventDefault();
     return;
   }
   switch(e.keyCode) {
@@ -1396,11 +1423,10 @@ window.addEventListener("keydown", function(e) {
 });
 window.addEventListener("click", function(e) {
   if(e.target && e.target.tagName &&
+     e.target.tagName.toLowerCase() === "textarea" ||
+     e.target.tagName.toLowerCase() === "input" ||
      e.target.tagName.toLowerCase() === "a" ||
      e.target.tagName.toLowerCase() === "audio") {
-    return;
-  }
-  if(document.activeElement.id === "level") {
     return;
   }
   if(ORK.gameover) {
