@@ -834,6 +834,19 @@ var LEVELS = [
     ]
   },
   {
+    difficulty: 1,
+    level: [
+      "  =     ",
+      "  o     ",
+      "H##     ",
+      "H       ",
+      "H@    4 ",
+      "#### ###",
+      "#### ###",
+      "########"
+    ]
+  },
+  {
     start: { x: 2, y: 7 },
     difficulty: 0,
     level: [
@@ -1111,7 +1124,7 @@ function moveto(x, y, img) {
     return false;
   }
 
-  if(img) {
+  if(img && img.className !== "ork") {
     targ.appendChild(img);
   } else {
     ORK.x = x;
@@ -1144,6 +1157,7 @@ function _old_fall() {
 function fall(img) {
   var x = ORK.x;
   var y = ORK.y;
+  var origy = y;
   if(img) {
     var cls = img.parentElement.className.split(" ");
     for(var i in cls) {
@@ -1151,8 +1165,11 @@ function fall(img) {
         x = parseInt(cls[i].substring(1), null);
       } else if(cls[i][0] === "y") {
         y = parseInt(cls[i].substring(1), null);
+        origy = y;
       }
     }
+  } else {
+    img = document.querySelector("img.ork");
   }
 
   if(cell(x, y).className.indexOf("ladder") >= 0) {
@@ -1164,7 +1181,7 @@ function fall(img) {
   while(below && isempty(below)) {
     if(moveto(x, y + 1, img)) {
       y++;
-      fell++
+      fell++;
       below = cell(x, y + 1);
     } else {
       below = null;
@@ -1172,7 +1189,20 @@ function fall(img) {
   }
 
   if(fell) {
+console.log(fell);
     sfx("oof");
+  }
+}
+function allfall() {
+  var list = [];
+  var obj = document.querySelectorAll("#main table img");
+  var i = 0;
+  for(i = 0; i < obj.length; i++) {
+    list.push(obj[i]);
+  }
+  list = list.reverse();
+  for(i = 0; i < list.length; i++) {
+    fall(list[i]);
   }
 }
 
@@ -1261,15 +1291,16 @@ function left() {
   if(kick) {
     document.querySelector("img.ork").src = "image/ork-down02.png";
     console.log("boot");
+    sfx("oof");
     moveto(ORK.x - 2, ORK.y, kick);
-    fall(kick);
+    allfall();
     return;
   }
   document.querySelector("img.ork").src = "image/ork-stand02.png";
   if(moveto(ORK.x - 1, ORK.y)) {
     sfx("step");
   }
-  fall();
+  allfall();
 }
 function right() {
   if(!cell(ORK.x + 1, ORK.y) ||
@@ -1282,15 +1313,16 @@ function right() {
   if(kick) {
     document.querySelector("img.ork").src = "image/ork-down01.png";
     console.log("boot");
+    sfx("oof");
     moveto(ORK.x + 2, ORK.y, kick);
-    fall(kick);
+    allfall();
     return;
   }
   document.querySelector("img.ork").src = "image/ork-stand01.png";
   if(moveto(ORK.x + 1, ORK.y)) {
     sfx("step");
   }
-  fall();
+  allfall();
 }
 
 function next() {
