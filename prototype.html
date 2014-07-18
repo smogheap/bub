@@ -838,17 +838,17 @@ var LEVELS = [
     ]
   },
   {
-    start: { x: 0, y: 0 },
+    start: { x: 2, y: 7 },
     difficulty: 0,
     level: [
       "        ",
-      "        ",
-      "        ",
-      "        ",
-      "        ",
-      "        ",
-      "        ",
-      "        "
+      "H######H",
+      "H >   #H",
+      "H#### #H",
+      "H     #H",
+      "oooooooH",
+      "      #H",
+      "4> > > H"
     ]
   },
 
@@ -992,6 +992,13 @@ function resize() {
                   body.offsetHeight - tools.offsetHeight);
 }
 
+function sfx(sound) {
+  try {
+    document.getElementById(sound).currentTime = 0;
+    document.getElementById(sound).play();
+  } catch(ignore) {}
+}
+
 function customlevel() {
   var data = [];
   var raw = document.getElementById("level").value;
@@ -1031,8 +1038,7 @@ function moveto(x, y) {
     if(ORK.bub + ORK.key < ORK.maxinv) {
       targ.className = targ.className.replace("bubble", "").trim();
       console.log("slurp!");
-      document.getElementById("slurp").currentTime = 0;
-      document.getElementById("slurp").play();
+      sfx("slurp");
       stay = true;
       ORK.bub++;
       inv();
@@ -1044,8 +1050,7 @@ function moveto(x, y) {
     if(ORK.bub + ORK.key < ORK.maxinv) {
       targ.className = targ.className.replace("key", "").trim();
       console.log("slurp!");
-      document.getElementById("slurp").currentTime = 0;
-      document.getElementById("slurp").play();
+      sfx("slurp");
       stay = true;
       ORK.key++;
       inv();
@@ -1108,10 +1113,8 @@ function up() {
     moved = down(true);
   }
   if(!moved) {
-console.log("fix");
     document.querySelector("img.ork").src = "image/ork-up01.png";
-    document.getElementById("cough").currentTime = 0;
-    document.getElementById("cough").play();
+    sfx("cough");
   }
 }
 function down() {
@@ -1142,8 +1145,7 @@ function down() {
   if(!ORK.bub && !ORK.key) {
     fall();
     console.log("cough!");
-      document.getElementById("cough").currentTime = 0;
-      document.getElementById("cough").play();
+      sfx("cough");
     return;
   }
   var targ = cell(ORK.x, ORK.y - 1);
@@ -1157,13 +1159,11 @@ function down() {
   if(ORK.bub) {
     cell(ORK.x, ORK.y).className += " bubble";
     ORK.bub--;
-    document.getElementById("plop").currentTime = 0;
-    document.getElementById("plop").play();
+    sfx("plop");
   } else if(ORK.key) {
     cell(ORK.x, ORK.y).className += " key";
     ORK.key--;
-    document.getElementById("plop").currentTime = 0;
-    document.getElementById("plop").play();
+    sfx("plop");
   }
   inv();
   moveto(ORK.x, ORK.y - 1);
