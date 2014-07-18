@@ -61,10 +61,6 @@ td.right {
   background: url("image/right01.png");
   background-size: 64px;
 }
-td.crate {
-  background: url("image/crate01.png");
-  background-size: 64px;
-}
 td.key {
   background: url("image/key01.png");
   background-size: 64px;
@@ -78,6 +74,10 @@ td.flag {
   background-size: 64px;
 }
 img.ork {
+  width: 64px;
+  height: 64px;
+}
+img.crate {
   width: 64px;
   height: 64px;
 }
@@ -115,14 +115,6 @@ body.evil #inv {
 #inv :first-child {
   outline: 4px solid green;
 }
-#win {
-  position: absolute;
-  top: 64px;
-  left: auto;
-  right: auto;
-  font-size: 1000%;
-  color: yellow;
-}
 .hidden {
   display: none;
 }
@@ -146,7 +138,6 @@ startx:<input id="startx" size=2 value="0">
 y:<input id="starty" size=2 value="0">
 <a href="#" onclick="customlevel(); return false;">add</a>
 </div>
-<div id="win" class="hidden">:^)</div>
 <div class="sounds">
 <audio loop controls preload="auto" src="sound/8bitloop01.ogg"></audio>
 <audio id="slurp" preload="auto" src="sound/slurp01.ogg"></audio>
@@ -824,14 +815,13 @@ var LEVELS = [
 
 
   {
-    start: { x: 0, y: 0 },
     difficulty: 0,
     level: [
       "        ",
       "  =     ",
-      "#H#     ",
-      " H      ",
-      " H=   4 ",
+      "H##     ",
+      "H       ",
+      "H@=   4 ",
       "#### ###",
       "#### ###",
       "########"
@@ -898,8 +888,8 @@ function inv() {
 
 function init() {
   ORK = {
-    x: LEVELS[LEVEL].start.x,
-    y: LEVELS[LEVEL].start.y,
+    x: LEVELS[LEVEL].start ? (LEVELS[LEVEL].start.x || 0) : 0,
+    y: LEVELS[LEVEL].start ? (LEVELS[LEVEL].start.y || 0) : 0,
     key: 0,
     bub: 0,
     maxinv: 2,
@@ -916,8 +906,7 @@ function init() {
     "X": "door",
     "4": "flag",
     "<": "left",
-    ">": "right",
-    "=": "crate"
+    ">": "right"
   };
   var long = {
     "": " ",
@@ -928,19 +917,49 @@ function init() {
     "door": "X",
     "flag": "4",
     "left": "<",
-    "right": ">",
+    "right": ">"
+  };
+  var oquick = {
+    "@": "ork",
+    "=": "crate"
+  };
+  var olong = {
+    "ork": "@",
     "crate": "="
   };
+  var img = null;
+  var tr = null;
+  var td = null;
+  var ork = document.createElement("img");
+  ork.className = "ork";
+  ork.src = "image/ork-stand01.png";
+  var type = "";
   var str = "";
   for(var i = 0; i < grid.length; i++) {
-    var tr = document.createElement("tr");
+    tr = document.createElement("tr");
     table.appendChild(tr);
     for(var j = 0; j < grid[i].length; j++) {
-      var td = document.createElement("td");
-      td.className = quick[grid[i][j]] || grid[i][j];
-      str += long[td.className] || " ";
-      td.className += (td.className ? " " : "") + "x" + j + " y" + i;
+      type = quick[grid[i][j]] || grid[i][j];
+      otype = oquick[grid[i][j]] || "";
+      td = document.createElement("td");
       tr.appendChild(td);
+      if(otype) {
+        if(otype === "ork") {  // there can be only one!
+          ORK.x = j;
+          ORK.y = i;
+          td.appendChild(ork);
+        } else {
+          img = document.createElement("img");
+          img.className = otype;
+          img.src = "image/" + otype + "01.png";
+          td.appendChild(img);
+        }
+        str += olong[otype] || " ";
+      } else {
+        td.className = quick[grid[i][j]] || grid[i][j];
+        str += long[td.className] || " ";
+      }
+      td.className += (td.className ? " " : "") + "x" + j + " y" + i;
     }
     str += "\n";
   }
@@ -949,13 +968,11 @@ function init() {
     main.removeChild(main.firstChild);
   }
   main.appendChild(table);
-  document.getElementById("win").className = "hidden";
 
-  var img = document.createElement("img");
-  img.src = "image/ork-stand01.png";
-  img.className = "ork";
-  cell(ORK.x, ORK.y).appendChild(img);
-  document.querySelector(".x" + ORK.x + ".y" + ORK.y).appendChild(img);
+  if(!document.querySelector("img.ork")) {
+    cell(ORK.x, ORK.y).appendChild(ork);
+  }
+
   inv();
 
   document.getElementById("lv").innerHTML = LEVEL;
@@ -1016,64 +1033,88 @@ function customlevel() {
   init();
 }
 
-function moveto(x, y) {
+function isempty(td) {
+  var emp = true;
+  if(td.firstChild) {
+    return false;
+  }
+  var cls = td.className.trim().split(" ");
+  for(var i in cls) {
+    if(cls[i][0] !== "x" && cls[i][0] !== "y") {
+      emp = false;
+    }
+  }
+  return emp;
+}
+
+function moveto(x, y, img) {
   var stay = false;
-  var ork = document.querySelector("img.ork");
   var targ = cell(x, y)
-  if(!targ || targ.className.indexOf("wall") >= 0) {
-    console.log("bump");
-    return;
-  } else if(targ.className.indexOf("bubble") >= 0) {
-    if(ORK.bub + ORK.key < ORK.maxinv) {
-      targ.className = targ.className.replace("bubble", "").trim();
-      console.log("slurp!");
-      sfx("slurp");
+  ork = document.querySelector("img.ork");
+
+  if(img && img.className !== "ork") {
+    if(!isempty(targ)) {
       stay = true;
-      ORK.bub++;
-      inv();
-    } else {
-      console.log("full!");
-      return;
     }
-  } else if(targ.className.indexOf("key") >= 0) {
-    if(ORK.bub + ORK.key < ORK.maxinv) {
-      targ.className = targ.className.replace("key", "").trim();
-      console.log("slurp!");
-      sfx("slurp");
+  } else {
+    if(!targ || targ.className.indexOf("wall") >= 0) {
+      console.log("bump");
+      return;
+    } else if(targ.className.indexOf("bubble") >= 0) {
+      if(ORK.bub + ORK.key < ORK.maxinv) {
+        targ.className = targ.className.replace("bubble", "").trim();
+        console.log("slurp!");
+        sfx("slurp");
+        stay = true;
+        ORK.bub++;
+        inv();
+      } else {
+        console.log("full!");
+        return;
+      }
+    } else if(targ.className.indexOf("key") >= 0) {
+      if(ORK.bub + ORK.key < ORK.maxinv) {
+        targ.className = targ.className.replace("key", "").trim();
+        console.log("slurp!");
+        sfx("slurp");
+        stay = true;
+        ORK.key++;
+        inv();
+      } else {
+        console.log("full!");
+        return;
+      }
+    } else if(targ.className.indexOf("door") >= 0) {
+      if(!ORK.key) {
+        console.log("locked!");
+        return;
+      }
       stay = true;
-      ORK.key++;
+      ORK.key--;
+      targ.className = targ.className.replace("door", "").trim();
       inv();
-    } else {
-      console.log("full!");
-      return;
     }
-  } else if(targ.className.indexOf("door") >= 0) {
-    if(!ORK.key) {
-      console.log("locked!");
-      return;
-    }
-    stay = true;
-    ORK.key--;
-    targ.className = targ.className.replace("door", "").trim();
-    inv();
   }
 
   if(stay) {
     return false;
   }
 
-  ORK.x = x;
-  ORK.y = y;
-  targ.appendChild(ork);
-  if(targ.className.indexOf("flag") >= 0) {
-    ORK.gameover = true;
-    light();
-    //document.getElementById("win").className = "";
+  if(img) {
+    targ.appendChild(img);
+  } else {
+    ORK.x = x;
+    ORK.y = y;
+    targ.appendChild(ork);
+    if(targ.className.indexOf("flag") >= 0) {
+      ORK.gameover = true;
+      light();
+    }
   }
   return true;
 }
 
-function fall() {
+function _old_fall() {
   if(cell(ORK.x, ORK.y).className.indexOf("ladder") >= 0) {
     return;
   }
@@ -1086,6 +1127,37 @@ function fall() {
         below.className.split(" ").indexOf("ladder") < 0) {
     moveto(ORK.x, ORK.y + 1);
     below = cell(ORK.x, ORK.y + 1);
+  }
+}
+function fall(img) {
+  var x = ORK.x;
+  var y = ORK.y;
+  if(img) {
+    var cls = img.parentElement.className.split(" ");
+    for(var i in cls) {
+      if(cls[i][0] === "x") {
+        x = parseInt(cls[i].substring(1), null);
+      } else if(cls[i][0] === "y") {
+        y = parseInt(cls[i].substring(1), null);
+      }
+    }
+  }
+
+  if(cell(x, y).className.indexOf("ladder") >= 0) {
+    return;
+  }
+
+  var below = cell(x, y + 1);
+var i = 0;
+  while(below && isempty(below) && i++ < 10) {
+console.log(below, isempty(below), i);
+    if(moveto(x, y + 1, img)) {
+      y++;
+      below = cell(x, y + 1);
+console.log("moved,", below);
+    } else {
+      below = null;
+    }
   }
 }
 
@@ -1165,6 +1237,13 @@ function left() {
     console.log("bonk");
     return;
   }
+  var kick = cell(ORK.x - 1, ORK.y).querySelector("img.crate");
+  if(kick) {
+    console.log("boot");
+    moveto(ORK.x - 2, ORK.y, kick);
+    fall(kick);
+    return;
+  }
   document.querySelector("img.ork").src = "image/ork-stand02.png";
   moveto(ORK.x - 1, ORK.y);
   fall();
@@ -1173,6 +1252,13 @@ function right() {
   if(!cell(ORK.x + 1, ORK.y) ||
      cell(ORK.x + 1, ORK.y).className.indexOf("left") >= 0) {
     console.log("bonk");
+    return;
+  }
+  var kick = cell(ORK.x + 1, ORK.y).querySelector("img.crate");
+  if(kick) {
+    console.log("boot");
+    moveto(ORK.x + 2, ORK.y, kick);
+    fall(kick);
     return;
   }
   document.querySelector("img.ork").src = "image/ork-stand01.png";
