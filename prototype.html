@@ -481,14 +481,14 @@ var LEVELS = [
     start: { x: 4, y: 4 },
     difficulty: 6,
     level: [
-      " w  k   ",
-      " w      ",
-      " d   wlw",
-      " www  l ",
-      " w    l ",
-      " w bw l ",
-      "fw b  l ",
-      "wwwwwwww"
+      " #  -   ",
+      " #      ",
+      " X   #H#",
+      " ###  H ",
+      " #    H ",
+      " # o# H ",
+      "4# o  H ",
+      "########"
     ]
   },
   {
@@ -908,17 +908,6 @@ function init() {
   var grid = LEVELS[LEVEL].level;
   var table = document.createElement("table");
   var quick = {
-    " ": "",
-    "w": "wall",
-    "l": "ladder",
-    "b": "bubble",
-    "k": "key",
-    "d": "door",
-    "f": "flag",
-    "l": "left",
-    "r": "right",
-    "c": "crate",
-
     " ": "",
     "#": "wall",
     "H": "ladder",
