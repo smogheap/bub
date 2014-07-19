@@ -1078,7 +1078,7 @@ function zoom(factor) {
 }
 function resize() {
   var i = 0;
-  zoom(ORK.zoom);
+  zoom(ORK.zoom || 1);
 console.log(document.body.clientHeight, document.body.scrollHeight, i);
 console.log("here");
   while(document.body.clientHeight >= document.body.scrollHeight && i < 10) {
@@ -1087,7 +1087,11 @@ console.log(document.body.clientHeight, document.body.scrollHeight, i);
     zoom(++ORK.zoom);
   }
   // spilled over on purpose, now fix
-  zoom(--ORK.zoom);
+  ORK.zoom--;
+  if(ORK.zoom < 1) {
+    ORK.zoom = 1;
+  }
+  zoom(ORK.zoom);
 }
 
 function sfx(sound) {
