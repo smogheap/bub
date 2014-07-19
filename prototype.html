@@ -1,8 +1,8 @@
 <html>
 <head>
 <title>Bub</title>
-<!--<meta name="viewport"
-	content="width=device-width, initial-scale=1.0, user-scalable=no">-->
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, user-scalable=no">
 <style>
 body {
   margin: 0;
@@ -24,9 +24,9 @@ body.evil {
 }
 #main {
   display: inline-block;
-  padding: 16px;
   background: url("image/wall01.png");
   background-size: 64px;
+  padding: 16px;
 }
 table {
   background: white;
@@ -42,46 +42,39 @@ td {
   padding: 0;
   width: 64px;
   height: 64px;
+  background-size: 64px !important;
 }
 td.bubble {
   background: url("image/bubble01.png");
-  background-size: 64px;
 }
 td.wall {
   background: url("image/wall01.png");
-  background-size: 64px;
 }
 td.ladder {
   background: url("image/ladder01.png");
-  background-size: 64px;
 }
 td.left {
   background: url("image/left01.png");
-  background-size: 64px;
 }
 td.right {
   background: url("image/right01.png");
-  background-size: 64px;
 }
 td.key {
   background: url("image/key01.png");
-  background-size: 64px;
 }
 td.door {
   background: url("image/door01.png");
-  background-size: 64px;
 }
 td.flag {
   background: url("image/flag01.png");
-  background-size: 64px;
+}
+img {
+  width: 64px;
+  height: 64px;
 }
 img.ork {
-  width: 64px;
-  height: 64px;
 }
 img.crate {
-  width: 64px;
-  height: 64px;
 }
 #tools {
   padding: 0.5em;
@@ -121,6 +114,7 @@ body.evil #inv {
   display: none;
 }
 </style>
+<style id="style"></style>
 <script src="swipe.js"></script>
 </head>
 <body class="dark">
@@ -944,7 +938,8 @@ function init() {
     key: 0,
     bub: 0,
     maxinv: 2,
-    gameover: false
+    gameover: false,
+    zoom: ORK.zoom || 1
   };
   var grid = LEVELS[LEVEL].level;
   var table = document.createElement("table");
@@ -1033,26 +1028,66 @@ function init() {
   }
 
   inv();
-
   document.getElementById("lv").innerHTML = LEVEL;
-  document.getElementById("inv").style.width = (32 * ORK.maxinv) + "px";
-  document.getElementById("inv").style.height = "32px";
   document.getElementById("level").value = str;
-
   if(LEVELS[LEVEL].difficulty % 2) {
     evil();
   } else {
     dark();
   }
+  resize();
 }
 init();
 
-function resize() {
+function zoom(factor) {
   var size = 0;
   var body = document.body;
   var tools = document.getElementById("tools");
-  size = Math.min(body.offsetWidth,
-                  body.offsetHeight - tools.offsetHeight);
+  var main = document.getElementById("main");
+
+  if(!factor) {
+    factor = 4;
+    size = Math.min(body.offsetWidth,
+                    body.offsetHeight - tools.offsetHeight);
+  }
+
+  var style = document.getElementById("style");
+  style.innerHTML = [
+    "#main {\n",
+    "  background-size: ", factor * 16, "px;\n",
+    "  padding: ", factor * 4, "px;\n",
+    "}\n",
+    "td {\n",
+    "  width: ", factor * 16, "px;\n",
+    "  height: ", factor * 16, "px;\n",
+    "  background-size: ", factor * 16, "px !important;\n",
+    "}\n",
+    "img {\n",
+    "  width: ", factor * 16, "px;\n",
+    "  height: ", factor * 16, "px;\n",
+    "}\n",
+    "#inv {\n",
+    "  width: ", factor * 8 * ORK.maxinv, "px;\n",
+    "  height: ", factor * 8, "px;\n",
+    "}\n",
+    "#inv img {\n",
+    "  width: ", factor * 8, "px;\n",
+    "  height: ", factor * 8, "px;\n",
+    "}\n"
+  ].join("");
+}
+function resize() {
+  var i = 0;
+  zoom(ORK.zoom);
+console.log(document.body.clientHeight, document.body.scrollHeight, i);
+console.log("here");
+  while(document.body.clientHeight >= document.body.scrollHeight && i < 10) {
+    i++;
+console.log(document.body.clientHeight, document.body.scrollHeight, i);
+    zoom(++ORK.zoom);
+  }
+  // spilled over on purpose, now fix
+  zoom(--ORK.zoom);
 }
 
 function sfx(sound) {
@@ -1433,6 +1468,9 @@ console.log(x - orkx, y - orky);
   }
 }
 
+window.addEventListener("resize", function(e) {
+  resize();
+});
 window.addEventListener("keydown", function(e) {
   if(document.activeElement.id === "level") {
     return;
