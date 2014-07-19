@@ -124,7 +124,7 @@ body.evil #inv {
 <a href="#" onclick="edit(); return false;">edit</a>
 <a href="#" onclick="prev(); return false;">prev</a>
 <a href="#" onclick="next(); return false;">next</a>
-<a href="#" onclick="help(); return false;">help</a>
+<!--<a href="#" onclick="help(); return false;">help</a>-->
 </div>
 <div id="main"></div>
 <br>
@@ -1544,10 +1544,7 @@ window.addEventListener("click", function(e) {
   e.preventDefault();
   return false;
 });
-// prevent scrolling the page on mobile devies
-document.body.addEventListener("touchmove", function(event) {
-  event.preventDefault();
-}, false);
+
 document.getElementById("music").addEventListener("change", function(e) {
   if(this.checked) {
     document.getElementById("loop").play();
@@ -1555,6 +1552,11 @@ document.getElementById("music").addEventListener("change", function(e) {
     document.getElementById("loop").pause();
   }
 });
+
+// prevent scrolling the page on mobile devies
+document.body.addEventListener("touchmove", function(event) {
+  event.preventDefault();
+}, false);
 
 
 
