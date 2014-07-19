@@ -135,7 +135,9 @@ body.evil #inv {
 </div>
 <div class="sounds">
 <input id="sfx" type="checkbox" checked>sfx
-<audio loop controls preload="auto" src="sound/8bitloop01.ogg"></audio>
+&nbsp;
+<input id="music" type="checkbox">music
+<audio id="loop" loop preload="auto" src="sound/8bitloop01.ogg"></audio>
 <audio id="slurp" preload="auto" src="sound/slurp01.ogg"></audio>
 <audio id="plop" preload="auto" src="sound/plop01.ogg"></audio>
 <audio id="cough" preload="auto" src="sound/cough01.ogg"></audio>
@@ -1079,11 +1081,8 @@ function zoom(factor) {
 function resize() {
   var i = 0;
   zoom(ORK.zoom || 1);
-console.log(document.body.clientHeight, document.body.scrollHeight, i);
-console.log("here");
   while(document.body.clientHeight >= document.body.scrollHeight && i < 10) {
     i++;
-console.log(document.body.clientHeight, document.body.scrollHeight, i);
     zoom(++ORK.zoom);
   }
   // spilled over on purpose, now fix
@@ -1546,10 +1545,16 @@ window.addEventListener("click", function(e) {
   return false;
 });
 // prevent scrolling the page on mobile devies
-document.body.addEventListener('touchmove', function(event) {
+document.body.addEventListener("touchmove", function(event) {
   event.preventDefault();
 }, false);
-
+document.getElementById("music").addEventListener("change", function(e) {
+  if(this.checked) {
+    document.getElementById("loop").play();
+  } else {
+    document.getElementById("loop").pause();
+  }
+});
 
 
 
