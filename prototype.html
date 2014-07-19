@@ -989,6 +989,9 @@ function init() {
     for(var j = 0; j < grid[i].length; j++) {
       type = quick[grid[i][j]] || grid[i][j];
       otype = oquick[grid[i][j]] || "";
+      if(!otype && olong[grid[i][j]]) {
+        otype = grid[i][j];
+      }
       td = document.createElement("td");
       tr.appendChild(td);
       if(otype) {
@@ -1019,6 +1022,11 @@ function init() {
 
   if(!document.querySelector("img.ork")) {
     cell(ORK.x, ORK.y).appendChild(ork);
+    var lines = str.split("\n");
+    lines[ORK.y] = [
+      lines[ORK.y].substring(0, ORK.x), "@", lines[ORK.y].substring(ORK.x + 1)
+    ].join("");
+    str = lines.join("\n");
   }
 
   inv();
