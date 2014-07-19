@@ -1,8 +1,11 @@
-function swipeSetup()
+function swipe()
 {
 	var startx, starty;
+	var moved;
 
 	window.addEventListener("touchstart", function(e) {
+		moved = false;
+
 		if (e.touches.length > 1) {
 			/* Ignore events with more than one finger */
 			return;
@@ -10,12 +13,18 @@ function swipeSetup()
 
 		startx = e.touches[0].clientX;
 		starty = e.touches[0].clientY;
-
-		e.preventDefault();
 	});
 
 	window.addEventListener("touchmove", function(e) {
-		e.preventDefault();
+		/*
+			Prevent all move events except the first to allow click events to
+			work as normal.
+		*/
+		if (!moved) {
+			moved = true;
+		} else {
+			e.preventDefault();
+		}
 	});
 
 	window.addEventListener("touchend", function(e) {
@@ -30,27 +39,17 @@ function swipeSetup()
 		var ax = Math.abs(dx);
 		var ay = Math.abs(dy);
 
+		if (Math.max(ax, ay) < 10) {
+			return;
+		}
+
 		if (Math.abs(ax - ay) < 5) {
 			/* Couldn't tell which axis the swipe was meant to be on */
 			return;
 		}
 
-		if (Math.max(ax, ay) < 10) {
-			/* Gotta move further than that */
-			return;
-		}
-
 		/* Set up a keydown event */
-		var		ne;
-
-		if (document.createEvent) {
-			ne = document.createEvent("HTMLEvents");
-			ne.initEvent("keydown", true, true);
-		} else {
-			ne = document.createEventObject();
-			ne.eventType = "keydown";
-		}
-		ne.eventName = "keydown";
+		var ne = this.createEvent("keydown");
 
 		/* Set the appropriate keycode on the fake event */
 		if (ax > ay) {
@@ -60,13 +59,35 @@ function swipeSetup()
 		}
 
 		/* Send the event */
-		if (document.createEvent) {
-			window.dispatchEvent(ne);
-		} else {
-			window.fireEvent("on" + ne.eventType, ne);
-		}
-	});
+		this.fireEvent(ne);
+	}.bind(this));
 };
-swipeSetup();
+
+swipe.prototype.createEvent = function(name)
+{
+	var		e;
+
+	if (document.createEvent) {
+		e = document.createEvent("HTMLEvents");
+		e.initEvent(name, true, true);
+	} else {
+		e = document.createEventObject();
+		e.eventType = name;
+	}
+	e.eventName = name;
+
+	return(e);
+};
+
+swipe.prototype.fireEvent = function(e)
+{
+	if (document.createEvent) {
+		window.dispatchEvent(e);
+	} else {
+		window.fireEvent("on" + e.eventType, e);
+	}
+};
+
+new swipe();
 
 
