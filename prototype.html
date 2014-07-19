@@ -1,8 +1,8 @@
 <html>
 <head>
 <title>Bub</title>
-<!--<meta name="viewport"
-	content="width=device-width, initial-scale=1.0, user-scalable=no">-->
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, user-scalable=no">
 <style>
 body {
   margin: 0;
@@ -26,7 +26,6 @@ body.evil {
   display: inline-block;
   padding: 16px;
   background: url("image/wall01.png");
-  background-size: 64px;
 }
 table {
   background: white;
@@ -40,49 +39,83 @@ body.evil table {
 }
 td {
   padding: 0;
-  width: 64px;
-  height: 64px;
 }
 td.bubble {
   background: url("image/bubble01.png");
-  background-size: 64px;
 }
 td.wall {
   background: url("image/wall01.png");
-  background-size: 64px;
 }
 td.ladder {
   background: url("image/ladder01.png");
-  background-size: 64px;
 }
 td.left {
   background: url("image/left01.png");
-  background-size: 64px;
 }
 td.right {
   background: url("image/right01.png");
-  background-size: 64px;
 }
 td.key {
   background: url("image/key01.png");
-  background-size: 64px;
 }
 td.door {
   background: url("image/door01.png");
-  background-size: 64px;
 }
 td.flag {
   background: url("image/flag01.png");
-  background-size: 64px;
 }
-img.ork {
-  width: 64px;
-  height: 64px;
+
+@media only screen and (max-width: 575px) {
+	td {
+	  width: 32px;
+	  height: 32px;
+	}
+	#main,
+	td.bubble,
+	td.wall,
+	td.ladder,
+	td.left,
+	td.right,
+	td.key,
+	td.door,
+	td.flag {
+	  background-size: 32px;
+	}
+	img.ork {
+	  width: 32px;
+	  height: 32px;
+	}
+	img.crate {
+	  width: 32px;
+	  height: 32px;
+	}
 }
-img.crate {
-  width: 64px;
-  height: 64px;
+@media only screen and (min-width: 576px) {
+	td {
+	  width: 64px;
+	  height: 64px;
+	}
+	#main,
+	td.bubble,
+	td.wall,
+	td.ladder,
+	td.left,
+	td.right,
+	td.key,
+	td.door,
+	td.flag {
+	  background-size: 64px;
+	}
+	img.ork {
+	  width: 64px;
+	  height: 64px;
+	}
+	img.crate {
+	  width: 64px;
+	  height: 64px;
+	}
 }
+
 #tools {
   padding: 0.5em;
   background: #444 linear-gradient(to bottom, #666, #222);
