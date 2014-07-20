@@ -1041,7 +1041,8 @@ function init() {
 }
 
 if (window.location.hash && window.location.hash.length > 1) {
-	customlevel(decodeURI(window.location.hash.slice(1)));
+	var re = /_/g;
+	customlevel(decodeURI(window.location.hash.slice(1)).replace(re, ' '));
 } else {
 	init();
 }
@@ -1135,7 +1136,7 @@ function customlevel(raw) {
 
   // Put the level data in the location hash string
   var re = / /g;
-  window.location.hash = "#" + encodeURI(data.join("\n").replace(re, '+'));
+  window.location.hash = "#" + encodeURI(data.join("\n").replace(re, '_'));
 }
 
 function isempty(td) {
