@@ -1039,7 +1039,12 @@ function init() {
   }
   resize();
 }
-init();
+
+if (window.location.hash && window.location.hash.length > 1) {
+	customlevel(decodeURI(window.location.hash.slice(1)));
+} else {
+	init();
+}
 
 function zoom(factor) {
   var size = 0;
@@ -1102,9 +1107,12 @@ function sfx(sound) {
   }
 }
 
-function customlevel() {
+function customlevel(raw) {
   var data = [];
-  var raw = document.getElementById("level").value;
+
+  if (!raw) {
+    raw = document.getElementById("level").value;
+  }
   raw = raw.split("\n");
   while(raw.length < 8) {
     raw.push("");
@@ -1116,7 +1124,7 @@ function customlevel() {
     while(raw[i].length < 8) {
       raw[i] += " ";
     }
-    data.push(raw[i]);
+    data.push(raw[i].slice(0, 8));
   }
   LEVELS.push({
     difficulty: 0,
@@ -1124,6 +1132,10 @@ function customlevel() {
   });
   LEVEL = LEVELS.length - 1;
   init();
+
+  // Put the level data in the location hash string
+  var re = / /g;
+  window.location.hash = "#" + encodeURI(data.join("\n").replace(re, '+'));
 }
 
 function isempty(td) {
