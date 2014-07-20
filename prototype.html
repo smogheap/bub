@@ -1081,7 +1081,8 @@ function zoom(factor) {
 function resize() {
   var i = 0;
   zoom(ORK.zoom || 1);
-  while(document.body.clientHeight >= document.body.scrollHeight && i < 10) {
+  while(document.body.clientHeight >= document.body.scrollHeight &&
+        document.body.clientWidth >= document.body.scrollWidth && i < 10) {
     i++;
     zoom(++ORK.zoom);
   }
