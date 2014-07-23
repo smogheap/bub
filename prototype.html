@@ -1,6 +1,7 @@
 <html>
 <head>
 <title>Bub</title>
+<link rel="shortcut icon" href="image/ork-stand01.png" type="image/png" />
 <meta name="viewport"
 	content="width=device-width, initial-scale=1.0, user-scalable=no">
 <style>
@@ -1091,7 +1092,8 @@ function zoom(factor) {
 }
 function resize() {
   var i = 0;
-  zoom(ORK.zoom || 1);
+  ORK.zoom = 1;
+  zoom(ORK.zoom);
   while(document.body.clientHeight >= document.body.scrollHeight &&
         document.body.clientWidth >= document.body.scrollWidth &&
         window.innerHeight >= document.body.scrollHeight &&
