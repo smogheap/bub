@@ -5,14 +5,19 @@
 	content="width=device-width, initial-scale=1.0, user-scalable=no">
 <style>
 body {
+  font-family: sans-serif;
   margin: 0;
   text-align: center;
   vertical-align: top;
-  image-rendering: -moz-crisp-edges;
-  image-rendering: -o-crisp-edges;
-  image-rendering: -webkit-optimize-contrast;
-  image-rendering: crisp-edges;
-  -ms-interpolation-mode: nearest-neighbor;
+
+  image-rendering: optimizeSpeed;             /* Legal fallback */
+  image-rendering: -moz-crisp-edges;          /* Firefox        */
+  image-rendering: -o-crisp-edges;            /* Opera          */
+  image-rendering: -webkit-optimize-contrast; /* Safari         */
+  image-rendering: optimize-contrast;         /* CSS3 Proposed  */
+  image-rendering: crisp-edges;               /* CSS4 Proposed  */
+  image-rendering: pixelated;                 /* CSS4 Proposed  */
+  -ms-interpolation-mode: nearest-neighbor;   /* IE8+           */
 }
 body.dark {
   background: black;
@@ -1444,6 +1449,7 @@ function edit() {
   } else {
     document.getElementById("edit").className = "hidden";
   }
+  resize();
 }
 function help() {
   alert(["arrows: play\n",
