@@ -126,7 +126,7 @@ body.evil #inv {
 <body class="dark">
 <div id="tools">
 <strong>level <span id="lv"></span></strong>
-<a href="#" onclick="init(); return false;">reset</a>
+<a href="#" onclick="restart(); return false;">reset</a>
 <a href="#" onclick="edit(); return false;">edit</a>
 <a href="#" onclick="prev(); return false;">prev</a>
 <a href="#" onclick="next(); return false;">next</a>
@@ -145,6 +145,16 @@ body.evil #inv {
 <input id="music" type="checkbox">music
 <div class="hidden">
 <audio id="loop" loop preload="auto" src="sound/8bitloop01.ogg"></audio>
+<audio id="slurp" preload="auto" src="sound/8b-slurp.wav"></audio>
+<audio id="plop" preload="auto" src="sound/8b-plop.wav"></audio>
+<audio id="cough" preload="auto" src="sound/8b-cough.wav"></audio>
+<audio id="oof" preload="auto" src="sound/8b-bonk.wav"></audio>
+<audio id="step" preload="auto" src="sound/8b-step.wav"></audio>
+<audio id="climb" preload="auto" src="sound/8b-ladder.wav"></audio>
+<audio id="flag" preload="auto" src="sound/8b-flag.wav"></audio>
+<audio id="unlock" preload="auto" src="sound/8b-key.wav"></audio>
+<audio id="restart" preload="auto" src="sound/8b-restart.wav"></audio>
+<!--
 <audio id="slurp" preload="auto" src="sound/slurp01.ogg"></audio>
 <audio id="plop" preload="auto" src="sound/plop01.ogg"></audio>
 <audio id="cough" preload="auto" src="sound/cough01.ogg"></audio>
@@ -153,6 +163,8 @@ body.evil #inv {
 <audio id="climb" preload="auto" src="sound/climb01.ogg"></audio>
 <audio id="flag" preload="auto" src="sound/flag01.ogg"></audio>
 <audio id="unlock" preload="auto" src="sound/unlock01.ogg"></audio>
+<audio id="restart" preload="auto" src="sound/restart01.ogg"></audio>
+-->
 <img src="bubble01.png">
 <img src="crate01.png">
 <img src="door01.png">
@@ -1069,6 +1081,11 @@ if (window.location.hash && window.location.hash.length > 1) {
 	init();
 }
 
+function restart() {
+  sfx("restart");
+  init();
+}
+
 function zoom(factor) {
   var size = 0;
   var body = document.body;
@@ -1553,7 +1570,7 @@ window.addEventListener("keydown", function(e) {
     e.preventDefault();
     break;
   case 32:  //space
-    init();
+    restart();
     e.preventDefault();
     break;
   case 61:  //+
