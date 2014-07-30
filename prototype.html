@@ -20,12 +20,15 @@ body {
   image-rendering: pixelated;                 /* CSS4 Proposed  */
   -ms-interpolation-mode: nearest-neighbor;   /* IE8+           */
 }
-body.dark {
-  background: black;
+body, body table, #inv {
+  background: white;
+}
+body.dark, body.dark table, body.dark #inv {
+  background: black; /*#228;*/
   color: silver;
 }
-body.evil {
-  background: #300;
+body.evil, body.evil table, body.evil #inv {
+  background: #400; /*#500*/
   color: silver;
 }
 #main {
@@ -37,12 +40,6 @@ body.evil {
 table {
   background: white;
   border-collapse: collapse;
-}
-body.dark table {
-  background: black;
-}
-body.evil table {
-  background: #300;
 }
 td {
   padding: 0;
@@ -98,16 +95,9 @@ a {
 }
 #inv {
   text-align: left;
-  background: white;
   margin: 4px;
   border: 2px dotted grey;
   display: inline-block;
-}
-body.dark #inv {
-  background: black;
-}
-body.evil #inv {
-  background: #300;
 }
 #inv img {
   width: 32px;
@@ -879,21 +869,7 @@ var LEVELS = [
   },
   {
     start: { x: 0, y: 0 },
-    difficulty: 0,
-    level: [
-      "        ",
-      "     =  ",
-      "4 =  =  ",
-      "##=##=#H",
-      "  =  = H",
-      "  =  o H",
-      "@ o    H",
-      "########"
-    ]
-  },
-  {
-    start: { x: 0, y: 0 },
-    difficulty: 0,
+    difficulty: 2,
     level: [
       "        ",
       "     =  ",
@@ -905,12 +881,26 @@ var LEVELS = [
       "########"
     ]
   },
+  {
+    start: { x: 0, y: 0 },
+    difficulty: 5,
+    level: [
+      "        ",
+      "     =  ",
+      "4 =  =  ",
+      "##=# =#H",
+      "  =  = H",
+      "  =  o H",
+      "  o @  H",
+      "########"
+    ]
+  },
 
 
 
   {
     start: { x: 2, y: 7 },
-    difficulty: 0,
+    difficulty: 2,
     level: [
       "        ",
       "H######H",
@@ -922,10 +912,73 @@ var LEVELS = [
       "4> > > H"
     ]
   },
+  {
+    start: { x: 2, y: 7 },
+    difficulty: 3,
+    level: [
+      "        ",
+      "H######H",
+      "H >   #H",
+      "H#### #H",
+      "H     #H",
+      "oooooooH",
+      "     #oH",
+      "4> > > H"
+    ]
+  },
 
-/*
-
-*/
+  {
+    difficulty: 0,
+    level: [
+      "        ",
+      " HHHHHH ",
+      " H    H ",
+      " H HH H ",
+      " H 4H H ",
+      " H  H H ",
+      " HHHH H ",
+      "      H@"
+    ]
+  },
+  {
+    difficulty: 1,
+    level: [
+      "        ",
+      " oooooo ",
+      " o    o ",
+      " o oo o ",
+      " o 4o o ",
+      " o  o o ",
+      " oooo o ",
+      "      o@"
+    ]
+  },
+  {
+    difficulty: 2,
+    level: [
+      "        ",
+      " #####o ",
+      " #    o ",
+      " # ## o ",
+      " # 4# o ",
+      " #  # o ",
+      " #### o ",
+      "      o@"
+    ]
+  },
+  {
+    difficulty: 3,
+    level: [
+      "        ",
+      " ###### ",
+      " =    = ",
+      " = #= = ",
+      " = 4= = ",
+      " =  = o ",
+      " #### o ",
+      "      o@"
+    ]
+  },
 
   {
     start: { x: 0, y: 0 },
@@ -1206,7 +1259,8 @@ function moveto(x, y, img) {
       stay = true;
     }
   } else {
-    if(!targ || targ.className.indexOf("wall") >= 0) {
+    if(!targ || targ.className.indexOf("wall") >= 0 ||
+       targ.querySelector(".crate")) {
       console.log("bump");
       sfx("oof");
       return;
