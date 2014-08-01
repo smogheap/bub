@@ -20,14 +20,14 @@ body {
   image-rendering: pixelated;                 /* CSS4 Proposed  */
   -ms-interpolation-mode: nearest-neighbor;   /* IE8+           */
 }
-body, body table, #inv {
+body, body table {
   background: white;
 }
-body.dark, body.dark table, body.dark #inv {
+body.dark, body.dark table {
   background: black; /*#228;*/
   color: silver;
 }
-body.evil, body.evil table, body.evil #inv {
+body.evil, body.evil table {
   background: #400; /*#500*/
   color: silver;
 }
@@ -81,23 +81,43 @@ img.crate {
 }
 #tools {
   padding: 0.5em;
-  background: #444 linear-gradient(to bottom, #666, #222);
+  background: #666;
+  background: linear-gradient(to bottom, #666, #222);
   color: silver;
+  border-bottom: 1px solid black;
 }
 a {
   margin-left: 0.4em;
-  padding: 0.25em 0.3em;
+  padding: 0.3em 0.5em;
   color: #222;
   text-decoration: none;
-  background: #ccc linear-gradient(to bottom, #ccc, #888);
+  background: #ccc;
+  background: linear-gradient(to bottom, #ccc, #888);
   border: 1px solid #222;
   border-radius: 0.25em;
+}
+a.big {
+  padding: 0.3em 1.5em;
+}
+a:hover {
+  background: #eee;
+  background: linear-gradient(to bottom, #eee, #aaa);
+}
+a:active {
+  background: #888;
+  background: linear-gradient(to bottom, #666, #888);
+}
+a img {
+  height: 1em;
+  width: 1em;
+  vertical-align: middle;
 }
 #inv {
   text-align: left;
   margin: 4px;
-  border: 2px dotted grey;
+  border: 2px dotted silver;
   display: inline-block;
+  vertical-align: middle;
 }
 #inv img {
   width: 32px;
@@ -106,33 +126,61 @@ a {
 #inv :first-child {
   outline: 4px solid green;
 }
+#settings {
+  margin: 1em;
+  padding: 2em;
+  background: silver;
+  color: #222;
+  border: 1px solid black;
+  border-radius: 0.5em;
+  box-shadow: 0px 5px 0.5em rgba(0, 0, 0, 0.5);
+}
 .hidden {
-  display: none;
+  display: none !important;
 }
 </style>
 <style id="style"></style>
 <script src="swipe.js"></script>
 </head>
 <body class="dark">
+
+<div id="game">
 <div id="tools">
-<strong>level <span id="lv"></span></strong>
-<a href="#" onclick="restart(); return false;">reset</a>
-<a href="#" onclick="edit(); return false;">edit</a>
-<a href="#" onclick="prev(); return false;">prev</a>
-<a href="#" onclick="next(); return false;">next</a>
-<!--<a href="#" onclick="help(); return false;">help</a>-->
+<strong><span id="lv"></span></strong>
+<a href="#" class="big" title="reset" onclick="restart(); return false;"><img
+  src="image/reset.png" alt="reset">
+</a>
+<a href="#" title="build" onclick="edit(); return false;"><img
+  src="image/build.png" alt="build"></a>
+<a href="#" title="settings" onclick="settings(); return false;"><img
+  src="image/settings.png" alt="settings"></a>
+<!--
+-->
 </div>
 <div id="main"></div>
 <br>
 <div id="inv"></div>
+<br>
 <div id="edit" class="hidden">
 <textarea rows=8 cols=8 id="level"></textarea>
 <a href="#" onclick="customlevel(); return false;">add</a>
 </div>
-<div class="resources">
+</div>
+
+<div id="settings" class="hidden">
+<a href="#" onclick="prev(); return false;">prev</a>
+<span id="lvl"></span>
+<a href="#" onclick="next(); return false;">next</a>
+<a href="#" onclick="help(); return false;">help</a>
+<br><br>
 <input id="sfx" type="checkbox" checked>sfx
 &nbsp;
 <input id="music" type="checkbox">music
+<a href="#" class="big" title="play" onclick="play(); return false;"><img
+  src="image/play.png" alt="play"></a>
+</div>
+
+<div class="resources">
 <div class="hidden">
 <audio id="loop" loop preload="auto" src="sound/8bitloop01.ogg"></audio>
 <audio id="slurp" preload="auto" src="sound/8b-slurp.wav"></audio>
@@ -1124,6 +1172,16 @@ var LEVELS = [
 var LEVEL = 0;
 var ORK = {};
 
+function play() {
+  document.getElementById("settings").className = "hidden";
+  document.getElementById("game").className = "";
+  resize();
+}
+function settings() {
+  document.getElementById("game").className = "hidden";
+  document.getElementById("settings").className = "";
+}
+
 function cell(x, y) {
   return document.querySelector(".x" + x + ".y" + y);
 }
@@ -1243,7 +1301,12 @@ function init() {
   }
 
   inv();
-  document.getElementById("lv").innerHTML = LEVEL;
+  var lvtxt = "" + LEVEL;
+  while(lvtxt.length < 3) {
+    lvtxt = "0" + lvtxt;
+  }
+  document.getElementById("lv").innerHTML = lvtxt;
+  document.getElementById("lvl").innerHTML = lvtxt;
   document.getElementById("level").value = str;
   if(LEVELS[LEVEL].difficulty % 2) {
     evil();
@@ -1711,7 +1774,8 @@ window.addEventListener("resize", function(e) {
   resize();
 });
 window.addEventListener("keydown", function(e) {
-  if(document.activeElement.id === "level") {
+  if(document.getElementById("main").className === "hidden" ||
+     document.activeElement.id === "level") {
     return;
   }
   if(ORK.gameover) {
@@ -1780,6 +1844,7 @@ window.addEventListener("click", function(e) {
      e.target.tagName.toLowerCase() === "audio") {
     return;
   }
+console.log(e.target, e.target.tagName);
   if(ORK.gameover) {
     next();
     return;
