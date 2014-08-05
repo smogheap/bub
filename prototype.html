@@ -1856,9 +1856,17 @@ console.log(e.target, e.target.tagName);
 
 document.getElementById("music").addEventListener("change", function(e) {
   if(this.checked) {
-    document.getElementById("loop").play();
+    if(audio.proceed) {
+      audio.play(1);
+    } else {
+      document.getElementById("loop").play();
+    }
   } else {
-    document.getElementById("loop").pause();
+    if(audio.proceed) {
+      audio.stop(1);
+    } else {
+      document.getElementById("loop").pause();
+    }
   }
 });
 
@@ -1878,7 +1886,9 @@ document.body.addEventListener("touchmove", function(event) {
         buffer: {},
         compatibility: {},
         files: [
-            "sound/8bitloop01.ogg"
+            "sound/8b-music01.ogg",
+            "sound/8b-music02.ogg",
+            "sound/8b-music03.ogg"
         ],
         proceed: true,
         source_loop: {},
