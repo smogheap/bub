@@ -87,7 +87,7 @@ img.crate {
   border-bottom: 1px solid black;
 }
 a {
-  margin-left: 0.4em;
+  margin: 0 0.4em;
   padding: 0.3em 0.5em;
   color: #222;
   text-decoration: none;
@@ -112,6 +112,9 @@ a img {
   width: 1em;
   vertical-align: middle;
 }
+input, select {
+  padding: 0.3em 0.5em;
+}
 #inv {
   text-align: left;
   margin: 4px;
@@ -127,6 +130,7 @@ a img {
   outline: 4px solid green;
 }
 #settings {
+  line-height: 300%;
   margin: 1em;
   padding: 2em;
   background: silver;
@@ -168,14 +172,26 @@ a img {
 </div>
 
 <div id="settings" class="hidden">
-<a href="#" onclick="prev(); return false;">prev</a>
-<span id="lvl"></span>
-<a href="#" onclick="next(); return false;">next</a>
 <a href="#" onclick="help(); return false;">help</a>
-<br><br>
+<br>
+zoom:
+<select id="zoom">
+<option value="0">auto</option>
+<option value="1">1x</option>
+<option value="2">2x</option>
+<option value="3">3x</option>
+<option value="4">4x</option>
+<option value="4">4x</option>
+</select>
+<br>
 <input id="sfx" type="checkbox" checked>sfx
 &nbsp;
 <input id="music" type="checkbox">music
+<br>
+<a href="#" onclick="prev(); return false;">prev</a>
+<span id="lvl"></span>
+<a href="#" onclick="next(); return false;">next</a>
+<br>
 <a href="#" class="big" title="play" onclick="play(); return false;"><img
   src="image/play.png" alt="play"></a>
 </div>
@@ -1212,7 +1228,8 @@ function init() {
     bub: 0,
     maxinv: 2,
     gameover: false,
-    zoom: ORK.zoom || 1
+    zoom: ORK.zoom || 0,
+    music: ORK.music || 2
   };
   var grid = LEVELS[LEVEL].level;
   var table = document.createElement("table");
@@ -1302,9 +1319,9 @@ function init() {
 
   inv();
   var lvtxt = "" + LEVEL;
-  while(lvtxt.length < 3) {
-    lvtxt = "0" + lvtxt;
-  }
+//  while(lvtxt.length < 3) {
+//    lvtxt = "0" + lvtxt;
+//  }
   document.getElementById("lv").innerHTML = lvtxt;
   document.getElementById("lvl").innerHTML = lvtxt;
   document.getElementById("level").value = str;
@@ -1366,22 +1383,26 @@ function zoom(factor) {
   ].join("");
 }
 function resize() {
+  if(ORK.zoom) {
+    zoom(ORK.zoom);
+    return;
+  }
   var i = 0;
-  ORK.zoom = 1;
-  zoom(ORK.zoom);
+  var z = 1;
+  zoom(z);
   while(document.body.clientHeight >= document.body.scrollHeight &&
         document.body.clientWidth >= document.body.scrollWidth &&
         window.innerHeight >= document.body.scrollHeight &&
         window.innerWidth >= document.body.scrollWidth && i < 10) {
     i++;
-    zoom(++ORK.zoom);
+    zoom(++z);
   }
   // spilled over on purpose, now fix
-  ORK.zoom--;
-  if(ORK.zoom < 1) {
-    ORK.zoom = 1;
+  z--;
+  if(z < 1) {
+    z = 1;
   }
-  zoom(ORK.zoom);
+  zoom(z);
 }
 
 function sfx(sound) {
@@ -1837,14 +1858,19 @@ window.addEventListener("keydown", function(e) {
   }
 });
 window.addEventListener("click", function(e) {
+  if(document.getElementById("game").className) {
+    return;
+  }
   if(e.target && e.target.tagName &&
      e.target.tagName.toLowerCase() === "textarea" ||
      e.target.tagName.toLowerCase() === "input" ||
      e.target.tagName.toLowerCase() === "a" ||
-     e.target.tagName.toLowerCase() === "audio") {
+     e.target.tagName.toLowerCase() === "audio" ||
+     (e.target.parentNode &&
+      e.target.parentNode.tagName.toLowerCase() === "a")) {
     return;
   }
-console.log(e.target, e.target.tagName);
+//console.log(e.target, e.target.tagName);
   if(ORK.gameover) {
     next();
     return;
@@ -1857,17 +1883,22 @@ console.log(e.target, e.target.tagName);
 document.getElementById("music").addEventListener("change", function(e) {
   if(this.checked) {
     if(audio.proceed) {
-      audio.play(1);
+      ORK.music = Math.floor(Math.random() * 3) + 1;
+      audio.play(ORK.music);
     } else {
       document.getElementById("loop").play();
     }
   } else {
     if(audio.proceed) {
-      audio.stop(1);
+      audio.stop(ORK.music);
     } else {
       document.getElementById("loop").pause();
     }
   }
+});
+
+document.getElementById("zoom").addEventListener("change", function(e) {
+  ORK.zoom = parseInt(this.value, null);
 });
 
 // prevent scrolling the page on mobile devies
@@ -1899,6 +1930,7 @@ document.body.addEventListener("touchmove", function(event) {
     // Audio Functions
     //-----------------
     audio.findSync = function(n) {
+return 0;  //TODO: greatly simplify this mess (yanked from a multitrack demo)
         var first = 0,
             current = 0,
             offset = 0;
