@@ -2155,6 +2155,7 @@ function left() {
   allfall();
 }
 function right() {
+  document.querySelector("img.ork").src = "image/ork-stand01.png";
   if(!cell(ORK.x + 1, ORK.y) ||
      cell(ORK.x + 1, ORK.y).className.indexOf("left") >= 0) {
     console.log("bonk");
@@ -2170,7 +2171,7 @@ function right() {
     allfall();
     return;
   }
-  document.querySelector("img.ork").src = "image/ork-stand01.png";
+//was here
   if(moveto(ORK.x + 1, ORK.y)) {
     sfx("step");
   }
