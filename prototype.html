@@ -163,6 +163,7 @@ textarea {
   src="image/settings.png" alt="settings"></a>
 <!--
 -->
+<strong><span id="clock"></span></strong>
 </div>
 <div id="main"></div>
 <br>
@@ -194,9 +195,9 @@ zoom:
 &nbsp;
 <input id="music" type="checkbox">music
 <br>
-<a href="#" onclick="prev(); return false;">prev</a>
+<a href="#" onclick="if(!ORK.speedrun){prev();} return false;">prev</a>
 <span id="lvl"></span>
-<a href="#" onclick="next(); return false;">next</a>
+<a href="#" onclick="if(!ORK.speedrun){next();} return false;">next</a>
 <br>
 <a href="#" class="big" title="play" onclick="play(); return false;"><img
   src="image/play.png" alt="play"></a>
@@ -1635,7 +1636,7 @@ var LEVELS = [
       "        ",
       "        ",
       "        ",
-      "        "
+      "  4     "
     ]
   }
 ];
@@ -1683,7 +1684,8 @@ function init() {
     maxinv: 2,
     gameover: false,
     zoom: ORK.zoom || 0,
-    music: ORK.music || 2
+    music: ORK.music || 2,
+    speedrun: ORK.speedrun || 0
   };
   var grid = LEVELS[LEVEL].level;
   var table = document.createElement("table");
@@ -1785,13 +1787,61 @@ function init() {
     dark();
   }
   resize();
+
+  if(LEVEL === 0 && window.location.search) {
+    if(window.location.search.toLowerCase().indexOf("speedrun") >= 0) {
+      ORK.speedrun = 0;
+      document.getElementById("clock").innerHTML = prettytime(0);
+      alert("ready, set, GO!");
+      ORK.speedrun = new Date();
+      window.requestAnimationFrame(timer);
+    }
+  }
 }
 
-if (window.location.hash && window.location.hash.length > 1) {
-	var re = /_/g;
-	customlevel(decodeURI(window.location.hash.slice(1)).replace(re, ' '));
+function prettytime(time) {
+  var msec = (time % 1000).toString();
+  while(msec.length < 3) {
+    msec = "0" + msec;
+  }
+  var sec = Math.floor(time / 1000).toString();
+  var min = Math.floor(sec / 60);
+  sec = (sec % 60).toString();
+  var hr = Math.floor(min / 60).toString();
+  min = (min % 60).toString();
+
+  while(sec.length < 2) {
+    sec = "0" + sec;
+  }
+  while(min.length < 2) {
+    min = "0" + min;
+  }
+  while(hr.length < 2) {
+    hr = "0" + hr;
+  }
+  return [
+    hr, ":", min, ":", sec, ".", msec
+  ].join("");
+}
+
+function timer() {
+  if(!ORK.speedrun) {
+    return;
+  }
+  window.requestAnimationFrame(timer);
+  var time = new Date() - ORK.speedrun;
+  document.getElementById("clock").innerHTML = prettytime(time);
+}
+
+window.requestAnimationFrame = (window.requestAnimationFrame ||
+                                window.mozRequestAnimationFrame ||
+                                window.webkitRequestAnimationFrame ||
+                                window.msRequestAnimationFrame);
+if(window.location.hash && window.location.hash.length > 1) {
+  var re = /_/g;
+  customlevel(decodeURI(window.location.hash.slice(1)).replace(re, ' '));
 } else {
-	init();
+  init();
 }
 
 function restart() {
@@ -1980,6 +2030,12 @@ function moveto(x, y, img) {
       ORK.gameover = true;
       sfx("flag");
       light();
+      if(ORK.speedrun && LEVEL === LEVELS.length - 1) {
+        var time = new Date() - ORK.speedrun;
+        ORK.speedrun = 0;
+        document.getElementById("clock").innerHTML = prettytime(time);
+        alert(prettytime(time));
+      }
     }
   }
   return true;
@@ -2301,12 +2357,16 @@ window.addEventListener("keydown", function(e) {
     break;
   case 61:  //+
   case 107: //num+
-    next();
+    if(!ORK.speedrun) {
+      next();
+    }
     e.preventDefault();
     break;
   case 109: //num-
   case 173: //-
-    prev();
+    if(!ORK.speedrun) {
+      prev();
+    }
     e.preventDefault();
     break;
   case 192: //~
