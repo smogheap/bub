@@ -82,7 +82,7 @@ img.crate {
 #tools {
   padding: 0.5em;
   background: #666;
-  background: linear-gradient(to bottom, #666, #222);
+  background: linear-gradient(to bottom, #888, #666 20%, #222 80%, #444);
   color: silver;
   border-bottom: 1px solid black;
 }
@@ -92,16 +92,17 @@ a {
   color: #222;
   text-decoration: none;
   background: #ccc;
-  background: linear-gradient(to bottom, #ccc, #888);
+  background: linear-gradient(to bottom, #eee, #ccc 20%, #888 80%, #aaa);
   border: 1px solid #222;
   border-radius: 0.25em;
+  box-shadow: 0px 0px 1px rgba(255, 255, 255, 0.5), 0px -1px 1px rgba(0, 0, 0, 0.5);
 }
 a.big {
   padding: 0.3em 1.5em;
 }
 a:hover {
   background: #eee;
-  background: linear-gradient(to bottom, #eee, #aaa);
+  background: linear-gradient(to bottom, #eee, #aaa 80%, #ccc);
 }
 a:active {
   background: #888;
@@ -133,7 +134,7 @@ textarea {
   outline: 4px solid green;
 }
 #settings {
-  line-height: 300%;
+  line-height: 250%;
   margin: 1em;
   padding: 2em;
   background: silver;
