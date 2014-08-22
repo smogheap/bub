@@ -1,7 +1,7 @@
 <html>
 <head>
 <title>Bub</title>
-<link rel="shortcut icon" href="image/ork-stand01.png" type="image/png" />
+<link rel="shortcut icon" href="image/16bit/ork-stand01.png" type="image/png" />
 <meta name="viewport"
 	content="width=device-width, initial-scale=1.0, user-scalable=no">
 <style>
@@ -10,6 +10,7 @@ body {
   margin: 0;
   text-align: center;
   vertical-align: top;
+  height: 100%;
 
   image-rendering: optimizeSpeed;             /* Legal fallback */
   image-rendering: -moz-crisp-edges;          /* Firefox        */
@@ -21,19 +22,19 @@ body {
   -ms-interpolation-mode: nearest-neighbor;   /* IE8+           */
 }
 body, body table {
-  background: white;
+  background: linear-gradient(to bottom, white, yellow);
 }
 body.dark, body.dark table {
-  background: black; /*#228;*/
+  background: linear-gradient(to bottom, lightblue, purple);
   color: silver;
 }
 body.evil, body.evil table {
-  background: #400; /*#500*/
+  background: linear-gradient(to bottom, black, red);
   color: silver;
 }
 #main {
   display: inline-block;
-  background: url("image/wall01.png");
+  background: url("image/16bit/wall01.png");
   background-size: 64px;
   padding: 16px;
 }
@@ -48,28 +49,28 @@ td {
   background-size: 64px !important;
 }
 td.bubble {
-  background: url("image/bubble01.png");
+  background: url("image/16bit/bubble01.png");
 }
 td.wall {
-  background: url("image/wall01.png");
+  background: url("image/16bit/wall01.png");
 }
 td.ladder {
-  background: url("image/ladder01.png");
+  background: url("image/16bit/ladder01.png");
 }
 td.left {
-  background: url("image/left01.png");
+  background: url("image/16bit/left01.png");
 }
 td.right {
-  background: url("image/right01.png");
+  background: url("image/16bit/right01.png");
 }
 td.key {
-  background: url("image/key01.png");
+  background: url("image/16bit/key01.png");
 }
 td.door {
-  background: url("image/door01.png");
+  background: url("image/16bit/door01.png");
 }
 td.flag {
-  background: url("image/flag01.png");
+  background: url("image/16bit/flag01.png");
 }
 img {
   width: 64px;
@@ -206,6 +207,7 @@ zoom:
 
 <div class="resources">
 <div class="hidden">
+<!--
 <audio id="loop" loop preload="auto" src="sound/8bitloop01.ogg"></audio>
 <audio id="slurp" preload="auto" src="sound/8b-slurp.wav"></audio>
 <audio id="plop" preload="auto" src="sound/8b-plop.wav"></audio>
@@ -216,7 +218,7 @@ zoom:
 <audio id="flag" preload="auto" src="sound/8b-flag.wav"></audio>
 <audio id="unlock" preload="auto" src="sound/8b-key2.wav"></audio>
 <audio id="restart" preload="auto" src="sound/8b-restart.wav"></audio>
-<!--
+-->
 <audio id="slurp" preload="auto" src="sound/slurp01.ogg"></audio>
 <audio id="plop" preload="auto" src="sound/plop01.ogg"></audio>
 <audio id="cough" preload="auto" src="sound/cough01.ogg"></audio>
@@ -226,7 +228,6 @@ zoom:
 <audio id="flag" preload="auto" src="sound/flag01.ogg"></audio>
 <audio id="unlock" preload="auto" src="sound/unlock01.ogg"></audio>
 <audio id="restart" preload="auto" src="sound/restart01.ogg"></audio>
--->
 <img src="bubble01.png">
 <img src="crate01.png">
 <img src="door01.png">
@@ -1666,12 +1667,12 @@ function inv() {
   var img = null;
   for(var i = 0; i < ORK.bub; i++) {
     img = document.createElement("img");
-    img.src = "image/bubble01.png";
+    img.src = "image/16bit/bubble01.png";
     div.appendChild(img);
   }
   for(var i = 0; i < ORK.key; i++) {
     img = document.createElement("img");
-    img.src = "image/key01.png";
+    img.src = "image/16bit/key01.png";
     div.appendChild(img);
   }
 }
@@ -1725,7 +1726,7 @@ function init() {
   var td = null;
   var ork = document.createElement("img");
   ork.className = "ork";
-  ork.src = "image/ork-stand01.png";
+  ork.src = "image/16bit/ork-stand01.png";
   var type = "";
   var str = "";
   for(var i = 0; i < grid.length; i++) {
@@ -1747,7 +1748,7 @@ function init() {
         } else {
           img = document.createElement("img");
           img.className = otype;
-          img.src = "image/" + otype + "01.png";
+          img.src = "image/16bit/" + otype + "01.png";
           td.appendChild(img);
         }
         str += olong[otype] || " ";
@@ -2110,7 +2111,7 @@ function allfall() {
 
 function up() {
   var moved = false;
-  document.querySelector("img.ork").src = "image/ork-up01.png";
+  document.querySelector("img.ork").src = "image/16bit/ork-up01.png";
   if(!cell(ORK.x, ORK.y - 1)) {
     sfx("oof");
     return;
@@ -2128,13 +2129,13 @@ function up() {
     moved = down(true);
   }
   if(!moved) {
-    document.querySelector("img.ork").src = "image/ork-up01.png";
+    document.querySelector("img.ork").src = "image/16bit/ork-up01.png";
     sfx("cough");
   }
 }
 function down() {
   var moved = false;
-  document.querySelector("img.ork").src = "image/ork-down01.png";
+  document.querySelector("img.ork").src = "image/16bit/ork-down01.png";
   if(cell(ORK.x, ORK.y).className.indexOf("left") >= 0 ||
             cell(ORK.x, ORK.y).className.indexOf("right") >= 0) {
     return;
@@ -2189,7 +2190,7 @@ function down() {
   return true;
 }
 function left() {
-  document.querySelector("img.ork").src = "image/ork-stand02.png";
+  document.querySelector("img.ork").src = "image/16bit/ork-stand02.png";
   if(!cell(ORK.x - 1, ORK.y) ||
      cell(ORK.x - 1, ORK.y).className.indexOf("right") >= 0) {
     console.log("bonk");
@@ -2198,7 +2199,7 @@ function left() {
   }
   var kick = cell(ORK.x - 1, ORK.y).querySelector("img.crate");
   if(kick) {
-    document.querySelector("img.ork").src = "image/ork-down02.png";
+    document.querySelector("img.ork").src = "image/16bit/ork-down02.png";
     console.log("boot");
     sfx("oof");
     moveto(ORK.x - 2, ORK.y, kick);
@@ -2212,7 +2213,7 @@ function left() {
   allfall();
 }
 function right() {
-  document.querySelector("img.ork").src = "image/ork-stand01.png";
+  document.querySelector("img.ork").src = "image/16bit/ork-stand01.png";
   if(!cell(ORK.x + 1, ORK.y) ||
      cell(ORK.x + 1, ORK.y).className.indexOf("left") >= 0) {
     console.log("bonk");
@@ -2221,7 +2222,7 @@ function right() {
   }
   var kick = cell(ORK.x + 1, ORK.y).querySelector("img.crate");
   if(kick) {
-    document.querySelector("img.ork").src = "image/ork-down01.png";
+    document.querySelector("img.ork").src = "image/16bit/ork-down01.png";
     console.log("boot");
     sfx("oof");
     moveto(ORK.x + 2, ORK.y, kick);
