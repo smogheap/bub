@@ -1863,6 +1863,9 @@ function zoom(factor) {
   }
 
   var style = document.getElementById("style");
+
+//todo: .cssText
+
   style.innerHTML = [
     "#main {\n",
     "  background-size: ", factor * 16, "px;\n",
@@ -1895,10 +1898,12 @@ function resize() {
   var i = 0;
   var z = 1;
   zoom(z);
+  var table = document.querySelector("table");
   while(document.body.clientHeight >= document.body.scrollHeight &&
         document.body.clientWidth >= document.body.scrollWidth &&
         window.innerHeight >= document.body.scrollHeight &&
-        window.innerWidth >= document.body.scrollWidth && i < 10) {
+        window.innerWidth >= document.body.scrollWidth && i < 10 &&
+		table.clientHeight === table.clientWidth) {
     i++;
     zoom(++z);
   }
