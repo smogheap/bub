@@ -2314,6 +2314,7 @@ function click(e) {
 window.addEventListener("resize", function(e) {
   resize();
 });
+
 window.addEventListener("keydown", function(e) {
   if(document.getElementById("main").className === "hidden" ||
      document.activeElement.id === "level") {
@@ -2377,7 +2378,7 @@ window.addEventListener("keydown", function(e) {
     break;
   case 27:  //esc
   default:
-//    console.log(e.keyCode);
+    console.log(e.keyCode);
     break;
   }
 });

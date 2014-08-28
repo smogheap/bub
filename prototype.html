@@ -2313,6 +2313,23 @@ function click(e) {
 window.addEventListener("resize", function(e) {
   resize();
 });
+
+/*
+micah's nes30:
+up = 'c'
+down = 'd'
+left = 'e'
+right = 'f'
+b = 'j'
+a = 'g'
+y = 'i'
+x = 'h'
+l = 'k'
+r = 'm'
+select = 'n'
+start = 'o'
+*/
+
 window.addEventListener("keydown", function(e) {
   if(document.getElementById("main").className === "hidden" ||
      document.activeElement.id === "level") {
@@ -2326,38 +2343,44 @@ window.addEventListener("keydown", function(e) {
   switch(e.keyCode) {
   case 38:  //up
   case 104: //num8
-  case 75:  //k
-  case 87:  //w
+//  case 75:  //k
+//  case 87:  //w
+  case 67:  //c
     up();
     e.preventDefault();
     break;
   case 40:  //down
   case 98:  //num2
-  case 74:  //j
-  case 83:  //s
+//  case 74:  //j
+//  case 83:  //s
+  case 68:  //d
     down();
     e.preventDefault();
     break;
   case 37:  //left
   case 100: //num4
-  case 72:  //h
-  case 65:  //a
+//  case 72:  //h
+//  case 65:  //a
+  case 69:  //e
     left();
     e.preventDefault();
     break;
   case 39:  //right
   case 102: //num6
-  case 76:  //l
-  case 68:  //d
+//  case 76:  //l
+//  case 68:  //d
+  case 70:  //f
     right();
     e.preventDefault();
     break;
   case 32:  //space
+  case 74:  //j
     restart();
     e.preventDefault();
     break;
   case 61:  //+
   case 107: //num+
+  case 77:  //m
     if(!ORK.speedrun) {
       next();
     }
@@ -2365,6 +2388,7 @@ window.addEventListener("keydown", function(e) {
     break;
   case 109: //num-
   case 173: //-
+  case 75:  //k
     if(!ORK.speedrun) {
       prev();
     }
