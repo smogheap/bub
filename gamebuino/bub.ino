@@ -24,6 +24,9 @@ extern const byte PROGMEM flag[];
 /* from levels */
 extern const char PROGMEM levels[];
 
+/* from sounds */
+extern const int soundfx[][8];
+
 
 /* game variables */
 uint8_t dir = NOFLIP;
@@ -38,6 +41,15 @@ int maxinv = 2;
 int bubs = 0;
 int keys = 0;
 int gameover = 0;
+
+
+void sfx(int fxno, int channel) {
+  gb.sound.command(0, soundfx[fxno][6], 0, channel); // set volume
+  gb.sound.command(1, soundfx[fxno][0], 0, channel); // set waveform
+  gb.sound.command(2, soundfx[fxno][5], -soundfx[fxno][4], channel); // set volume slide
+  gb.sound.command(3, soundfx[fxno][3], soundfx[fxno][2] - 58, channel); // set pitch slide
+  gb.sound.playNote(soundfx[fxno][1], soundfx[fxno][7], channel); // play note
+}
 
 void loadlevel(int level) {
   int i;
@@ -60,6 +72,7 @@ int isempty(char cell) {
   return (cell == ' ' || cell == '4') ? 1 : 0;
 }
 
+//FIXME: crate moving through flag erases the flag
 int moveto(int x, int y, int fromx, int fromy) {
   int stay = 0;
   char who = cell(fromx, fromy);
@@ -74,12 +87,12 @@ int moveto(int x, int y, int fromx, int fromy) {
     }
   } else {
     if(!targ || targ == '#' || targ == '=') {
-      //sfx("oof");
+      sfx(0, 0);
       return 0;
     } else if(targ == 'o') {
       if(bubs + keys < maxinv) {
         lvldata[(y * 8) + x] = ' ';
-        //sfx("slurp");
+        sfx(1, 0);
         stay = 1;
         bubs++;
       } else {
@@ -88,7 +101,7 @@ int moveto(int x, int y, int fromx, int fromy) {
     } else if(targ == '-') {
       if(bubs + keys < maxinv) {
         lvldata[(y * 8) + x] = ' ';
-        //sfx("slurp");
+        sfx(1, 0);
         stay = 1;
         keys++;
       } else {
@@ -96,13 +109,13 @@ int moveto(int x, int y, int fromx, int fromy) {
       }
     } else if(targ == 'X') {
       if(!keys) {
-        //sfx("oof");
+        sfx(0, 0);
         return 0;
       }
       stay = 1;
       keys--;
       lvldata[(y * 8) + x] = ' ';
-      //sfx("unlock");
+      sfx(4, 0);
     }
   }
 
@@ -118,7 +131,7 @@ int moveto(int x, int y, int fromx, int fromy) {
     orky = y;
     if(targ == '4') {
       gameover = 1;
-      //sfx("flag");
+      sfx(5, 0);
     }
   }
   return 1;
@@ -150,7 +163,7 @@ void fall(int fromx, int fromy) {
   }
 
   if(fell) {
-    //sfx("oof");
+    sfx(0, 0);
   }
 }
 
@@ -181,7 +194,7 @@ int movedown() {
   } else if(!cell(orkx, orky + 1)) {
     if(cell(orkx, orky) == 'H') {
       fall(orkx, orky);
-      //sfx("oof");
+      sfx(0, 0);
       return 0;
     }
   } else if(cell(orkx, orky) == 'H') {
@@ -194,7 +207,7 @@ int movedown() {
 
   if(!bubs && !keys) {
     fall(orkx, orky);
-    //sfx("cough");
+    sfx(6, 0);
     return 0;
   }
 
@@ -202,17 +215,17 @@ int movedown() {
   targ = cell(orkx, orky - 1);
   if(!targ ||
      (!isempty(targ) && targ != 'H' && targ != '<' && targ != '>')) {
-    //sfx("oof");
+    sfx(0, 0);
     return 0;
   }
   if(bubs) {
     lvldata[(orky * 8) + orkx] = 'o';
     bubs--;
-    //sfx("plop");
+    sfx(2, 0);
   } else if(keys) {
     lvldata[(orky * 8) + orkx] = '-';
     keys--;
-    //sfx("plop");
+    sfx(2, 0);
   }
   moveto(orkx, orky - 1, orkx, orky);
   fall(orkx, orky);
@@ -223,7 +236,7 @@ void moveup() {
   int moved = 0;
   ork = orkup;
   if(!cell(orkx, orky - 1)) {
-    //sfx("oof");
+    sfx(0, 0);
     return;
   }
   if(cell(orkx, orky) == 'H' &&
@@ -238,7 +251,7 @@ void moveup() {
   }
   if(!moved) {
     ork = orkup;
-    //sfx("cough");
+    sfx(6, 0);
   }
 }
 
@@ -248,12 +261,12 @@ void moveleft() {
   ork = orkstand;  
   dir = FLIPH;
   if(!cell(orkx - 1, orky) || cell(orkx - 1, orky) == '>') {
-    //sfx("oof");
+    sfx(0, 0);
     return;
   }
   if(kick == '=') {
     ork = orkdown;
-    //sfx("oof");
+    sfx(0, 0);
     moveto(orkx - 2, orky, orkx - 1, orky);
     allfall();
     return;
@@ -269,12 +282,12 @@ void moveright() {
   ork = orkstand;  
   dir = NOFLIP;
   if(!cell(orkx + 1, orky) || cell(orkx + 1, orky) == '<') {
-    //sfx("oof");
+    sfx(0, 0);
     return;
   }
   if(kick == '=') {
     ork = orkdown;
-    //sfx("oof");
+    sfx(0, 0);
     moveto(orkx + 2, orky, orkx + 1, orky);
     allfall();
     return;
@@ -319,7 +332,7 @@ void loop() {
         next();
       } else {
         loadlevel(level);
-        //sfx("restart");
+        sfx(3, 0);
       }
     }
     if(gb.buttons.pressed(BTN_LEFT)) {
