@@ -37,6 +37,8 @@ char lvldata[64] = "";
 const byte *ork = orkstand;
 int orkx = 0;
 int orky = 0;
+int flagx = 0;
+int flagy = 0;
 int maxinv = 2;
 int bubs = 0;
 int keys = 0;
@@ -126,6 +128,9 @@ int moveto(int x, int y, int fromx, int fromy) {
   if(who != '@') {
     lvldata[(y * 8) + x] = who;
     lvldata[(fromy * 8) + fromx] = ' ';
+    if(fromx == flagx && fromy == flagy) {
+      lvldata[(fromy * 8) + fromx] = '4';
+    }
   } else {
     orkx = x;
     orky = y;
@@ -417,6 +422,8 @@ void loop() {
           break;
         case '4':
           block = flag;
+          flagx = j;
+          flagy = i;
           break;
         case '@':
           orkx = j;
