@@ -27,6 +27,27 @@ extern const char PROGMEM levels[];
 /* from sounds */
 extern const int soundfx[][8];
 
+/* menu data */
+prog_char menustring_0[] PROGMEM = "Evil twin levels=OFF";
+prog_char menustring_1[] PROGMEM = "Evil twin levels=ON";
+prog_char menustring_2[] PROGMEM = "Lv  0 (beginner)";
+prog_char menustring_3[] PROGMEM = "Lv 16 (easy)";
+prog_char menustring_4[] PROGMEM = "Lv 44 (intermediate)";
+prog_char menustring_5[] PROGMEM = "Lv 88 (advanced)";
+PROGMEM const char *menutable0[] = {
+  menustring_0,
+  menustring_2,
+  menustring_3,
+  menustring_4,
+  menustring_5
+};
+PROGMEM const char *menutable1[] = {
+  menustring_1,
+  menustring_2,
+  menustring_3,
+  menustring_4,
+  menustring_5
+};
 
 /* game variables */
 uint8_t dir = NOFLIP;
@@ -43,6 +64,7 @@ int maxinv = 2;
 int bubs = 0;
 int keys = 0;
 int gameover = 0;
+int eviltwin = 0;
 
 
 void sfx(int fxno, int channel) {
@@ -74,7 +96,6 @@ int isempty(char cell) {
   return (cell == ' ' || cell == '4') ? 1 : 0;
 }
 
-//FIXME: crate moving through flag erases the flag
 int moveto(int x, int y, int fromx, int fromy) {
   int stay = 0;
   char who = cell(fromx, fromy);
@@ -304,12 +325,55 @@ void moveright() {
 }
 
 void next() {
-  if(level >= 99) {
-    level = 0;
-  } else {
+  level++;
+  if(!eviltwin && level % 2) {
     level++;
   }
+  if(level >= 99) {
+    level = 0;
+  }
   loadlevel(level);
+}
+
+void showmenu() {
+  int load;
+  int show;
+  PROGMEM const char **m;
+  do {
+    m = eviltwin ? menutable1 : menutable0;
+    show = 0;
+    load = 1;
+    switch(gb.menu(m, 5)) {
+    case 0:
+      eviltwin = !eviltwin;
+      if(!eviltwin && level % 2) {
+        level--;
+        loadlevel(level);
+      }
+      show = 1;
+      load = 0;
+      break;
+    case 1:
+      level = 0;
+      break;
+    case 2:
+      level = 16;
+      break;
+    case 3:
+      level = 44;
+      break;
+    case 4:
+      level = 88;
+      break;
+    case -1:
+    default:
+      load = 0;
+      break;
+    }
+  } while(show);
+  if(load) {
+    loadlevel(level);
+  }
 }
 
 
@@ -330,7 +394,9 @@ void loop() {
       }
     }
     if(gb.buttons.pressed(BTN_B)) {
-      next();
+      //next();
+      gb.display.setFont(font3x5);
+      showmenu();
     }
     if(gb.buttons.pressed(BTN_A)) {
       if(gameover) {
@@ -346,9 +412,6 @@ void loop() {
       } else {
         moveleft();
       }
-      //ork = orkstand;
-      //orkx--;
-      //dir = FLIPH;
     }
     if(gb.buttons.pressed(BTN_RIGHT)) {
       if(gameover) {
@@ -356,9 +419,6 @@ void loop() {
       } else {
         moveright();
       }
-      //ork = orkstand;
-      //orkx++;
-      //dir = NOFLIP;
     }
     if(gb.buttons.pressed(BTN_UP)) {
       if(gameover) {
@@ -366,8 +426,6 @@ void loop() {
       } else {
         moveup();
       }
-      //ork = orkup;
-      //orky--;
     }
     if(gb.buttons.pressed(BTN_DOWN)) {
       if(gameover) {
@@ -375,8 +433,6 @@ void loop() {
       } else {
         movedown();
       }
-      //ork = orkdown;
-      //orky++;
     }
   }
 
