@@ -130,7 +130,7 @@ textarea {
   width: 32px;
   height: 32px;
 }
-#inv :first-child {
+#inv .selected {
   outline: 4px solid green;
 }
 #settings {
@@ -171,6 +171,7 @@ textarea {
 <div id="inv"></div>
 <br>
 <div id="edit" class="hidden">
+level editing is a bit broken right now, i'll update soon!  :^)<br>
 <textarea rows=9 cols=9 id="level"></textarea>
 <a href="#" onclick="customlevel(); return false;">add</a>
 </div>
@@ -1401,6 +1402,9 @@ var LEVELS = [
       " ooo#o#o"
     ]
   },
+/* end intermediate */
+
+/* advanced */
   {
     difficulty: 6,
     level: [
@@ -1505,9 +1509,6 @@ var LEVELS = [
       "H @##  #"
     ]
   },
-/* end intermediate */
-
-/* advanced */
   {
     difficulty: 8,
     level: [
@@ -1729,6 +1730,19 @@ var LEVELS = [
     ]
   }
 ];
+var MAP = {
+  " ": "",
+  "@": "ork-stand",
+  "#": "wall",
+  "H": "ladder",
+  "o": "bubble",
+  "-": "key",
+  "X": "door",
+  "4": "flag",
+  "<": "left",
+  ">": "right",
+  "=": "crate"
+};
 var LEVEL = 0;
 var ORK = {};
 
@@ -1762,6 +1776,26 @@ function inv() {
     img.src = "image/key01.png";
     div.appendChild(img);
   }
+  if(div.firstChild) {
+    div.firstChild.className = "selected";
+  }
+}
+function editinv() {
+  var div = document.getElementById("inv");
+  while(div.firstChild) {
+    div.removeChild(div.firstChild);
+  }
+  var img = null;
+  var name = null;
+  for(key in MAP) {
+    name = MAP[key] || "blank";
+    img = document.createElement("img");
+    img.src = "image/" + name + "01.png";
+    img.title = { "@": "ork", "=": "crate" }[key] || "";
+    img.alt = img.title ? "" : name;
+    div.appendChild(img);
+  }
+  div.firstChild.className = "selected";
 }
 
 function init() {
@@ -1970,8 +2004,8 @@ function zoom(factor) {
     "  height: ", factor * 16, "px;\n",
     "}\n",
     "#inv {\n",
-    "  width: ", factor * 8 * ORK.maxinv, "px;\n",
-    "  height: ", factor * 8, "px;\n",
+    "  min-width: ", factor * 8 * ORK.maxinv, "px;\n",
+    "  min-height: ", factor * 8, "px;\n",
     "}\n",
     "#inv img {\n",
     "  width: ", factor * 8, "px;\n",
@@ -2056,6 +2090,22 @@ function isempty(td) {
     }
   }
   return emp;
+}
+function emptyout(td) {
+  if(!td) {
+    return;
+  }
+  while(td.firstChild) {
+    td.removeChild(td.firstChild);
+  }
+  var keep = [];
+  var cls = td.className.trim().split(" ");
+  for(var i in cls) {
+    if(cls[i][0] === "x" || cls[i][0] === "y") {
+      keep.push(cls);
+    }
+  }
+  td.className = keep.join(" ");
 }
 
 function moveto(x, y, img) {
@@ -2213,12 +2263,14 @@ function up() {
 function down() {
   var moved = false;
   document.querySelector("img.ork").src = "image/ork-down01.png";
-  if(cell(ORK.x, ORK.y + 1).className.indexOf("ladder") >= 0) {
+  if(cell(ORK.x, ORK.y + 1) &&
+     cell(ORK.x, ORK.y + 1).className.indexOf("ladder") >= 0) {
     moveto(ORK.x, ORK.y + 1);
     sfx("climb");
     return;
-  } else if(cell(ORK.x, ORK.y).className.indexOf("left") >= 0 ||
-            cell(ORK.x, ORK.y).className.indexOf("right") >= 0) {
+  } else if(cell(ORK.x, ORK.y) &&
+            (cell(ORK.x, ORK.y).className.indexOf("left") >= 0 ||
+             cell(ORK.x, ORK.y).className.indexOf("right") >= 0)) {
     return;
   } else if(!cell(ORK.x, ORK.y + 1)) {
     if(cell(ORK.x, ORK.y).className.indexOf("ladder") >= 0) {
@@ -2340,8 +2392,10 @@ function evil() {
 function edit() {
   if(document.getElementById("edit").className) {
     document.getElementById("edit").className = "";
+    editinv();
   } else {
     document.getElementById("edit").className = "hidden";
+    inv();
   }
   resize();
 }
@@ -2483,6 +2537,50 @@ window.addEventListener("keydown", function(e) {
 });
 window.addEventListener("click", function(e) {
   if(document.getElementById("game").className) {
+    return;
+  }
+  if(!document.getElementById("edit").className) {
+    var selected = document.querySelector("#inv .selected");
+    var parent = e.target.parentNode;
+    var elm = null;
+    if(e.target.tagName.toLowerCase() === "img" && parent.id === "inv") {
+      selected.className = "";
+      e.target.className = "selected";
+    } else if(e.target.tagName.toLowerCase() === "img" &&
+              parent.tagName.toLowerCase() === "td") {
+      parent.removeChild(e.target);
+      if(selected.alt === "flag") {
+        emptyout(document.querySelector("td.flag"));
+      } else if(selected.title === "ork" &&
+                document.querySelector("img.ork")) {
+        emptyout(document.querySelector("img.ork").parentNode);
+      }
+      emptyout(parent);
+      if(selected.title) {
+        elm = selected.cloneNode();
+        elm.title = "";
+        elm.className = selected.title;
+        parent.appendChild(elm);
+      } else if(selected.alt) {
+        parent.className += " " + selected.alt;
+      }
+    } else if(e.target.tagName.toLowerCase() === "td") {
+      if(selected.alt === "flag") {
+        emptyout(document.querySelector("td.flag"));
+      } else if(selected.title === "ork" &&
+                document.querySelector("img.ork")) {
+        emptyout(document.querySelector("img.ork").parentNode);
+      }
+      emptyout(e.target);
+      if(selected.title) {
+        elm = selected.cloneNode();
+        elm.title = "";
+        elm.className = selected.title;
+        e.target.appendChild(elm);
+      } else if(selected.alt) {
+        e.target.className += " " + selected.alt;
+      }
+    }
     return;
   }
   if(e.target && e.target.tagName &&
