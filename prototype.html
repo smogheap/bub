@@ -146,6 +146,9 @@ textarea {
 .hidden {
   display: none !important;
 }
+iframe {
+  vertical-align: middle;
+}
 </style>
 <style id="style"></style>
 <script src="swipe.js"></script>
@@ -171,9 +174,17 @@ textarea {
 <div id="inv"></div>
 <br>
 <div id="edit" class="hidden">
-level editing is a bit broken right now, i'll update soon!  :^)<br>
-<textarea rows=9 cols=9 id="level"></textarea>
-<a href="#" onclick="customlevel(); return false;">add</a>
+<a href="#" title="build" onclick="edit(); return false;"><img
+  src="image/play.png" alt="play"> play</a>
+&nbsp;
+share:
+<a id="email" href="#">email</a>
+<a href="https://twitter.com/share" class="twitter-share-button" data-text="I made a Bub level!" data-size="large" data-count="none" data-dnt="true">Tweet</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+<div class="hidden">
+ <textarea rows=9 cols=9 id="level"></textarea>
+ <a href="#" onclick="customlevel(); return false;">add</a>
+</div>
 </div>
 </div>
 
@@ -202,7 +213,7 @@ zoom:
 <a href="#" onclick="if(!ORK.speedrun){next();} return false;">next</a>
 <br>
 <a href="#" class="big" title="play" onclick="play(); return false;"><img
-  src="image/play.png" alt="play"></a>
+  src="image/play.png" alt="play"> play</a>
 </div>
 
 <div class="resources">
@@ -1726,7 +1737,7 @@ var LEVELS = [
       "        ",
       "        ",
       "        ",
-      "    4   "
+      "@      4"
     ]
   }
 ];
@@ -1798,7 +1809,67 @@ function editinv() {
   div.firstChild.className = "selected";
 }
 
-function init() {
+function buildlevelstring() {
+  var grid = LEVELS[LEVEL].level;
+  var table = document.createElement("table");
+  var quick = {
+    " ": "",
+    "#": "wall",
+    "H": "ladder",
+    "o": "bubble",
+    "-": "key",
+    "X": "door",
+    "4": "flag",
+    "<": "left",
+    ">": "right"
+  };
+  var long = {
+    "": " ",
+    "wall": "#",
+    "ladder": "H",
+    "bubble": "o",
+    "key": "-",
+    "door": "X",
+    "flag": "4",
+    "left": "<",
+    "right": ">"
+  };
+  var oquick = {
+    "@": "ork",
+    "=": "crate"
+  };
+  var olong = {
+    "ork": "@",
+    "crate": "="
+  };
+  var type = "";
+  var str = "";
+  for(var i = 0; i < grid.length; i++) {
+    for(var j = 0; j < grid[i].length; j++) {
+      type = quick[grid[i][j]] || grid[i][j];
+      otype = oquick[grid[i][j]] || "";
+      if(!otype && olong[grid[i][j]]) {
+        otype = grid[i][j];
+      }
+      if(otype) {
+        str += olong[otype] || " ";
+      } else {
+        str += long[quick[grid[i][j]] || grid[i][j]] || " ";
+      }
+    }
+    str += "\n";
+  }
+  if(0 > str.indexOf("@")) {
+    var lines = str.split("\n");
+    lines[ORK.y] = [
+      lines[ORK.y].substring(0, ORK.x), "@", lines[ORK.y].substring(ORK.x + 1)
+    ].join("");
+    str = lines.join("\n");
+  }
+  return str;
+}
+
+function init(keepmode) {
   ORK = {
     x: LEVELS[LEVEL].start ? (LEVELS[LEVEL].start.x || 0) : 0,
     y: LEVELS[LEVEL].start ? (LEVELS[LEVEL].start.y || 0) : 0,
@@ -1896,8 +1967,13 @@ function init() {
     str = lines.join("\n");
   }
 
-  inv();
+  if(!keepmode) {
+    inv();
+  }
   var lvtxt = "" + LEVEL;
+  if(LEVEL === LEVELS.length - 1) {
+    lvtxt = "custom";
+  }
 //  while(lvtxt.length < 3) {
 //    lvtxt = "0" + lvtxt;
 //  }
@@ -2066,16 +2142,22 @@ function customlevel(raw) {
     }
     data.push(raw[i].slice(0, 8));
   }
-  LEVELS.push({
+  LEVELS[LEVELS.length - 1] = {
     difficulty: 0,
     level: data
-  });
+  };
   LEVEL = LEVELS.length - 1;
-  init();
+  init(true);
 
   // Put the level data in the location hash string
-  var re = / /g;
-  window.location.hash = "#" + encodeURI(data.join("\n").replace(re, '_'));
+  var re = new RegExp(" ", "g");
+  window.location.hash = "#" + encodeURI(data.join("\n").replace(re, "_"));
+
+  document.getElementById("email").href = [
+    "mailto:owenswerk%40gmail.com",
+    "?subject=", encodeURIComponent("I made a Bub level!"),
+    "&body=", encodeURIComponent(window.location)
+  ].join("");
 }
 
 function isempty(td) {
@@ -2102,7 +2184,7 @@ function emptyout(td) {
   var cls = td.className.trim().split(" ");
   for(var i in cls) {
     if(cls[i][0] === "x" || cls[i][0] === "y") {
-      keep.push(cls);
+      keep.push(cls[i]);
     }
   }
   td.className = keep.join(" ");
@@ -2390,6 +2472,8 @@ function evil() {
 }
 
 function edit() {
+  LEVEL = LEVELS.length - 1;
+  init(true);
   if(document.getElementById("edit").className) {
     document.getElementById("edit").className = "";
     editinv();
@@ -2464,6 +2548,9 @@ start = 'o'
 window.addEventListener("keydown", function(e) {
   if(document.getElementById("main").className === "hidden" ||
      document.activeElement.id === "level") {
+    return;
+  }
+  if(!document.getElementById("edit").className) {
     return;
   }
   if(ORK.gameover) {
@@ -2543,11 +2630,32 @@ window.addEventListener("click", function(e) {
     var selected = document.querySelector("#inv .selected");
     var parent = e.target.parentNode;
     var elm = null;
+    var level = document.getElementById("level").value.split("\n");
+    var x = 0;
+    var y = 0;
+    var rep = {
+      "blank": " ",
+      "wall": "#",
+      "ladder": "H",
+      "bubble": "o",
+      "key": "-",
+      "door": "X",
+      "flag": "4",
+      "left": "<",
+      "right": ">",
+      "ork": "@",
+      "crate": "="
+    };
+    var type = null;
+    var cls = null;
     if(e.target.tagName.toLowerCase() === "img" && parent.id === "inv") {
       selected.className = "";
       e.target.className = "selected";
     } else if(e.target.tagName.toLowerCase() === "img" &&
               parent.tagName.toLowerCase() === "td") {
+
+      cls = parent.className.trim().split(" ");
+/*
       parent.removeChild(e.target);
       if(selected.alt === "flag") {
         emptyout(document.querySelector("td.flag"));
@@ -2561,10 +2669,13 @@ window.addEventListener("click", function(e) {
         elm.title = "";
         elm.className = selected.title;
         parent.appendChild(elm);
-      } else if(selected.alt) {
+      } else if(selected.alt !== "blank") {
         parent.className += " " + selected.alt;
       }
+*/
     } else if(e.target.tagName.toLowerCase() === "td") {
+      cls = e.target.className.trim().split(" ");
+/*
       if(selected.alt === "flag") {
         emptyout(document.querySelector("td.flag"));
       } else if(selected.title === "ork" &&
@@ -2577,10 +2688,35 @@ window.addEventListener("click", function(e) {
         elm.title = "";
         elm.className = selected.title;
         e.target.appendChild(elm);
-      } else if(selected.alt) {
+      } else if(selected.alt !== "blank") {
         e.target.className += " " + selected.alt;
       }
+*/
     }
+      if(cls) {
+        for(var i in cls) {
+          if(cls[i][0] === "x") {
+            x = parseInt(cls[i].substring(1), null);
+          } else if(cls[i][0] === "y") {
+            y = parseInt(cls[i].substring(1), null);
+          }
+        }
+        type = selected.title || selected.alt;
+        if(type === "ork" || type === "flag") {
+          level = level.join("\n");
+          if(type === "ork") {
+            level = level.replace(new RegExp("@", "g"), " ");
+          } else if(type === "flag") {
+            level = level.replace(new RegExp("4", "g"), " ");
+          }
+          level = level.split("\n");
+        }
+        level[y] = [
+          level[y].substring(0, x), rep[type], level[y].substring(x + 1)
+        ].join("");
+        customlevel(level.join("\n"));
+      }
+//    document.getElementById("level").value = buildlevelstring();
     return;
   }
   if(e.target && e.target.tagName &&
