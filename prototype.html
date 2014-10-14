@@ -1758,6 +1758,9 @@ var LEVEL = 0;
 var ORK = {};
 
 function play() {
+  if(!document.getElementById("edit").className) {
+    document.getElementById("edit").className = "hidden";
+  }
   document.getElementById("settings").className = "hidden";
   document.getElementById("game").className = "";
   resize();
@@ -2053,6 +2056,9 @@ if(window.location.hash && window.location.hash.length > 1 ||
 }
 
 function restart() {
+  if(!document.getElementById("edit").className) {
+    return;
+  }
   sfx("restart");
   init();
 }
