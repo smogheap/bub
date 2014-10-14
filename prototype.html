@@ -2037,9 +2037,17 @@ window.requestAnimationFrame = (window.requestAnimationFrame ||
                                 window.webkitRequestAnimationFrame ||
                                 window.msRequestAnimationFrame ||
 								function() {});
-if(window.location.hash && window.location.hash.length > 1) {
-  var re = /_/g;
-  customlevel(decodeURI(window.location.hash.slice(1)).replace(re, ' '));
+if(window.location.hash && window.location.hash.length > 1 ||
+   window.location.search && window.location.search.length > 1) {
+  var lvl = window.location.hash || window.location.search;
+  if(lvl.indexOf("#") === 0 || lvl.indexOf("?") === 0) {
+    lvl = lvl.substring(1);
+  }
+  lvl = lvl.replace(new RegExp("_", "g"), " ");
+  lvl = lvl.replace(new RegExp("E", "g"), "#");
+  lvl = lvl.replace(new RegExp("O", "g"), "@");
+  lvl = lvl.replace(new RegExp("0", "g"), "\n");
+  customlevel(lvl);
 } else {
   init();
 }
@@ -2150,13 +2158,16 @@ function customlevel(raw) {
   init(true);
 
   // Put the level data in the location hash string
-  var re = new RegExp(" ", "g");
-  window.location.hash = "#" + encodeURI(data.join("\n").replace(re, "_"));
+  var enc = ""
+  enc = data.join("0").replace(new RegExp(" ", "g"), "_");
+  enc = enc.replace(new RegExp("#", "g"), "E");
+  enc = enc.replace(new RegExp("@", "g"), "O");
+  window.location.hash = "#" + enc;
 
   document.getElementById("email").href = [
     "mailto:owenswerk%40gmail.com",
     "?subject=", encodeURIComponent("I made a Bub level!"),
-    "&body=", encodeURIComponent(window.location)
+    "&body=", encodeURIComponent(window.location.toString())
   ].join("");
 }
 
