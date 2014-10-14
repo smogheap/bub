@@ -180,8 +180,7 @@ iframe {
 &nbsp;
 share:
 <a id="email" href="#">email</a>
-<a href="https://twitter.com/share" class="twitter-share-button" data-text="I made a Bub level!" data-size="large" data-count="none" data-dnt="true">Tweet</a>
-<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+<a id="tweet" href="#" target="_blank">tweet</a>
 <div class="hidden">
  <textarea rows=9 cols=9 id="level"></textarea>
  <a href="#" onclick="customlevel(); return false;">add</a>
@@ -2169,6 +2168,12 @@ function customlevel(raw) {
     "mailto:owenswerk%40gmail.com",
     "?subject=", encodeURIComponent("I made a Bub level!"),
     "&body=", encodeURIComponent(window.location.toString())
+  ].join("");
+  document.getElementById("tweet").href = [
+    "https://twitter.com/share?text=",
+//    window.location.toString(),
+    encodeURIComponent("I made a Bub level! "),
+    encodeURIComponent(window.location.toString())
   ].join("");
 }
 
