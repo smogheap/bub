@@ -2049,6 +2049,9 @@ if(window.location.hash && window.location.hash.length > 1 ||
   lvl = lvl.replace(new RegExp("_", "g"), " ");
   lvl = lvl.replace(new RegExp("E", "g"), "#");
   lvl = lvl.replace(new RegExp("O", "g"), "@");
+  lvl = lvl.replace(new RegExp("c", "g"), "=");
+  lvl = lvl.replace(new RegExp("l", "g"), "<");
+  lvl = lvl.replace(new RegExp("r", "g"), ">");
   lvl = lvl.replace(new RegExp("0", "g"), "\n");
   customlevel(lvl);
 } else {
@@ -2056,10 +2059,12 @@ if(window.location.hash && window.location.hash.length > 1 ||
 }
 
 function restart() {
+  sfx("restart");
   if(!document.getElementById("edit").className) {
+    customlevel("        \n        \n        \n        \n" +
+                "        \n        \n        \n@      4\n");
     return;
   }
-  sfx("restart");
   init();
 }
 
@@ -2168,6 +2173,9 @@ function customlevel(raw) {
   enc = data.join("0").replace(new RegExp(" ", "g"), "_");
   enc = enc.replace(new RegExp("#", "g"), "E");
   enc = enc.replace(new RegExp("@", "g"), "O");
+  enc = enc.replace(new RegExp("=", "g"), "c");
+  enc = enc.replace(new RegExp("<", "g"), "l");
+  enc = enc.replace(new RegExp(">", "g"), "r");
   window.location.hash = "#" + enc;
 
   document.getElementById("email").href = [
@@ -2574,6 +2582,10 @@ window.addEventListener("keydown", function(e) {
     return;
   }
   if(!document.getElementById("edit").className) {
+    if(e.keyCode && e.keyCode === 192) { //~
+      edit();
+      e.preventDefault();
+    }
     return;
   }
   if(ORK.gameover) {
@@ -2636,16 +2648,22 @@ window.addEventListener("keydown", function(e) {
     e.preventDefault();
     break;
   case 192: //~
-    dark();
+    edit();
     e.preventDefault();
     break;
   case 27:  //esc
   default:
-//    console.log(e.keyCode);
+ //   console.log(e.keyCode);
     break;
   }
 });
-window.addEventListener("click", function(e) {
+
+function handleclick(e) {
+  var touches = e.changedTouches;
+  if(e.changedTouches && e.changedTouches.length) {
+    e = e.changedTouches[0];
+  }
+
   if(document.getElementById("game").className) {
     return;
   }
@@ -2678,43 +2696,8 @@ window.addEventListener("click", function(e) {
               parent.tagName.toLowerCase() === "td") {
 
       cls = parent.className.trim().split(" ");
-/*
-      parent.removeChild(e.target);
-      if(selected.alt === "flag") {
-        emptyout(document.querySelector("td.flag"));
-      } else if(selected.title === "ork" &&
-                document.querySelector("img.ork")) {
-        emptyout(document.querySelector("img.ork").parentNode);
-      }
-      emptyout(parent);
-      if(selected.title) {
-        elm = selected.cloneNode();
-        elm.title = "";
-        elm.className = selected.title;
-        parent.appendChild(elm);
-      } else if(selected.alt !== "blank") {
-        parent.className += " " + selected.alt;
-      }
-*/
     } else if(e.target.tagName.toLowerCase() === "td") {
       cls = e.target.className.trim().split(" ");
-/*
-      if(selected.alt === "flag") {
-        emptyout(document.querySelector("td.flag"));
-      } else if(selected.title === "ork" &&
-                document.querySelector("img.ork")) {
-        emptyout(document.querySelector("img.ork").parentNode);
-      }
-      emptyout(e.target);
-      if(selected.title) {
-        elm = selected.cloneNode();
-        elm.title = "";
-        elm.className = selected.title;
-        e.target.appendChild(elm);
-      } else if(selected.alt !== "blank") {
-        e.target.className += " " + selected.alt;
-      }
-*/
     }
       if(cls) {
         for(var i in cls) {
@@ -2759,7 +2742,9 @@ window.addEventListener("click", function(e) {
   click(e);
   e.preventDefault();
   return false;
-});
+}
+window.addEventListener("click", handleclick);
+window.addEventListener("touchstart", handleclick);
 
 document.getElementById("music").addEventListener("change", function(e) {
   if(this.checked) {
