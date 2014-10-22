@@ -87,7 +87,7 @@ img.crate {
   border-bottom: 1px solid black;
 }
 a {
-  margin: 0 0.4em;
+  margin: 0 0.2em;
   padding: 0.3em 0.5em;
   color: #222;
   text-decoration: none;
@@ -98,7 +98,7 @@ a {
   box-shadow: 0px 0px 1px rgba(255, 255, 255, 0.5), 0px 0px 1.5px rgba(0, 0, 0, 0.5);
 }
 a.big {
-  padding: 0.3em 1.5em;
+  padding: 0.3em 1em;
 }
 a:hover {
   background: #eee;
@@ -157,14 +157,15 @@ iframe {
 
 <div id="game">
 <div id="tools">
+<a href="#" title="settings" onclick="settings(); return false;"><img
+  src="image/settings.png" alt="settings"></a>
 <strong><span id="lv"></span></strong>
 <a href="#" class="big" title="reset" onclick="restart(); return false;"><img
   src="image/reset.png" alt="reset">
 </a>
 <a href="#" title="build" onclick="edit(); return false;"><img
   src="image/build.png" alt="build"></a>
-<a href="#" title="settings" onclick="settings(); return false;"><img
-  src="image/settings.png" alt="settings"></a>
+<a href="#" title="help" onclick="help(); return false;"><b>?</b></a>
 <!--
 -->
 <strong><span id="clock"></span></strong>
@@ -189,8 +190,6 @@ share:
 </div>
 
 <div id="settings" class="hidden">
-<a href="#" onclick="help(); return false;">help</a>
-<br>
 zoom:
 <select id="zoom">
 <option value="0">auto</option>
@@ -204,9 +203,19 @@ zoom:
 <option value="8">8x</option>
 </select>
 <br>
-<input id="sfx" type="checkbox" checked>sfx
-&nbsp;
-<input id="music" type="checkbox">music
+sfx:
+<select id="sfx">
+<option value="1">on</option>
+<option value="">off</option>
+</select>
+<br>
+music:
+<select id="music">
+<option value="">off</option>
+<option value="1">type 1</option>
+<option value="2">type 2</option>
+<option value="3">type 3</option>
+</select>
 <br>
 <a href="#" onclick="if(!ORK.speedrun){prev();} return false;">prev</a>
 <span id="lvl"></span>
@@ -218,7 +227,9 @@ zoom:
 
 <div class="resources">
 <div class="hidden">
-<audio id="loop" loop preload="auto" src="sound/8bitloop01.ogg"></audio>
+<audio id="loop1" loop preload="auto" src="sound/8bitloop01.ogg"></audio>
+<audio id="loop2" loop preload="auto" src="sound/8bitloop02.ogg"></audio>
+<audio id="loop3" loop preload="auto" src="sound/8bitloop03.ogg"></audio>
 <audio id="slurp" preload="auto" src="sound/8b-slurp.wav"></audio>
 <audio id="plop" preload="auto" src="sound/8b-plop.wav"></audio>
 <audio id="cough" preload="auto" src="sound/8b-cough.wav"></audio>
@@ -1541,8 +1552,8 @@ var LEVELS = [
       "  # ### ",
       "H###oHH ",
       "H     H ",
-      "H  o  ##",
-      " @ o  X4",
+      "H  o# ##",
+      " @ o# X4",
       "##### ##"
     ]
   },
@@ -1763,6 +1774,7 @@ function play() {
   }
   document.getElementById("settings").className = "hidden";
   document.getElementById("game").className = "";
+  inv();
   resize();
 }
 function settings() {
@@ -2134,7 +2146,7 @@ function resize() {
 }
 
 function sfx(sound) {
-  if(document.getElementById("sfx").checked) {
+  if(document.getElementById("sfx").value) {
     try {
       document.getElementById(sound).currentTime = 0;
       document.getElementById(sound).play();
@@ -2517,7 +2529,10 @@ function edit() {
 function help() {
   alert(["arrows: play\n",
          "space: reset\n",
-         "-/+: change level\n"].join(""));
+         "-/+: change level\n",
+         "~: editmode on/off\n",
+         "\n",
+         "click, tap or swipe to play too!"].join(""));
 }
 
 function click(e) {
@@ -2747,18 +2762,21 @@ window.addEventListener("click", handleclick);
 window.addEventListener("touchstart", handleclick);
 
 document.getElementById("music").addEventListener("change", function(e) {
-  if(this.checked) {
+  if(this.value) {
     if(audio.proceed) {
-      ORK.music = Math.floor(Math.random() * 3) + 1;
+      audio.stop(ORK.music);
+      ORK.music = parseInt(this.value, null);
       audio.play(ORK.music);
     } else {
-      document.getElementById("loop").play();
+      document.getElementById("loop" + ORK.music).pause();
+      ORK.music = parseInt(this.value, null);
+      document.getElementById("loop" + ORK.music).play();
     }
   } else {
     if(audio.proceed) {
       audio.stop(ORK.music);
     } else {
-      document.getElementById("loop").pause();
+      document.getElementById("loop" + ORK.music).pause();
     }
   }
 });
