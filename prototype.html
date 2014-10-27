@@ -176,7 +176,7 @@ iframe {
 <br>
 <div id="edit" class="hidden">
 <br>
-<a href="#" title="build" onclick="edit(); return false;"><img
+<a href="#" title="play" onclick="edit(); return false;"><img
   src="image/play.png" alt="play"> play</a>
 &nbsp;
 share:
@@ -1738,6 +1738,64 @@ var LEVELS = [
 
 
 
+/* future
+#______4E0____HEEE0____H___0________0__HEEEH_0__H___H_0________0OoooEEEE
+"      4#"
+"    H###"
+"    H   "
+"        "
+"  H###H "
+"  H   H "
+"        "
+"@ooo####"
+#_____X4E0____HEEE0____o___0-_______0__HEEEH_0__H___H_0________0OoooEEEE
+"     X4#"
+"    H###"
+"    o   "
+"-       "
+"  H###H "
+"  H   H "
+"        "
+"@ooo####"
+
+#oH_c____0_HoE_E__0_o_E_EE_0oH_EEE__0_HoEE__E0_o_EE_EE0oH_EE__E0OHoEEE_4
+#oH_r_H_40_HoE_H_c0_o_E_o_c0oH_E_H_c0_HoE_Hoc0_o_E_o_c0oH_E_H_c0OHoE_H_c
+#________0__c_c___0__c_c___0O_o_o__40EE_E_E_E0EE_E_E_E0EEEEEEEE0EEEEEEEE
+#EE______0E___cEE_0___coEE40__co_EE_0__o_____0EHEEEHE_0EH___HE_0EH_O_HE_
+#Oc______0EEEEEE_o0________0o_EEEEEE0________0EEEEEE_o04_______0E_E_E_E_
+#EEEO_EEE0EEEH_EEE0EEEo_EEE0EEE_HEEE0EEE_oEEE0EEEH_EEE0EEEo_EEE0EEE4EEEE
+#________0_O____4_0_EE__EE_0_EE__EE_0___oo___0___EE___0___EE___0_oo__oo_
+#-HXooo__0OoE__ooo0cEEEEEEH0--_____H0_X___EcE0E_EEEEc40o_Xo__oE0E_EE___E
+#_HHHHHHH0_H__cc_H0_H__oo_H0_HEE__EE0_H_____40_HE_EE_E0OHE_EE_E0EEEEEEEE
+#EE_Oc_EE0E__EE__E0________0________0__EEEEEE0________0_______40EEEEEE_E
+#_c_E____0HE_X4___0H_cEE___0H_-Ho___0H__Ho___0H__H__O_0H__H__H_0H__H__H_
+#_r_lOr_l0EE_EEE_E0_l_r_l_r0_EEE_EEE0_r_l_r_l0EE_EEE_E0_l_r_l_r04EEE_EEE
+#-______E0E__X4___0o__EEE_E0E______o0o______E0_EEEH__o0____HEE_0_O__H___
+#_____4X_0____EEEH0_______H0____O__H0Hccccccc0Hooocooo0H___o___0H__ooo_-
+#___EEE_E0___EE___0_O_EEE4E0HccccccE0HooooooE0H______E0HooooooE0EEEEEEEE
+#_O_c__EE0_EEEEcEE0____Ec__0_____X_40__HEE_EE0-_HEE_EE0o_H___EE0EE_c__EE
+#_____c__0____-X__0____-X__0____-X__0O___-X_40EEEEE_EE0EEEEEEEE0EEEEEEEE
+#________0_r_r-r__0EEHEEEH_0__H___H_0O_Hl_rH_0E_EEHEE_04___H___0X_r_H_l_
+#o______40__H__H__0_EHEEHE_0__H__H__0__HO_H__0_EHEEHE_0__H__H__0o______o
+#____c___0____c___0____c___0____c___0____c___0__O-X4__0__EEEE__0o______o
+#EE____EE0EE_rr_EE0EEEEEEEE0________0_O_c_4__0EEEEEEEE0EE____EE0EE_rr_EE
+#________0_EEEEEE_0_E____E_0_E__c_E_0_EO_o4E_0_EEEEEE_0___EE___0__EEEE__
+#_______40_EEEH__H0____H__H0__c_Hc_H0__oOHo_H0___EE___0_c______0EE_EE___
+
+#Hc______0Hc______0HoEE____0H_c___4_0H_c__EEE0HEE__EEE0HEE__EEE0HOo__EEE
+
+liar:
+#__EEEE__0_Xc__oX_0HEE_EEEH0H___4__H0H___O__H0H___E__H0__o_Eo__0o_-_E-_o
+
+escape from utah:
+#________0_E__EE__0_E___E__0_Eo_oE__0_EoOoE__0_EEEEE__0________0_______4
+
+#___O___E0___E___E0___E___E0___r___E0_o_l_-_E0_HEEEH_E0_Hc4XH_E0EEEE_EEE
+#___O___E0___E___E0___E___E0___r___E0_o_l_-_E0_HEEEH_E0_HE4XH_E0EEEE_EEE
+*/
+
+
+
   {
     difficulty: 0,
     level: [
@@ -2199,7 +2257,8 @@ function customlevel(raw) {
     "https://twitter.com/intent/tweet?text=",
 //    window.location.toString(),
     encodeURIComponent("I made a Bub level! "),
-    encodeURIComponent(window.location.toString())
+    encodeURIComponent(window.location.toString()),
+    encodeURIComponent(" @penduin"),
   ].join("");
 }
 
