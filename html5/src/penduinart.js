@@ -190,7 +190,20 @@ function penduinOBJ(obj, cb) {
 	this.loadPart([obj], cb);
 }
 
-function penduinTRANSITION(cb, img, zoom, out, duration, rotation) {
+function penduinTRANSITION(cb, img, zoom, duration, rotation) {
+	if(typeof(img) === "string") {
+		console.log("auto-loading " + img);
+		var im = document.createElement("img");
+		im.addEventListener("load", function(e) {
+			console.log("auto-loaded " + e.target.src);
+			img = this;
+		});
+		im.addEventListener("error", function(e) {
+			console.error("ERROR: could not load " + e.target.src);
+		});
+		im.src = img;
+		img = null;  // use data url below until loaded
+	}
 	if(!img) {
 		img = document.createElement("img");
 		img.src = [
@@ -215,7 +228,7 @@ function penduinTRANSITION(cb, img, zoom, out, duration, rotation) {
 	}
 	cb = cb || function() {};
 
-	this.draw = function draw(ctx, timeOffset) {
+	this.draw = function draw(ctx, timeOffset, out) {
 		var prog = timeOffset / duration;
 		//prog = (Math.exp(prog) - 1) / (Math.E - 1);
 		if(!prog) {
@@ -275,8 +288,11 @@ function penduinSCENE(canvas, logicWidth, logicHeight,
 	var showfps = false;
 	var tags = [];
 	var uniq = 0;
-	var trans = null;
-	var transStart = 0;
+	var trans = {
+		fx: null,
+		start: 0,
+		out: false
+	};
 
 	this.resize = function resize() {
 		canvas.width = 0;
@@ -338,13 +354,13 @@ function penduinSCENE(canvas, logicWidth, logicHeight,
 		}
 
 		// draw any active transition
-		if(trans) {
-			if(!transStart) {
-				transStart = time;
+		if(trans.fx) {
+			if(!trans.start) {
+				trans.start = time;
 			}
-			if(trans.draw(ctx, time - transStart)) {
-				trans = null;
-				transStart = 0;
+			if(trans.fx.draw(ctx, time - trans.start, trans.out)) {
+				trans.fx = null;
+				trans.start = 0;
 			}
 		}
 
@@ -403,9 +419,10 @@ function penduinSCENE(canvas, logicWidth, logicHeight,
 	};
 
 	// begin a transition
-	this.transition = function transition(transObj) {
-		trans = transObj;
-		transStart = 0;
+	this.transition = function transition(transObj, out) {
+		trans.fx = transObj;
+		trans.start = 0;
+		trans.out = out;
 	};
 
 	// show frames per second (true or false)
@@ -534,7 +551,6 @@ function _penduinART(game) {
 			}
 		}
 	};
-
 
 	this.init(game);
 };

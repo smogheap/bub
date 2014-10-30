@@ -4,7 +4,15 @@ BUB = {
 	height: 1080,
 	json: {},
 	thing: {},
-	scene: null
+	scene: null,
+	mask: {
+		ork: "image/mask/ork.png",
+		orkup: "image/mask/orkup.png",
+		orkdown: "image/mask/orkdown.png",
+		bubble: { src: "image/mask/bubble.png", zoom: 2}
+	},
+	maskout: false,
+	acceptinput: false
 };
 function LOAD(json) {
 	var data = json;
@@ -25,8 +33,19 @@ function tick(scene) {
 		BUB.thing.ork.x = 0;
 	}
 }
+
+function transitionEnd() {
+	// examine state, set up next scene
+
+	if(BUB.maskout) {
+		BUB.scene.pause();
+	}
+	BUB.acceptinput = true;
+}
+
 function start() {
 	console.log("start");
+	BUB.acceptinput = true;
 	BUB.scene = new penduinSCENE(BUB.canvas, BUB.width, BUB.height,
 								 tick, 60, true);
 	BUB.scene.showFPS(true);
@@ -40,6 +59,8 @@ function start() {
 
 	BUB.thing.ork.setTags("8bit");
 	BUB.thing.bubble.setTags("8bit");
+
+	BUB.scene.transition(BUB.mask.ork, BUB.maskout);
 }
 
 function combineCallbacks(cbList, resultsVary, cb) {
@@ -72,8 +93,28 @@ function combineCallbacks(cbList, resultsVary, cb) {
 
 window.addEventListener("load", function() {
 	BUB.canvas = document.querySelector("#display");
-	var cbs = [
-	];
+	var cbs = [];
+
+	// load transition masks
+	Object.keys(BUB.mask).every(function(key) {
+		cbs.push(function(cb) {
+			var mask = document.createElement("img");
+			mask.addEventListener("load", function() {
+				if(typeof(BUB.mask[key]) === "string") {
+					BUB.mask[key] = new penduinTRANSITION(transitionEnd, mask, 4);
+				} else if(BUB.mask[key].src && BUB.mask[key].zoom) {
+					BUB.mask[key] = new penduinTRANSITION(transitionEnd, mask,
+														  BUB.mask[key].zoom);
+				}
+				cb(true);
+			});
+			mask.src = BUB.mask[key].src || BUB.mask[key];
+			return true;
+		});
+		return true;
+	});
+
+	// load object armatures
 	Object.keys(BUB.json).every(function(key) {
 		cbs.push(function(cb) {
 			BUB.thing[key] = new penduinOBJ(BUB.json[key], cb);
@@ -81,19 +122,18 @@ window.addEventListener("load", function() {
 		});
 		return true;
 	});
+
 	combineCallbacks(cbs, null, start);
 });
 
-var mask = document.createElement("img");
-mask.src = "icon16.png";
-var out = true;
 window.addEventListener("click", function() {
+	if(!BUB.acceptinput) {
+		return;
+	}
 	BUB.scene.resume();
-	BUB.scene.transition(new penduinTRANSITION(function() {
-		if(!out) {
-			BUB.scene.pause();
-		}
-	}, mask, 4, out));
-//	}, null, null, out));
-	out = !out;
+	BUB.maskout = !BUB.maskout;
+	BUB.acceptinput = false;
+	var masks = Object.keys(BUB.mask);
+	var which = Math.floor(Math.random() * masks.length);
+	BUB.scene.transition(BUB.mask[masks[which]], BUB.maskout);
 });
