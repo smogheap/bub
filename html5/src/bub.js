@@ -27,7 +27,7 @@ if(!console) {
 }
 
 function tick(scene) {
-	BUB.thing.bubble.obj._$.bub8bit.rotate++;
+	BUB.thing.bubble.$.bub8bit.rotate++;
 	BUB.thing.ork.x+=4;
 	if(BUB.thing.ork.x > BUB.width) {
 		BUB.thing.ork.x = 0;

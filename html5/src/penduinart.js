@@ -6,19 +6,29 @@ if(!console) {
 }
 
 function penduinOBJ(obj, cb) {
-	/* internals */
+	/* consumer-available stuff */
 	this.x = obj.x;
 	this.y = obj.y;
 	this.obj = obj;
-	var tags = [];
+	this.$ = {};  // hash of part names for direct manipulation
 
-	this.loadPart = function loadPart(part, cb) {
+	/* internal stuff */
+	var tags = [];
+	var pose = null;
+	var anim = null;
+	var animstart = 0;
+	var frompose = null;
+	var lastsolved = null;
+	var posetime = 0;
+
+	var loadPart = function loadPart(part, cb) {
 		var img;
 		var i = 0;
+		var $ = this.$;
 		for(i = 0; i < part.length; i++) {
 			if(part[i].image && part[i].name) {
 				console.log("loading '" + part[i].name + "' (" + part[i].image + ")");
-				obj._$[part[i].name] = part[i];
+				$[part[i].name] = part[i];
 
 				if(obj._img[part[i].image] === undefined) {
 					obj._img[part[i].image] = null;
@@ -27,10 +37,14 @@ function penduinOBJ(obj, cb) {
 					img.src = part[i].image;
 					img.style.display = "none";
 					obj._img[part[i].image] = img;
-					img.addEventListener("load", function() {
+					img.addEventListener("load", function(e) {
+						//e.target.removeEventListener("load", this);
 						obj._imgLoaded++;
-						if(this.loadedAll() && cb) {
+						if(loadedAll() && cb) {
 							console.log("all done");
+							obj.pose = obj.pose || {};
+							obj.pose["_default"] = capturePose();
+							lastsolved = capturePose();
 							cb();
 						}
 					}.bind(this), false);
@@ -41,20 +55,23 @@ function penduinOBJ(obj, cb) {
 				}
 			}
 
-			this.loadPart([].concat(part[i].above || [],
-									part[i].below || []), cb);
+			loadPart.bind(this)([].concat(part[i].above || [],
+							   part[i].below || []), cb);
 		}
-	},
-	this.loadedAll = function loadedAll() {
+	}.bind(this);
+	var loadedAll = function loadedAll() {
 		var total = 0;
 		for(i in obj._img) {
 			total++;
 		}
 		console.log("loaded " + obj._imgLoaded + " of " + total);
+		if(obj._imgLoaded > total) {
+			console.log("greater, why?", obj);
+		}
 		return total === obj._imgLoaded;
-	},
+	};
 
-	this.drawPart = function drawPart(ctx, part, scale, displayx, displayy) {
+	var drawPart = function drawPart(ctx, part, scale, displayx, displayy) {
 		if((part.tag && tags.indexOf(part.tag) < 0) ||
 		   (part.hidetag && tags.indexOf(part.hidetag) >= 0)) {
 			// this part's tag or hidetag says to skip drawing.
@@ -66,7 +83,7 @@ function penduinOBJ(obj, cb) {
 		var offy = 0;
 		ctx.save();
 
-		if(displayx === undefined || displayy === undefined) {
+		if(isNaN(displayx) || isNaN(displayy)) {
 			ctx.translate(this.x * scale, this.y * scale);
 		} else {
 			ctx.translate(displayx, displayy);
@@ -78,10 +95,10 @@ function penduinOBJ(obj, cb) {
 			ctx.translate(part._offset.x, part._offset.y);
 		}
 
-		if(part.alpha !== undefined) {
+		if(!isNaN(part.alpha)) {
 			ctx.globalAlpha = part.alpha;
 		}
-		if(part.alpha !== undefined) {
+		if(!isNaN(part._alpha)) {
 			ctx.globalAlpha = part._alpha;
 		}
 
@@ -107,7 +124,7 @@ function penduinOBJ(obj, cb) {
 
 		if(part.below) {
 			for(i in part.below) {
-				this.drawPart(ctx, part.below[i], 1, offx, offy);
+				drawPart(ctx, part.below[i], 1, offx, offy);
 			}
 		}
 
@@ -123,15 +140,168 @@ function penduinOBJ(obj, cb) {
 
 		if(part.above) {
 			for(i in part.above) {
-				this.drawPart(ctx, part.above[i], 1, offx, offy);
+				drawPart(ctx, part.above[i], 1, offx, offy);
 			}
 		}
 
 		ctx.restore();
+	}.bind(this);
+
+	var lerp = function lerp(from, to, prog) {
+		return (1 - prog) * from + prog * to;
 	};
+
+	var lerpPose = function lerpPose(dest, src1, src2, prog) {
+		dest = dest || {};
+		Object.keys(src1).every(function(key) {
+			dest[key] = dest[key] || {};
+			if(!isNaN(src1[key].alpha) && !isNaN(src2[key].alpha)) {
+				dest[key].alpha = lerp(src1[key].alpha, src2[key].alpha, prog);
+			}
+			if(!isNaN(src1[key].scale) && !isNaN(src2[key].scale)) {
+				dest[key].scale = lerp(src1[key].scale, src2[key].scale, prog);
+			}
+			if(!isNaN(src1[key].rotate) && !isNaN(src2[key].rotate)) {
+				dest[key].rotate = lerp(src1[key].rotate, src2[key].rotate,
+										prog);
+			} else {
+				console.log(key, src1, src2);
+			}
+			if(src1[key].offset && src2[key].offset) {
+				dest[key].offset = dest[key].offset || {};
+				if(!isNaN(src1[key].offset.x) && !isNaN(src2[key].offset.x)) {
+					dest[key].offset.x = lerp(src1[key].offset.x,
+											  src2[key].offset.x, prog);
+				}
+				if(!isNaN(src1[key].offset.y) && !isNaN(src2[key].offset.y)) {
+					dest[key].offset.y = lerp(src1[key].offset.y,
+											  src2[key].offset.y, prog);
+				}
+			}
+			return true;
+		});
+		return dest;
+	};
+
+	var capturePose = function capturePose(user) {
+		var posedata = {};
+		var data = null;
+		Object.keys(this.$).every(function(key) {
+			posedata[key] = posedata[key] || {};
+			if((data = this.$[key])) {
+				if(user) {
+					posedata[key] = {};
+					posedata[key].alpha = data.alpha;
+					posedata[key].scale = data.scale;
+					posedata[key].rotate = data.rotate;
+					if(data.offset) {
+						posedata[key].offset = posedata[key].offset || {};
+						posedata[key].offset.x = data.offset.x;
+						posedata[key].offset.y = data.offset.y;
+					}
+				} else {
+					posedata[key].alpha = (isNaN(data._alpha) ?
+										   1 : data._alpha);
+					posedata[key].scale = (isNaN(data._scale) ?
+										   1 : data._scale);
+					posedata[key].rotate = (isNaN(data._rotate) ?
+											1 : data._rotate);
+					posedata[key].offset = posedata[key].offset || {};
+					if(data._offset) {
+						posedata[key].offset.x = data._offset.x;
+						posedata[key].offset.y = data._offset.y;
+					} else {
+						posedata[key].offset.x = 0;
+						posedata[key].offset.y = 0;
+					}
+				}
+			} else {
+				console.log("capturePose: no data in key " + key);
+			}
+			return true;
+		}.bind(this));
+		return posedata;
+	}.bind(this);
+
+	var applyPose = function applyPose(posedata, user) {
+		var data = null;
+		var part = null;
+		Object.keys(this.$).every(function(key) {
+			var part = this.$[key];
+			if(user) {
+				if(posedata && (data = posedata[key])) {
+					part.alpha = data.alpha;
+					part.scale = data.scale;
+					part.rotate = data.rotate;
+					part.offset = part.offset || {};
+					if(data.offset) {
+						part.offset.x = data.offset.x;
+						part.offset.y = data.offset.y;
+					}
+				} else {
+					part.alpha = 1;
+					part.scale = 0;
+					part.rotate = 0;
+					part.offset = part.offset || {};
+					part.offset.x = 0;
+					part.offset.y = 0;
+				}
+			} else {
+				if(posedata && (data = posedata[key])) {
+					part._alpha = data.alpha;
+					part._scale = data.scale;
+					part._rotate = data.rotate;
+					part._offset = part._offset || {};
+					if(data._offset) {
+						part._offset.x = data.offset.x;
+						part._offset.y = data.offset.y;
+					}
+				} else {
+					part._alpha = 1;
+					part._scale = 0;
+					part._rotate = 0;
+					part._offset = part.offset || {};
+					part._offset.x = 0;
+					part._offset.y = 0;
+				}
+			}
+			return true;
+		}.bind(this));
+	}.bind(this);
+
+	var solvePose = function solvePose(now) {
+		now = now || new Date();
+		var prog = 0;
+
+		if(anim) {
+			//TODO
+		} else if(pose) {
+			if(posetime) {
+				if(now - animstart >= posetime) {
+					// finished
+					applyPose(obj.pose[pose]);
+					animstart = 0;
+					posetime = 0;
+				} else {
+					// interpolate
+					prog = (now - animstart) / posetime;
+					lerpPose(lastsolved, frompose, obj.pose[pose], prog);
+					applyPose(lastsolved);
+				}
+			}
+		}
+	};
+
+	/* initialize */
+	obj = JSON.parse(JSON.stringify(obj));  // prevent dupes/refs between objs
+	obj._img = {};
+	obj._imgLoaded = 0;
+	loadPart([obj], cb);
 
 
 	/* API */
+
+	/* API:TAGS */
 
 	// set/replace tags (to show/hide different parts)
 	this.setTags = function setTags(newTags) {
@@ -176,21 +346,54 @@ function penduinOBJ(obj, cb) {
 		tags = [];
 	};
 
-	// draw the object
-	this.draw = function draw(ctx, scale, displayx, displayy) {
-		this.drawPart(ctx, obj, scale, displayx, displayy);
+	/* API: POSING */
+
+	// animate to a pose specified by name
+	this.setPose = function setPose(name, transtime) {
+		pose = name || "_default";
+		if(isNaN(transtime)) {
+			transtime = 500;
+		}
+		animstart = 0;
+		posetime = 0;
+		frompose = capturePose();
+		requestAnimationFrame(function(time) {
+			animstart = time;
+			posetime = transtime;
+		});
+	};
+
+	// get and set full pose data
+	this.getPoseData = function getPoseData() {
+		return capturePose(true);
+	};
+	this.setPoseData = function setPoseData(data) {
+		return applyPose(data, true);
+	};
+
+	/* API: ANIMATION */
+	// TODO: implement animations :^)
+	// set an animation
+	this.setAnimation = function setAnimation(name, transtime, now) {
+		if(isNaN(transtime)) {
+			transtime = 500;
+		}
+		anim = name;
+		animstart = now || new Date();
+		frompose = capturePose();
 	},
 
-
-	/* initialize */
-	obj = obj || {};
-	obj._$ = {};
-	obj._img = {};
-	obj._imgLoaded = 0;
-	this.loadPart([obj], cb);
+	// draw the object
+	this.draw = function draw(ctx, scale, displayx, displayy, time) {
+		if(time) {
+			solvePose(time);
+		}
+		drawPart(ctx, obj, scale, displayx, displayy);
+	};
 }
 
 function penduinTRANSITION(cb, img, zoom, duration, rotation) {
+	var scratchCtx = document.createElement("canvas").getContext("2d");
 	if(typeof(img) === "string") {
 		console.log("auto-loading " + img);
 		var im = document.createElement("img");
@@ -251,16 +454,25 @@ function penduinTRANSITION(cb, img, zoom, duration, rotation) {
 			prog = 1 - prog;
 		}
 
-		ctx.save();
-		ctx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2);
-		ctx.scale(prog * (ctx.canvas.width / img.width * zoom),
-				  prog * (ctx.canvas.width / img.width * zoom));
+		// some canvas implementations won't blot outer area without scratch
+		scratchCtx.canvas.width = ctx.canvas.width;
+		scratchCtx.canvas.height = ctx.canvas.height;
+		scratchCtx.mozImageSmoothingEnabled = ctx.mozImageSmoothingEnabled;
+		scratchCtx.webkitImageSmoothingEnabled =ctx.webkitImageSmoothingEnabled;
+		scratchCtx.imageSmoothingEnabled = ctx.imageSmoothingEnabled;
+		scratchCtx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2);
+		scratchCtx.scale(prog * (ctx.canvas.width / img.width * zoom),
+						 prog * (ctx.canvas.width / img.width * zoom));
 		if(rotation) {
-			ctx.rotate(prog * rotation);
+			scratchCtx.rotate(prog * rotation);
 		}
+		scratchCtx.drawImage(img, img.width / -2, img.height / -2);
+
+		ctx.save();
 		ctx.globalCompositeOperation = "destination-atop";
-		ctx.drawImage(img, img.width / -2, img.height / -2);
+		ctx.drawImage(scratchCtx.canvas, 0, 0);
 		ctx.restore();
+
 		return false;
 	}
 }
@@ -271,8 +483,8 @@ function penduinSCENE(canvas, logicWidth, logicHeight,
 	/* internals */
 	var ctx = canvas.getContext("2d");
 	var bg = "silver";
-	logicWidth = logicWidth || 320;
-	logicHeight = logicHeight || 240;
+	logicWidth = logicWidth || canvas.width || 320;
+	logicHeight = logicHeight || canvas.height || 240;
 	var scale = 1.0;
 	var objects = [];
 	logicTickFunc = logicTickFunc || function() {};
@@ -283,6 +495,9 @@ function penduinSCENE(canvas, logicWidth, logicHeight,
 								 window.mozRequestAnimationFrame ||
 								 window.webkitRequestAnimationFrame ||
 								 window.msRequestAnimationFrame);
+	requestAnimationFrame = requestAnimationFrame || function(cb) {
+		setTimeout(cb, 10, new Date());
+	};
 	var frametime = 0;
 	var run = false;
 	var showfps = false;
@@ -309,10 +524,7 @@ function penduinSCENE(canvas, logicWidth, logicHeight,
 			canvas.width = parent.clientWidth;
 			canvas.height = parent.clientWidth / ratio;
 		}
-		ctx.mozImageSmoothingEnabled = !jaggy;
-		ctx.webkitImageSmoothingEnabled = !jaggy;
-		ctx.msImageSmoothingEnabled = !jaggy;
-		ctx.imageSmoothingEnabled = !jaggy;
+		this.setJaggy(jaggy);
 
 		scale = canvas.width / logicWidth;
 	};
@@ -350,7 +562,7 @@ function penduinSCENE(canvas, logicWidth, logicHeight,
 			return a.y - b.y;
 		});
 		for(i in ordered) {
-			objects[ordered[i]].draw(ctx, scale);
+			objects[ordered[i]].draw(ctx, scale, undefined, undefined, time);
 		}
 
 		// draw any active transition
@@ -403,6 +615,15 @@ function penduinSCENE(canvas, logicWidth, logicHeight,
 	// set the scene's background color
 	this.setBG = function setBG(color) {
 		bg = color;
+	};
+
+	// set whether the scaling is jaggy or smooth
+	this.setJaggy = function setJaggy(jag) {
+		jaggy = jag;
+		ctx.mozImageSmoothingEnabled = !jaggy;
+		ctx.webkitImageSmoothingEnabled = !jaggy;
+		ctx.msImageSmoothingEnabled = !jaggy;
+		ctx.imageSmoothingEnabled = !jaggy;
 	};
 
 	// pause the scene
@@ -481,76 +702,3 @@ function penduinSCENE(canvas, logicWidth, logicHeight,
 	window.addEventListener("resize", this.resize.bind(this), false);
 	requestAnimationFrame(this.render.bind(this));
 }
-
-
-// leaving this here for now, probably dump it though.
-function _penduinART(game) {
-	this.game = {};
-	this.scene = {};
-	this.state = {};
-	this.blankgame = {
-		"title": "sample penduinART game",
-		"width": 320,
-		"height": 240
-	};
-
-	this.init = function init(game) {
-		this.canvas = document.querySelector("canvas");
-		this.ctx = this.canvas.getContext("2d");
-
-		if(this.initialized) {
-			this.load(game);
-			return;
-		}
-
-		window.addEventListener("resize", this.resize.bind(this), false);
-		var requestAnimationFrame = (window.requestAnimationFrame ||
-									 window.mozRequestAnimationFrame ||
-									 window.webkitRequestAnimationFrame ||
-									 window.msRequestAnimationFrame);
-		window.requestAnimationFrame = requestAnimationFrame;
-
-		this.load(game);
-		this.initialized = true;
-	};
-
-	this.resize = function resize() {
-		this.canvas.width = 0;
-		this.canvas.height = 0;
-
-		var parent = this.canvas.parentElement;
-		var ratio = this.game.width / this.game.height;
-		var toowide = (parent.clientWidth / parent.clientHeight) > ratio;
-
-		if(toowide) {
-			this.canvas.width = parent.clientHeight * ratio;
-			this.canvas.height = parent.clientHeight;
-		} else {
-			this.canvas.width = parent.clientWidth;
-			this.canvas.height = parent.clientWidth / ratio;
-		}
-
-		this.render();
-	};
-
-	this.load = function load(game) {
-		if(game) {
-			this.game = game;
-		} else {
-			this.game = this.blankgame;
-		}
-		window.document.title = this.game.title;
-		if(this.game.custom && typeof(this.game.custom) === "function") {
-			this.game.custom();
-		}
-		if(this.game.animation && this.game.animation.load) {
-			var l = this.game.animation.load;
-
-			if(l.custom && typeof(l.custom) === "function") {
-				l.custom();
-			}
-		}
-	};
-
-	this.init(game);
-};
