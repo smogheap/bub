@@ -1,0 +1,383 @@
+LOAD({
+	"name": "ork",
+	"above": [
+		{
+			"name": "ork-body",
+			"image": "image/scribble/ork-body.png",
+			"pivot": {
+				"x": 100,
+				"y": 155
+			},
+			"rotate": 0,
+			"scale": 0.3,
+			"alpha": 1,
+			"offset": {
+				"x": 2,
+				"y": -180
+			},
+			"above": [
+				{
+					"name": "ork-snout",
+					"image": "image/scribble/ork-snout.png",
+					"pivot": {
+						"x": 25,
+						"y": 60
+					},
+					"rotate": 0,
+					"scale": 1,
+					"alpha": 1,
+					"offset": {
+						"x": 154,
+						"y": 96
+					},
+					"above": [
+						{
+							"name": "ork-mouth",
+							"image": "image/scribble/ork-mouth.png",
+							"pivot": {
+								"x": 36,
+								"y": 82
+							},
+							"rotate": -4,
+							"scale": 1.25,
+							"alpha": 1,
+							"offset": {
+								"x": 230,
+								"y": 54
+							},
+							"above": [],
+							"below": []
+						}
+					],
+					"below": []
+				},
+				{
+					"name": "ork-eye",
+					"image": "image/scribble/ork-eye.png",
+					"pivot": {
+						"x": 62,
+						"y": 94
+					},
+					"rotate": 0,
+					"scale": 1,
+					"alpha": 1,
+					"offset": {
+						"x": 76,
+						"y": 76
+					},
+					"above": [
+						{
+							"name": "ork-pupil",
+							"tag": "pupil",
+							"image": "image/scribble/ork-pupil.png",
+							"pivot": {
+								"x": 20,
+								"y": 31
+							},
+							"rotate": 0,
+							"scale": 1,
+							"alpha": 1,
+							"offset": {
+								"x": 56,
+								"y": 74
+							},
+							"above": [],
+							"below": []
+						},
+						{
+							"name": "ork-pupilbubble",
+							"tag": "bubble",
+							"image": "image/scribble/bubble.png",
+							"pivot": {
+								"x": 115,
+								"y": 165
+							},
+							"rotate": 0,
+							"scale": 0.3,
+							"alpha": 1,
+							"offset": {
+								"x": 56,
+								"y": 74
+							},
+							"above": [],
+							"below": []
+						},
+						{
+							"name": "ork-pupilkey",
+							"tag": "key",
+							"image": "image/scribble/key.png",
+							"pivot": {
+								"x": 105,
+								"y": 155
+							},
+							"rotate": 0,
+							"scale": 0.3,
+							"alpha": 1,
+							"offset": {
+								"x": 56,
+								"y": 74
+							},
+							"above": [],
+							"below": []
+						}
+					],
+					"below": []
+				}
+			],
+			"below": [
+				{
+					"name": "ork-eyeb",
+					"image": "image/scribble/ork-eyeb.png",
+					"pivot": {
+						"x": 62,
+						"y": 94
+					},
+					"rotate": 0,
+					"scale": 1,
+					"alpha": 1,
+					"offset": {
+						"x": 146,
+						"y": 68
+					},
+					"above": [
+						{
+							"name": "ork-pupilb",
+							"tag": "pupilb",
+							"image": "image/scribble/ork-pupilb.png",
+							"pivot": {
+								"x": 21,
+								"y": 30
+							},
+							"rotate": 0,
+							"scale": 1,
+							"alpha": 1,
+							"offset": {
+								"x": 80,
+								"y": 52
+							},
+							"above": [],
+							"below": []
+						},
+						{
+							"name": "ork-pupilbubble",
+							"tag": "bubbleb",
+							"image": "image/scribble/bubble.png",
+							"pivot": {
+								"x": 115,
+								"y": 165
+							},
+							"rotate": 0,
+							"scale": 0.3,
+							"alpha": 1,
+							"offset": {
+								"x": 80,
+								"y": 52
+							},
+							"above": [],
+							"below": []
+						},
+						{
+							"name": "ork-pupilkey",
+							"tag": "keyb",
+							"image": "image/scribble/key.png",
+							"pivot": {
+								"x": 105,
+								"y": 155
+							},
+							"rotate": 0,
+							"scale": 0.3,
+							"alpha": 1,
+							"offset": {
+								"x": 80,
+								"y": 52
+							},
+							"above": [],
+							"below": []
+						}
+					],
+					"below": []
+				},
+				{
+					"name": "ork-hair1",
+					"image": "image/scribble/ork-hair1.png",
+					"pivot": {
+						"x": 136,
+						"y": 40
+					},
+					"rotate": 0,
+					"scale": 1,
+					"alpha": 1,
+					"offset": {
+						"x": 58,
+						"y": 46
+					},
+					"above": [],
+					"below": []
+				},
+				{
+					"name": "ork-hair2",
+					"image": "image/scribble/ork-hair2.png",
+					"pivot": {
+						"x": 140,
+						"y": 35
+					},
+					"rotate": 19,
+					"scale": 1,
+					"alpha": 1,
+					"offset": {
+						"x": 56,
+						"y": 34
+					},
+					"above": [],
+					"below": []
+				},
+				{
+					"name": "ork-legb1",
+					"tag": "straightb",
+					"image": "image/scribble/ork-leg1.png",
+					"pivot": {
+						"x": 34,
+						"y": 14
+					},
+					"rotate": 0,
+					"scale": 1,
+					"alpha": 1,
+					"offset": {
+						"x": 154,
+						"y": 156
+					},
+					"above": [
+						{
+							"name": "ork-footb1",
+							"image": "image/scribble/ork-foot1.png",
+							"pivot": {
+								"x": 45,
+								"y": 62
+							},
+							"rotate": 0,
+							"scale": 1,
+							"alpha": 1,
+							"offset": {
+								"x": 40,
+								"y": 166
+							},
+							"above": [],
+							"below": []
+						}
+					],
+					"below": []
+				},
+				{
+					"name": "ork-legb2",
+					"tag": "bentb",
+					"image": "image/scribble/ork-leg2.png",
+					"pivot": {
+						"x": 45,
+						"y": 13
+					},
+					"rotate": 27,
+					"scale": 1,
+					"alpha": 1,
+					"offset": {
+						"x": 154,
+						"y": 156
+					},
+					"above": [
+						{
+							"name": "ork-footb2",
+							"image": "image/scribble/ork-foot2.png",
+							"pivot": {
+								"x": 36,
+								"y": 42
+							},
+							"rotate": 0,
+							"scale": 1,
+							"alpha": 1,
+							"offset": {
+								"x": 20,
+								"y": 140
+							},
+							"above": [],
+							"below": []
+						}
+					],
+					"below": []
+				},
+				{
+					"name": "ork-leg1",
+					"tag": "straight",
+					"image": "image/scribble/ork-leg1.png",
+					"pivot": {
+						"x": 34,
+						"y": 14
+					},
+					"rotate": 0,
+					"scale": 1,
+					"alpha": 1,
+					"offset": {
+						"x": 76,
+						"y": 160
+					},
+					"above": [
+						{
+							"name": "ork-foot1",
+							"image": "image/scribble/ork-foot1.png",
+							"pivot": {
+								"x": 45,
+								"y": 62
+							},
+							"rotate": 0,
+							"scale": 1,
+							"alpha": 1,
+							"offset": {
+								"x": 40,
+								"y": 166
+							},
+							"above": [],
+							"below": []
+						}
+					],
+					"below": []
+				},
+				{
+					"name": "ork-leg2",
+					"tag": "bent",
+					"image": "image/scribble/ork-leg2.png",
+					"pivot": {
+						"x": 45,
+						"y": 13
+					},
+					"rotate": 27,
+					"scale": 1,
+					"alpha": 1,
+					"offset": {
+						"x": 76,
+						"y": 160
+					},
+					"above": [
+						{
+							"name": "ork-foot2",
+							"image": "image/scribble/ork-foot2.png",
+							"pivot": {
+								"x": 36,
+								"y": 42
+							},
+							"rotate": 0,
+							"scale": 1,
+							"alpha": 1,
+							"offset": {
+								"x": 20,
+								"y": 140
+							},
+							"above": [],
+							"below": []
+						}
+					],
+					"below": []
+				}
+			]
+		}
+	],
+	"below": [],
+	"pose": {}
+});

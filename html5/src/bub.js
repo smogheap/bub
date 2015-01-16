@@ -26,17 +26,23 @@ if(!console) {
 	}
 }
 
+function idle() {
+//	BUB.thing.ork.$["ork"]
+}
+
+
 function tick(scene) {
 	BUB.thing.bubble.$.bub8bit.rotate++;
+/*
 	BUB.thing.ork.x+=4;
 	if(BUB.thing.ork.x > BUB.width) {
 		BUB.thing.ork.x = 0;
 	}
+*/
 }
 
 function transitionEnd() {
 	// examine state, set up next scene
-
 	if(BUB.maskout) {
 		BUB.scene.pause();
 	}
@@ -47,7 +53,7 @@ function start() {
 	console.log("start");
 	BUB.acceptinput = true;
 	BUB.scene = new penduinSCENE(BUB.canvas, BUB.width, BUB.height,
-								 tick, 60, true);
+								 tick, 60);
 	BUB.scene.showFPS(true);
 	BUB.scene.addOBJ(BUB.thing.ork);
 	BUB.scene.addOBJ(BUB.thing.bubble);
@@ -57,8 +63,25 @@ function start() {
 	BUB.thing.bubble.x = 400;
 	BUB.thing.bubble.y = 400;
 
-	BUB.thing.ork.setTags("8bit");
+	BUB.thing.ork.setTags(["straight", "straightb", "pupil", "pupilb"]);
 	BUB.thing.bubble.setTags("8bit");
+
+
+
+//	BUB.thing.ork.flip(true, false);
+/*
+	BUB.thing.ork.$["ork-leg1"].flipx = true;
+	BUB.thing.ork.$["ork-leg2"].flipx = true;
+
+	BUB.thing.ork.$["ork-eyeb"].scale = 1.6;
+	BUB.thing.ork.removeTags("pupilb");
+	BUB.thing.ork.addTags("bubbleb");
+
+	BUB.thing.ork.$["ork-eye"].scale = 1.6;
+	BUB.thing.ork.removeTags("pupil");
+	BUB.thing.ork.addTags("bubble");
+	*/
+
 
 	BUB.scene.transition(BUB.mask.ork, BUB.maskout);
 }

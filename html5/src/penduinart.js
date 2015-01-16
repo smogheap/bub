@@ -109,6 +109,12 @@ function penduinOBJ(obj, cb) {
 		if(part._scale) {
 			ctx.scale(part._scale, part._scale);
 		}
+		if(part.flipx) {
+			ctx.scale(-1, 1);
+		}
+		if(part.flipy) {
+			ctx.scale(1, -1);
+		}
 
 		if(part.pivot) {
 			offx = -part.pivot.x
@@ -347,6 +353,12 @@ function penduinOBJ(obj, cb) {
 	};
 
 	/* API: POSING */
+
+	//flip x/y
+	this.flip = function flip(x, y) {
+		obj.flipx = x;
+		obj.flipy = y;
+	};
 
 	// animate to a pose specified by name
 	this.setPose = function setPose(name, transtime) {
