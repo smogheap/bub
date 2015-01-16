@@ -2,7 +2,7 @@ LOAD({
 	"above": [
 		{
 			"name": "body",
-			"image": "file:///home/penduin/proj/smogheap/bub/trunk/html5/image/scribble/ork-body.png",
+			"image": "image/scribble/ork-body.png",
 			"pivot": {
 				"x": 99,
 				"y": 99
@@ -17,7 +17,7 @@ LOAD({
 			"above": [
 				{
 					"name": "snout",
-					"image": "file:///home/penduin/proj/smogheap/bub/trunk/html5/image/scribble/ork-snout.png",
+					"image": "image/scribble/ork-snout.png",
 					"pivot": {
 						"x": 35,
 						"y": 62
@@ -32,7 +32,7 @@ LOAD({
 					"above": [
 						{
 							"name": "mouth",
-							"image": "file:///home/penduin/proj/smogheap/bub/trunk/html5/image/scribble/ork-mouth.png",
+							"image": "image/scribble/ork-mouth.png",
 							"pivot": {
 								"x": 17,
 								"y": 82
@@ -52,7 +52,7 @@ LOAD({
 				},
 				{
 					"name": "eye1",
-					"image": "file:///home/penduin/proj/smogheap/bub/trunk/html5/image/scribble/ork-eye.png",
+					"image": "image/scribble/ork-eye.png",
 					"pivot": {
 						"x": 75,
 						"y": 89
@@ -67,7 +67,7 @@ LOAD({
 					"above": [
 						{
 							"name": "pupil1",
-							"image": "file:///home/penduin/proj/smogheap/bub/trunk/html5/image/scribble/ork-pupil.png",
+							"image": "image/scribble/ork-pupil.png",
 							"pivot": {
 								"x": 22,
 								"y": 22
@@ -89,7 +89,7 @@ LOAD({
 			"below": [
 				{
 					"name": "eye2",
-					"image": "file:///home/penduin/proj/smogheap/bub/trunk/html5/image/scribble/ork-eye.png",
+					"image": "image/scribble/ork-eye.png",
 					"pivot": {
 						"x": 44,
 						"y": 89
@@ -104,7 +104,7 @@ LOAD({
 					"above": [
 						{
 							"name": "pupil2",
-							"image": "file:///home/penduin/proj/smogheap/bub/trunk/html5/image/scribble/ork-pupil.png",
+							"image": "image/scribble/ork-pupil.png",
 							"pivot": {
 								"x": 22,
 								"y": 22
@@ -124,7 +124,7 @@ LOAD({
 				},
 				{
 					"name": "hair1",
-					"image": "file:///home/penduin/proj/smogheap/bub/trunk/html5/image/scribble/ork-hair1.png",
+					"image": "image/scribble/ork-hair1.png",
 					"pivot": {
 						"x": 137,
 						"y": 42
@@ -141,7 +141,7 @@ LOAD({
 				},
 				{
 					"name": "hair2",
-					"image": "file:///home/penduin/proj/smogheap/bub/trunk/html5/image/scribble/ork-hair2.png",
+					"image": "image/scribble/ork-hair2.png",
 					"pivot": {
 						"x": 140,
 						"y": 36
@@ -158,7 +158,7 @@ LOAD({
 				},
 				{
 					"name": "leg1",
-					"image": "file:///home/penduin/proj/smogheap/bub/trunk/html5/image/scribble/ork-leg1.png",
+					"image": "image/scribble/ork-leg1.png",
 					"pivot": {
 						"x": 34,
 						"y": 15
@@ -173,7 +173,7 @@ LOAD({
 					"above": [
 						{
 							"name": "foot1",
-							"image": "file:///home/penduin/proj/smogheap/bub/trunk/html5/image/scribble/ork-foot1.png",
+							"image": "image/scribble/ork-foot1.png",
 							"pivot": {
 								"x": 64,
 								"y": 60
@@ -193,7 +193,7 @@ LOAD({
 				},
 				{
 					"name": "leg2",
-					"image": "file:///home/penduin/proj/smogheap/bub/trunk/html5/image/scribble/ork-leg1.png",
+					"image": "image/scribble/ork-leg1.png",
 					"pivot": {
 						"x": 34,
 						"y": 15
@@ -208,7 +208,7 @@ LOAD({
 					"above": [
 						{
 							"name": "foot2",
-							"image": "file:///home/penduin/proj/smogheap/bub/trunk/html5/image/scribble/ork-foot1.png",
+							"image": "image/scribble/ork-foot1.png",
 							"pivot": {
 								"x": 64,
 								"y": 60
