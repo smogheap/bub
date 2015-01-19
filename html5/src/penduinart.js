@@ -558,7 +558,7 @@ function penduinSCENE(canvas, logicWidth, logicHeight,
 			frametime = time - lastFrame;
 		}
 		while(frametime >= logicTickWait) {
-			logicTickFunc(this);
+			logicTickFunc(this, time);
 			ticks++
 			frametime -= logicTickWait;
 			frametime /= 1.5;  // HACK: prefer natural to exact fps

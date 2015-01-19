@@ -1,4 +1,6 @@
 LOAD({
+	"name": "flag",
+	"scale": 0.3,
 	"above": [
 		{
 			"name": "pole",
@@ -70,12 +72,12 @@ LOAD({
 										"x": 78,
 										"y": 84
 									},
-									"rotate": -6,
+									"rotate": -7,
 									"scale": 0.8,
 									"alpha": 1,
 									"offset": {
 										"x": -16,
-										"y": 50
+										"y": 47
 									},
 									"above": [],
 									"below": []

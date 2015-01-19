@@ -31,14 +31,22 @@ function idle() {
 }
 
 
-function tick(scene) {
-	BUB.thing.bubble.$.bub8bit.rotate++;
+function tick(scene, time) {
+//	BUB.thing.bubble.$.bub8bit.rotate++;
 /*
 	BUB.thing.ork.x+=4;
 	if(BUB.thing.ork.x > BUB.width) {
 		BUB.thing.ork.x = 0;
 	}
 */
+
+
+	//wave the flag
+	BUB.thing.flag.$["1"].rotate = 4 + (Math.cos(time / 200) * 3);
+	BUB.thing.flag.$["2"].rotate = 0 + (Math.sin(time / 200) * 5);
+	BUB.thing.flag.$["3"].rotate = 0 - (Math.cos(time / 200) * 8);
+	BUB.thing.flag.$["shade"].offset.x = (Math.cos(time / 200) * 20);
+	BUB.thing.flag.$["shade"].alpha = 1 + Math.sin(time / -200);
 }
 
 function transitionEnd() {
@@ -56,15 +64,15 @@ function start() {
 								 tick, 60);
 	BUB.scene.showFPS(true);
 	BUB.scene.addOBJ(BUB.thing.ork);
-	BUB.scene.addOBJ(BUB.thing.bubble);
+	BUB.scene.addOBJ(BUB.thing.flag);
 	BUB.scene.setBG("silver");
-	BUB.thing.ork.x = 300;
-	BUB.thing.ork.y = 300;
-	BUB.thing.bubble.x = 400;
-	BUB.thing.bubble.y = 400;
+	BUB.thing.ork.x = 500;
+	BUB.thing.ork.y = 600;
+	BUB.thing.flag.x = 1200;
+	BUB.thing.flag.y = 600;
 
-	BUB.thing.ork.setTags(["straight", "straightb", "pupil", "pupilb"]);
-	BUB.thing.bubble.setTags("8bit");
+//	BUB.thing.ork.setTags(["straight", "straightb", "pupil", "pupilb"]);
+//	BUB.thing.flag.setTags("8bit");
 
 
 
