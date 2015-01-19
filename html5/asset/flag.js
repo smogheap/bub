@@ -1,6 +1,6 @@
 LOAD({
 	"name": "flag",
-	"scale": 0.3,
+	"scale": 1,
 	"above": [
 		{
 			"name": "pole",

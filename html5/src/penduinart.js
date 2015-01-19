@@ -92,7 +92,7 @@ function penduinOBJ(obj, cb) {
 			ctx.translate(part.offset.x, part.offset.y);
 		}
 		if(part._offset) {
-			ctx.translate(part._offset.x, part._offset.y);
+			ctx.translate(part._offset.x || 0, part._offset.y || 0);
 		}
 
 		if(!isNaN(part.alpha)) {

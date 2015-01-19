@@ -41,12 +41,42 @@ function tick(scene, time) {
 */
 
 
+	//draw bg?
+
+
+	//idle animation
+	BUB.thing.ork.$["body"]._offset = BUB.thing.ork.$["body"]._offset || {};
+	BUB.thing.ork.$["pupil1"]._offset = BUB.thing.ork.$["pupil1"]._offset || {};
+	BUB.thing.ork.$["pupil2"]._offset = BUB.thing.ork.$["pupil2"]._offset || {};
+
+	BUB.thing.ork.$["body"]._offset.x = (Math.cos(time / 300) * 14);
+	BUB.thing.ork.$["body"]._offset.y = (Math.cos(time / 150) * 1);
+
+	BUB.thing.ork.$["snout"]._rotate = (Math.cos(time / 300) * 2);
+	BUB.thing.ork.$["mouth"]._rotate = (Math.sin(time / 300) * 2);
+
+	BUB.thing.ork.$["leg1"]._rotate = (Math.cos(time / 300) * 5);
+	BUB.thing.ork.$["foot1"]._rotate = (Math.cos(time / 300) * -5);
+	BUB.thing.ork.$["leg2"]._rotate = (Math.cos(time / 300) * 5);
+	BUB.thing.ork.$["foot2"]._rotate = (Math.cos(time / 300) * -5);
+
+	BUB.thing.ork.$["hair1"]._rotate = (Math.sin(time / 300) * 3);
+	BUB.thing.ork.$["hair2"]._rotate = (Math.sin(time / 300) * 6);
+
+/*
+	BUB.thing.ork.$["pupil1"]._offset.x = (Math.cos(time / 200) * 10);
+	BUB.thing.ork.$["pupil1"]._offset.y = (Math.cos(time / 300) * 10);
+	BUB.thing.ork.$["pupil2"]._offset.x = (Math.cos(time / 500) * 10);
+	BUB.thing.ork.$["pupil2"]._offset.y = (Math.cos(time / 400) * 10);
+*/
+
 	//wave the flag
-	BUB.thing.flag.$["1"].rotate = 4 + (Math.cos(time / 200) * 3);
-	BUB.thing.flag.$["2"].rotate = 0 + (Math.sin(time / 200) * 5);
-	BUB.thing.flag.$["3"].rotate = 0 - (Math.cos(time / 200) * 8);
-	BUB.thing.flag.$["shade"].offset.x = (Math.cos(time / 200) * 20);
-	BUB.thing.flag.$["shade"].alpha = 1 + Math.sin(time / -200);
+	BUB.thing.flag.$["shade"]._offset = BUB.thing.flag.$["shade"]._offset || {};
+	BUB.thing.flag.$["1"]._rotate = -1 + (Math.cos(time / 200) * 3);
+	BUB.thing.flag.$["2"]._rotate = 0 + (Math.sin(time / 200) * 5);
+	BUB.thing.flag.$["3"]._rotate = 0 - (Math.cos(time / 200) * 8);
+	BUB.thing.flag.$["shade"]._offset.x = 15 + (Math.cos(time / 200) * 20);
+	BUB.thing.flag.$["shade"]._alpha = 1 + Math.sin(time / -200);
 }
 
 function transitionEnd() {
