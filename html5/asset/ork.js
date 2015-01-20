@@ -1,6 +1,6 @@
 LOAD({
 	"name": "ork",
-	"scale": 1,
+	"scale": 0.3,
 	"above": [
 		{
 			"name": "body",

@@ -20,6 +20,7 @@ function penduinOBJ(obj, cb) {
 	var frompose = null;
 	var lastsolved = null;
 	var posetime = 0;
+	var instances = null;
 
 	var loadPart = function loadPart(part, cb) {
 		var img;
@@ -71,10 +72,24 @@ function penduinOBJ(obj, cb) {
 		return total === obj._imgLoaded;
 	};
 
-	var drawPart = function drawPart(ctx, part, scale, displayx, displayy) {
+	var drawPart = function drawPart(ctx, part, scale, displayx, displayy,
+									 instance) {
 		if((part.tag && tags.indexOf(part.tag) < 0) ||
 		   (part.hidetag && tags.indexOf(part.hidetag) >= 0)) {
 			// this part's tag or hidetag says to skip drawing.
+			return;
+		}
+
+		if(instance && instances && instances.length) {
+			instances.every(function(ins) {
+				// FIXME: not quite right if scale/x/y are 0
+				drawPart(ctx, part,
+						 ins.scale || scale,
+						 ins.x || displayx,
+						 ins.y || displayy,
+						 false);
+				return true;
+			}, this);
 			return;
 		}
 
@@ -86,7 +101,7 @@ function penduinOBJ(obj, cb) {
 		if(isNaN(displayx) || isNaN(displayy)) {
 			ctx.translate(this.x * scale, this.y * scale);
 		} else {
-			ctx.translate(displayx, displayy);
+			ctx.translate(displayx * scale, displayy * scale);
 		}
 		if(part.offset) {
 			ctx.translate(part.offset.x, part.offset.y);
@@ -307,7 +322,13 @@ function penduinOBJ(obj, cb) {
 
 	/* API */
 
-	/* API:TAGS */
+	/* API: INSTANCES*/
+	// set to null or array of {scale:1, x:2, y:3} instances
+	this.setInstances = function setInstances(arr) {
+		instances = arr;
+	};
+
+	/* API: TAGS */
 
 	// set/replace tags (to show/hide different parts)
 	this.setTags = function setTags(newTags) {
@@ -400,7 +421,7 @@ function penduinOBJ(obj, cb) {
 		if(time) {
 			solvePose(time);
 		}
-		drawPart(ctx, obj, scale, displayx, displayy);
+		drawPart(ctx, obj, scale, displayx, displayy, true);
 	};
 }
 
@@ -571,7 +592,7 @@ function penduinSCENE(canvas, logicWidth, logicHeight,
 
 		// draw objects ordered by obj.y coordinate
 		var ordered = Object.keys(objects).sort(function(a, b) {
-			return a.y - b.y;
+			return objects[a].y - objects[b].y;
 		});
 		for(i in ordered) {
 			objects[ordered[i]].draw(ctx, scale, undefined, undefined, time);

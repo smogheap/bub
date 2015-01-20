@@ -1,6 +1,6 @@
 BUB = {
 	canvas: null,
-	width: 1920,
+	width: 1080,
 	height: 1080,
 	json: {},
 	thing: {},
@@ -42,6 +42,7 @@ function tick(scene, time) {
 
 
 	//draw bg?
+//	BUB.thing.wall.draw(BUB.thing.wall);
 
 
 	//idle animation
@@ -52,8 +53,8 @@ function tick(scene, time) {
 	BUB.thing.ork.$["body"]._offset.x = (Math.cos(time / 300) * 14);
 	BUB.thing.ork.$["body"]._offset.y = (Math.cos(time / 150) * 1);
 
-	BUB.thing.ork.$["snout"]._rotate = (Math.cos(time / 300) * 2);
-	BUB.thing.ork.$["mouth"]._rotate = (Math.sin(time / 300) * 2);
+	BUB.thing.ork.$["snout"]._rotate = (Math.sin(time / 300) * -2);
+	BUB.thing.ork.$["mouth"]._rotate = (Math.cos(time / 300) * 2);
 
 	BUB.thing.ork.$["leg1"]._rotate = (Math.cos(time / 300) * 5);
 	BUB.thing.ork.$["foot1"]._rotate = (Math.cos(time / 300) * -5);
@@ -72,9 +73,9 @@ function tick(scene, time) {
 
 	//wave the flag
 	BUB.thing.flag.$["shade"]._offset = BUB.thing.flag.$["shade"]._offset || {};
-	BUB.thing.flag.$["1"]._rotate = -1 + (Math.cos(time / 200) * 3);
-	BUB.thing.flag.$["2"]._rotate = 0 + (Math.sin(time / 200) * 5);
-	BUB.thing.flag.$["3"]._rotate = 0 - (Math.cos(time / 200) * 8);
+	BUB.thing.flag.$["1"]._rotate = -1 + (Math.cos(time / 200) * 4); //3
+	BUB.thing.flag.$["2"]._rotate = 2 + (Math.sin(time / 200) * 7);  //5
+	BUB.thing.flag.$["3"]._rotate = 0 - (Math.cos(time / 200) * 12);  //8
 	BUB.thing.flag.$["shade"]._offset.x = 15 + (Math.cos(time / 200) * 20);
 	BUB.thing.flag.$["shade"]._alpha = 1 + Math.sin(time / -200);
 }
@@ -92,14 +93,44 @@ function start() {
 	BUB.acceptinput = true;
 	BUB.scene = new penduinSCENE(BUB.canvas, BUB.width, BUB.height,
 								 tick, 60);
-	BUB.scene.showFPS(true);
-	BUB.scene.addOBJ(BUB.thing.ork);
-	BUB.scene.addOBJ(BUB.thing.flag);
+//	BUB.scene.showFPS(true);
+	BUB.scene.addOBJ(BUB.thing.ork, "ork");
+	BUB.scene.addOBJ(BUB.thing.flag, "flag");
 	BUB.scene.setBG("silver");
-	BUB.thing.ork.x = 500;
-	BUB.thing.ork.y = 600;
-	BUB.thing.flag.x = 1200;
-	BUB.thing.flag.y = 600;
+
+	BUB.thing.ork.x = 128 + (119 * 1);
+	BUB.thing.ork.y = 178 + (122 * 7);
+	BUB.thing.flag.x = 128 + (119 * 6);
+	BUB.thing.flag.y = 178 + (122 * 7);
+
+	BUB.thing.wall.x = 0;
+	BUB.thing.wall.y = 0;
+	BUB.scene.addOBJ(BUB.thing.wall, "wall");
+	var walls = [];
+	var i;
+	for(i = 0; i < 10; i++) {
+		walls.push({x: 9 + (i * 119), y: 56 + (9 * 122)});
+	}
+	for(i = 8; i > 0; i--) {
+		walls.push({x: 9, y: 56 + (i * 122)});
+		walls.push({x: 9 + (9 * 119), y: 56 + (i * 122)});
+	}
+	for(i = 0; i < 10; i++) {
+		walls.push({x: 9 + (i * 119), y: 56});
+	}
+/*
+	for(i = 0; i < 8; i++) {
+		for(j = 8; j > 0; j--) {
+			walls.push({x: 128 + (i * 119), y: 56 + (j * 122)});
+		}
+	}
+*/
+	BUB.thing.wall.setInstances(walls);
+
+	BUB.scene.addOBJ(BUB.thing.bg, "bg");
+	BUB.thing.bg.y = -1;
+	BUB.thing.bg.x = BUB.width / 2;
+
 
 //	BUB.thing.ork.setTags(["straight", "straightb", "pupil", "pupilb"]);
 //	BUB.thing.flag.setTags("8bit");

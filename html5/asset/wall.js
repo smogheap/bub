@@ -1,15 +1,15 @@
 LOAD({
 	"name": "wall",
-	"scale": 1,
+	"scale": 0.3,
 	"above": [
 		{
 			"name": "brick",
 			"image": "image/scribble/wall.png",
 			"pivot": {
 				"x": 200,
-				"y": 390
+				"y": 440
 			},
-			"rotate": 0,
+			"rotate": 0.5,
 			"scale": 1,
 			"alpha": 1,
 			"offset": {
