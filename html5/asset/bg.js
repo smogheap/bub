@@ -11,6 +11,7 @@ LOAD({
 //			"image": "image/scribble/bg-garage.png",
 			"image": "image/scribble/bg-park.png",
 //			"image": "image/scribble/bg-conduits.png",
+//			"image": "image/scribble/bg-crumple.png",
 			"pivot": {
 				"x": 128,
 				"y": 0

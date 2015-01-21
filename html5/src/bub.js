@@ -33,58 +33,72 @@ if(!console) {
 	}
 }
 
-function idle() {
-//	BUB.thing.ork.$["ork"]
+//idle animation
+function idle(ork, time) {
+	var cos300 = Math.cos(time / 300);
+	var cos150 = Math.cos(time / 150);
+	var sin300 = Math.sin(time / 300);
+
+	ork.$["body"]._offset.x =  cos300 * 14;
+	ork.$["body"]._offset.y = cos150;
+	ork.$["snout"]._rotate = sin300 * -2;
+	ork.$["mouth"]._rotate = cos300 * 2;
+
+	ork.$["leg1"]._rotate = cos300 * 5;
+	ork.$["foot1"]._rotate = cos300 * -5;
+	ork.$["leg2"]._rotate = cos300 * 5;
+	ork.$["foot2"]._rotate = cos300 * -5;
+
+	ork.$["hair1"]._rotate = sin300 * 3;
+	ork.$["hair2"]._rotate = sin300 * 6;
+
+	ork.$["pupil1"]._offset.x = 0;
+	ork.$["pupil1"]._offset.y = 0;
+	ork.$["pupil2"]._offset.x = 0;
+	ork.$["pupil2"]._offset.y = 0;
 }
 
+//walk animation
+function walk(ork, time) {
+	ork.$["body"]._offset.y = -25 - (Math.sin(time / 50) * 15);
+	ork.$["body"]._rotate = (Math.sin(time / 100) * 3);
+	ork.$["snout"]._rotate = (Math.cos(time / 100) * -3);
+	ork.$["mouth"]._rotate = (Math.sin(time / 100) * -3);
+
+	ork.$["leg1"]._rotate = Math.sin(time / 100) * 50;
+	ork.$["foot1"]._rotate = Math.cos(time / 100) * 30;
+	ork.$["leg2"]._rotate = Math.sin(time / 100) * -50;
+	ork.$["foot2"]._rotate = Math.cos(time / 100) * -30;
+
+	ork.$["hair1"]._rotate = (Math.cos(time / 50) * -6);
+	ork.$["hair2"]._rotate = (Math.cos(time / 50) * -9);
+
+	ork.$["pupil1"]._offset.x = 5;
+	ork.$["pupil1"]._offset.y = -5;
+	ork.$["pupil2"]._offset.x = 5;
+	ork.$["pupil2"]._offset.y = 10;
+}
+
+//wave the flag
+function wave(flag, time) {
+	var cos200 = Math.cos(time / 200);
+	var sin200 = Math.sin(time / 200);
+
+	flag.$["1"]._rotate = -1 + (cos200 * 4);
+	flag.$["2"]._rotate = 2 + (sin200 * 7);
+	flag.$["3"]._rotate = 0 - (cos200 * 12);
+	flag.$["shade"]._offset.x = 15 + (cos200 * 20);
+	flag.$["shade"]._alpha = 1 + (sin200 * -1);
+}
 
 function tick(scene, time) {
-//	BUB.thing.bubble.$.bub8bit.rotate++;
-/*
-	BUB.thing.ork.x+=4;
-	if(BUB.thing.ork.x > BUB.width) {
+	wave(BUB.thing.flag, time);
+//	idle(BUB.thing.ork, time);
+	walk(BUB.thing.ork, time);
+	BUB.thing.ork.x += 8;
+	if(BUB.thing.ork.x > 1080) {
 		BUB.thing.ork.x = 0;
 	}
-*/
-
-
-	//draw bg?
-//	BUB.thing.wall.draw(BUB.thing.wall);
-
-
-	//idle animation
-	BUB.thing.ork.$["body"]._offset = BUB.thing.ork.$["body"]._offset || {};
-	BUB.thing.ork.$["pupil1"]._offset = BUB.thing.ork.$["pupil1"]._offset || {};
-	BUB.thing.ork.$["pupil2"]._offset = BUB.thing.ork.$["pupil2"]._offset || {};
-
-	BUB.thing.ork.$["body"]._offset.x = (Math.cos(time / 300) * 14);
-	BUB.thing.ork.$["body"]._offset.y = (Math.cos(time / 150) * 1);
-
-	BUB.thing.ork.$["snout"]._rotate = (Math.sin(time / 300) * -2);
-	BUB.thing.ork.$["mouth"]._rotate = (Math.cos(time / 300) * 2);
-
-	BUB.thing.ork.$["leg1"]._rotate = (Math.cos(time / 300) * 5);
-	BUB.thing.ork.$["foot1"]._rotate = (Math.cos(time / 300) * -5);
-	BUB.thing.ork.$["leg2"]._rotate = (Math.cos(time / 300) * 5);
-	BUB.thing.ork.$["foot2"]._rotate = (Math.cos(time / 300) * -5);
-
-	BUB.thing.ork.$["hair1"]._rotate = (Math.sin(time / 300) * 3);
-	BUB.thing.ork.$["hair2"]._rotate = (Math.sin(time / 300) * 6);
-
-/*
-	BUB.thing.ork.$["pupil1"]._offset.x = (Math.cos(time / 200) * 10);
-	BUB.thing.ork.$["pupil1"]._offset.y = (Math.cos(time / 300) * 10);
-	BUB.thing.ork.$["pupil2"]._offset.x = (Math.cos(time / 500) * 10);
-	BUB.thing.ork.$["pupil2"]._offset.y = (Math.cos(time / 400) * 10);
-*/
-
-	//wave the flag
-	BUB.thing.flag.$["shade"]._offset = BUB.thing.flag.$["shade"]._offset || {};
-	BUB.thing.flag.$["1"]._rotate = -1 + (Math.cos(time / 200) * 4); //3
-	BUB.thing.flag.$["2"]._rotate = 2 + (Math.sin(time / 200) * 7);  //5
-	BUB.thing.flag.$["3"]._rotate = 0 - (Math.cos(time / 200) * 12);  //8
-	BUB.thing.flag.$["shade"]._offset.x = 15 + (Math.cos(time / 200) * 20);
-	BUB.thing.flag.$["shade"]._alpha = 1 + Math.sin(time / -200);
 }
 
 function transitionEnd() {
@@ -105,10 +119,16 @@ function start() {
 	BUB.scene.addOBJ(BUB.thing.flag, "flag");
 	BUB.scene.setBG("silver");
 
+	BUB.thing.ork.$["body"]._offset = BUB.thing.ork.$["body"]._offset || {};
+	BUB.thing.ork.$["pupil1"]._offset = BUB.thing.ork.$["pupil1"]._offset || {};
+	BUB.thing.ork.$["pupil2"]._offset = BUB.thing.ork.$["pupil2"]._offset || {};
+
 	BUB.thing.ork.x = 128 + (119 * 1);
 	BUB.thing.ork.y = 178 + (122 * 7);
 	BUB.thing.flag.x = 128 + (119 * 6);
-	BUB.thing.flag.y = 178 + (122 * 7);
+	BUB.thing.flag.y = (178 + (122 * 7)) - 1;
+
+	BUB.thing.flag.$["shade"]._offset = BUB.thing.flag.$["shade"]._offset || {};
 
 	BUB.thing.wall.x = 0;
 	BUB.thing.wall.y = 0;
@@ -116,14 +136,14 @@ function start() {
 	var walls = [];
 	var i;
 	for(i = 0; i < 10; i++) {
-		walls.push({x: 8 + (i * 119), y: 56 + (9 * 122)});
+		walls.push({x: 3 + (i * 119), y: 52 + (9 * 122)});
 	}
 	for(i = 8; i > 0; i--) {
-		walls.push({x: 8, y: 56 + (i * 122)});
-		walls.push({x: 8 + (9 * 119), y: 56 + (i * 122)});
+		walls.push({x: 3, y: 56 + (i * 122)});
+		walls.push({x: 3 + (9 * 119), y: 52 + (i * 122)});
 	}
 	for(i = 0; i < 10; i++) {
-		walls.push({x: 8 + (i * 119), y: 56});
+		walls.push({x: 3 + (i * 119), y: 52});
 	}
 /*
 	for(i = 0; i < 8; i++) {
