@@ -6,10 +6,17 @@ BUB = {
 	thing: {},
 	scene: null,
 	mask: {
+		ork: { src: "image/mask/scribbleork.png", zoom: 8, rot: 6 },
+		ork2: { src: "image/mask/scribbleork2.png", zoom: 8, rot: 6 },
+		ork3: { src: "image/mask/scribbleork3.png", zoom: 8, rot: 6 },
+		ork3: { src: "image/mask/scribbleork4.png", zoom: 8, rot: 6 }
+//		key: { src: "image/mask/scribblekey.png", zoom: 8, rot: -3 }
+/*
 		ork: "image/mask/ork.png",
 		orkup: "image/mask/orkup.png",
 		orkdown: "image/mask/orkdown.png",
 		bubble: { src: "image/mask/bubble.png", zoom: 2}
+*/
 	},
 	maskout: false,
 	acceptinput: false
@@ -109,14 +116,14 @@ function start() {
 	var walls = [];
 	var i;
 	for(i = 0; i < 10; i++) {
-		walls.push({x: 9 + (i * 119), y: 56 + (9 * 122)});
+		walls.push({x: 8 + (i * 119), y: 56 + (9 * 122)});
 	}
 	for(i = 8; i > 0; i--) {
-		walls.push({x: 9, y: 56 + (i * 122)});
-		walls.push({x: 9 + (9 * 119), y: 56 + (i * 122)});
+		walls.push({x: 8, y: 56 + (i * 122)});
+		walls.push({x: 8 + (9 * 119), y: 56 + (i * 122)});
 	}
 	for(i = 0; i < 10; i++) {
-		walls.push({x: 9 + (i * 119), y: 56});
+		walls.push({x: 8 + (i * 119), y: 56});
 	}
 /*
 	for(i = 0; i < 8; i++) {
@@ -193,10 +200,13 @@ window.addEventListener("load", function() {
 			var mask = document.createElement("img");
 			mask.addEventListener("load", function() {
 				if(typeof(BUB.mask[key]) === "string") {
-					BUB.mask[key] = new penduinTRANSITION(transitionEnd, mask, 4);
+					BUB.mask[key] = new penduinTRANSITION(transitionEnd, mask,
+														  4);
 				} else if(BUB.mask[key].src && BUB.mask[key].zoom) {
 					BUB.mask[key] = new penduinTRANSITION(transitionEnd, mask,
-														  BUB.mask[key].zoom);
+														  BUB.mask[key].zoom,
+														  1000,
+														  BUB.mask[key].rot);
 				}
 				cb(true);
 			});

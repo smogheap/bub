@@ -494,8 +494,8 @@ function penduinTRANSITION(cb, img, zoom, duration, rotation) {
 		scratchCtx.webkitImageSmoothingEnabled =ctx.webkitImageSmoothingEnabled;
 		scratchCtx.imageSmoothingEnabled = ctx.imageSmoothingEnabled;
 		scratchCtx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2);
-		scratchCtx.scale(prog * (ctx.canvas.width / img.width * zoom),
-						 prog * (ctx.canvas.width / img.width * zoom));
+		scratchCtx.scale((prog * prog) * (ctx.canvas.width / img.width * zoom),
+						 (prog * prog) * (ctx.canvas.width / img.width * zoom));
 		if(rotation) {
 			scratchCtx.rotate(prog * rotation);
 		}
