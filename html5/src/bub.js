@@ -19,7 +19,23 @@ BUB = {
 */
 	},
 	maskout: false,
-	acceptinput: false
+	acceptinput: false,
+	pos: {
+		x: 1,
+		y: 7
+	},
+	anim: null,
+	animstart: null,
+	input: {
+		up: false,
+		down: false,
+		left: false,
+		right: false,
+		restart: false,
+		menu: false
+	},
+	action: null,
+	actiondone: null
 };
 function LOAD(json) {
 	var data = json;
@@ -94,11 +110,55 @@ function wave(flag, time) {
 function tick(scene, time) {
 	wave(BUB.thing.flag, time);
 //	idle(BUB.thing.ork, time);
+
+	if(!BUB.action || BUB.actiondone) {
+		BUB.actiondone = false;
+		if(!BUB.action) {
+			BUB.animstart = time;
+		}
+		if(BUB.input.left) {
+			BUB.anim = "walk";
+			BUB.thing.ork.flip(true, false);
+			BUB.action = "left";
+		} else if(BUB.input.right) {
+			BUB.anim = "walk";
+			BUB.thing.ork.flip(false, false);
+			BUB.action = "right";
+		} else if(BUB.input.down) {
+		} else if(BUB.input.right) {
+		} else {
+			BUB.action = null;
+			BUB.anim = null;
+		}
+	}
+
+	if(BUB.anim === "walk") {
+		walk(BUB.thing.ork, time - BUB.animstart - 300);
+		if(BUB.action === "right") {
+			BUB.thing.ork.x += 8;
+			if(BUB.thing.ork.x > (128 + (119 * (BUB.pos.x + 1)))) {
+				BUB.actiondone = true;
+				BUB.pos.x++;
+				BUB.thing.ork.x = 128 + (119 * BUB.pos.x)
+			}
+		} else if(BUB.action === "left") {
+			BUB.thing.ork.x -= 8;
+			if(BUB.thing.ork.x < (128 + (119 * (BUB.pos.x - 1)))) {
+				BUB.actiondone = true;
+				BUB.pos.x--;
+				BUB.thing.ork.x = 128 + (119 * BUB.pos.x)
+			}
+		}
+	} else {
+		idle(BUB.thing.ork, time);
+	}
+/*
 	walk(BUB.thing.ork, time);
 	BUB.thing.ork.x += 8;
 	if(BUB.thing.ork.x > 1080) {
 		BUB.thing.ork.x = 0;
 	}
+*/
 }
 
 function transitionEnd() {
@@ -123,8 +183,8 @@ function start() {
 	BUB.thing.ork.$["pupil1"]._offset = BUB.thing.ork.$["pupil1"]._offset || {};
 	BUB.thing.ork.$["pupil2"]._offset = BUB.thing.ork.$["pupil2"]._offset || {};
 
-	BUB.thing.ork.x = 128 + (119 * 1);
-	BUB.thing.ork.y = 178 + (122 * 7);
+	BUB.thing.ork.x = 128 + (119 * BUB.pos.x);
+	BUB.thing.ork.y = 178 + (122 * BUB.pos.y);
 	BUB.thing.flag.x = 128 + (119 * 6);
 	BUB.thing.flag.y = (178 + (122 * 7)) - 1;
 
@@ -178,8 +238,8 @@ function start() {
 	BUB.thing.ork.addTags("bubble");
 	*/
 
-
 	BUB.scene.transition(BUB.mask.ork, BUB.maskout);
+	BUB.ready = true;
 }
 
 function combineCallbacks(cbList, resultsVary, cb) {
@@ -258,4 +318,46 @@ window.addEventListener("click", function() {
 	var masks = Object.keys(BUB.mask);
 	var which = Math.floor(Math.random() * masks.length);
 	BUB.scene.transition(BUB.mask[masks[which]], BUB.maskout);
+});
+
+
+function handlekey(event, down) {
+	switch(event.keyCode) {
+	case 38:  //up
+	case 104: //num8
+	case 87:  //w
+		BUB.input.up = down;
+		break;
+	case 40:  //down
+	case 98:  //num2
+	case 83:  //s
+		BUB.input.down = down;
+		break;
+	case 37:  //left
+	case 100: //num4
+	case 65:  //a
+		BUB.input.left = down;
+		break;
+	case 39:  //right
+	case 102: //num6
+	case 68:  //d
+		BUB.input.right = down;
+		break;
+	case 32:  //space
+		BUB.input.restart = down;
+		break;
+	case 27:  //esc
+		BUB.input.menu = down;
+		break;
+	default:
+		return;
+		break;
+	}
+	event.preventDefault();
+};
+window.addEventListener("keydown", function(e) {
+	handlekey(e, true);
+});
+window.addEventListener("keyup", function(e) {
+	handlekey(e, false);
 });
