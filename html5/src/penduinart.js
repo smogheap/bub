@@ -510,7 +510,6 @@ function penduinTRANSITION(cb, img, zoom, duration, rotation) {
 		}
 
 		// some canvas implementations won't blot outer area without scratch
-/*
 		scratchCtx.canvas.width = ctx.canvas.width;
 		scratchCtx.canvas.height = ctx.canvas.height;
 		scratchCtx.mozImageSmoothingEnabled = ctx.mozImageSmoothingEnabled;
@@ -523,19 +522,11 @@ function penduinTRANSITION(cb, img, zoom, duration, rotation) {
 			scratchCtx.rotate(prog * rotation);
 		}
 		scratchCtx.drawImage(img, img.width / -2, img.height / -2);
-*/
 
 		ctx.save();
 		ctx.globalCompositeOperation = "destination-atop";
 
-//		ctx.drawImage(scratchCtx.canvas, 0, 0);
-		ctx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2);
-		ctx.scale((prog * prog) * (ctx.canvas.width / img.width * zoom),
-				  (prog * prog) * (ctx.canvas.width / img.width * zoom));
-		if(rotation) {
-			ctx.rotate(prog * rotation);
-		}
-		ctx.drawImage(img, img.width / -2, img.height / -2);
+		ctx.drawImage(scratchCtx.canvas, 0, 0);
 
 		ctx.restore();
 
