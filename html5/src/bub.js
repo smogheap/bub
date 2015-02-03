@@ -20,6 +20,8 @@ BUB = {
 	},
 	maskout: false,
 	acceptinput: false,
+
+	level: null,
 	pos: {
 		x: 1,
 		y: 7
@@ -57,6 +59,7 @@ function idle(ork, time) {
 
 	ork.$["body"]._offset.x =  cos300 * 14;
 	ork.$["body"]._offset.y = cos150;
+	ork.$["body"]._rotate = 0;
 	ork.$["snout"]._rotate = sin300 * -2;
 	ork.$["mouth"]._rotate = cos300 * 2;
 
@@ -77,6 +80,7 @@ function idle(ork, time) {
 //walk animation
 function walk(ork, time) {
 	ork.$["body"]._offset.y = -25 - (Math.sin(time / 50) * 15);
+	ork.$["body"]._offset.x = 0;
 	ork.$["body"]._rotate = (Math.sin(time / 100) * 3);
 	ork.$["snout"]._rotate = (Math.cos(time / 100) * -3);
 	ork.$["mouth"]._rotate = (Math.sin(time / 100) * -3);
@@ -107,31 +111,11 @@ function wave(flag, time) {
 	flag.$["shade"]._alpha = 1 + (sin200 * -1);
 }
 
-function tick(scene, time) {
+function animate(time) {
+	// flag
 	wave(BUB.thing.flag, time);
-//	idle(BUB.thing.ork, time);
 
-	if(!BUB.action || BUB.actiondone) {
-		BUB.actiondone = false;
-		if(!BUB.action) {
-			BUB.animstart = time;
-		}
-		if(BUB.input.left) {
-			BUB.anim = "walk";
-			BUB.thing.ork.flip(true, false);
-			BUB.action = "left";
-		} else if(BUB.input.right) {
-			BUB.anim = "walk";
-			BUB.thing.ork.flip(false, false);
-			BUB.action = "right";
-		} else if(BUB.input.down) {
-		} else if(BUB.input.right) {
-		} else {
-			BUB.action = null;
-			BUB.anim = null;
-		}
-	}
-
+	// ork
 	if(BUB.anim === "walk") {
 		walk(BUB.thing.ork, time - BUB.animstart - 300);
 		if(BUB.action === "right") {
@@ -152,13 +136,34 @@ function tick(scene, time) {
 	} else {
 		idle(BUB.thing.ork, time);
 	}
-/*
-	walk(BUB.thing.ork, time);
-	BUB.thing.ork.x += 8;
-	if(BUB.thing.ork.x > 1080) {
-		BUB.thing.ork.x = 0;
+}
+
+function handleinput(time) {
+	if(!BUB.action || BUB.actiondone) {
+		BUB.actiondone = false;
+		if(!BUB.action) {
+			BUB.animstart = time;
+		}
+		if(BUB.input.left) {
+			BUB.anim = "walk";
+			BUB.thing.ork.flip(true, false);
+			BUB.action = "left";
+		} else if(BUB.input.right) {
+			BUB.anim = "walk";
+			BUB.thing.ork.flip(false, false);
+			BUB.action = "right";
+		} else if(BUB.input.down) {
+		} else if(BUB.input.right) {
+		} else {
+			BUB.action = null;
+			BUB.anim = null;
+		}
 	}
-*/
+}
+
+function tick(scene, time) {
+	handleinput(time);
+	animate(time);
 }
 
 function transitionEnd() {
@@ -174,7 +179,7 @@ function start() {
 	BUB.acceptinput = true;
 	BUB.scene = new penduinSCENE(BUB.canvas, BUB.width, BUB.height,
 								 tick, 60);
-//	BUB.scene.showFPS(true);
+	BUB.scene.showFPS(true);
 	BUB.scene.addOBJ(BUB.thing.ork, "ork");
 	BUB.scene.addOBJ(BUB.thing.flag, "flag");
 	BUB.scene.setBG("silver");
@@ -190,9 +195,14 @@ function start() {
 
 	BUB.thing.flag.$["shade"]._offset = BUB.thing.flag.$["shade"]._offset || {};
 
+
+	BUB.scene.addBG(BUB.thing.bg, "bg");
+	BUB.thing.bg.y = 0;
+	BUB.thing.bg.x = BUB.width / 2;
+
 	BUB.thing.wall.x = 0;
 	BUB.thing.wall.y = 0;
-	BUB.scene.addOBJ(BUB.thing.wall, "wall");
+	BUB.scene.addBG(BUB.thing.wall, "wall");
 	var walls = [];
 	var i;
 	for(i = 0; i < 10; i++) {
@@ -213,10 +223,6 @@ function start() {
 	}
 */
 	BUB.thing.wall.setInstances(walls);
-
-	BUB.scene.addOBJ(BUB.thing.bg, "bg");
-	BUB.thing.bg.y = -1;
-	BUB.thing.bg.x = BUB.width / 2;
 
 
 //	BUB.thing.ork.setTags(["straight", "straightb", "pupil", "pupilb"]);

@@ -3,15 +3,16 @@ LOAD({
 	"scale": 6,
 	"above": [
 		{
-			"name": "brick",
-//			"image": "image/scribble/bg-stairs.png",
+			"name": "photo",
 //			"image": "image/scribble/bg-oven.png",
 //			"image": "image/scribble/bg-hall.png",
 //			"image": "image/scribble/bg-valve.png",
 //			"image": "image/scribble/bg-garage.png",
-			"image": "image/scribble/bg-park.png",
 //			"image": "image/scribble/bg-conduits.png",
 //			"image": "image/scribble/bg-crumple.png",
+//			"image": "image/scribble/bg-stairs.png",
+//			"image": "image/scribble/bg-works.png",
+			"image": "image/scribble/bg-park.png",
 			"pivot": {
 				"x": 128,
 				"y": 0

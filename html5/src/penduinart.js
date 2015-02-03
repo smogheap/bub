@@ -21,8 +21,10 @@ function penduinOBJ(obj, cb) {
 	var lastsolved = null;
 	var posetime = 0;
 	var instances = null;
+	var dirty = false;
 
 	var loadPart = function loadPart(part, cb) {
+		dirty = true;
 		var img;
 		var i = 0;
 		var $ = this.$;
@@ -322,9 +324,10 @@ function penduinOBJ(obj, cb) {
 
 	/* API */
 
-	/* API: INSTANCES*/
+	/* API: INSTANCES */
 	// set to null or array of {scale:1, x:2, y:3} instances
 	this.setInstances = function setInstances(arr) {
+		dirty = true;
 		instances = arr;
 	};
 
@@ -332,6 +335,7 @@ function penduinOBJ(obj, cb) {
 
 	// set/replace tags (to show/hide different parts)
 	this.setTags = function setTags(newTags) {
+		dirty = true;
 		if(typeof(newTags) === "string") {
 			tags = [newTags];
 		} else {
@@ -346,6 +350,7 @@ function penduinOBJ(obj, cb) {
 
 	// add one or more tags
 	this.addTags = function addTags(newTags) {
+		dirty = true;
 		if(typeof(newTags) === "string") {
 			tags = tags.concat([newTags]);
 		} else {
@@ -355,6 +360,7 @@ function penduinOBJ(obj, cb) {
 
 	// remove one or more tags
 	this.removeTags = function removeTags(byeTags) {
+		dirty = true;
 		if(typeof(byeTags) === "string") {
 			tags = tags.filter(function(tag) {
 				return tag !== byeTags;
@@ -370,6 +376,7 @@ function penduinOBJ(obj, cb) {
 
 	// clear all tags
 	this.clearTags = function clearTags() {
+		dirty = true;
 		tags = [];
 	};
 
@@ -377,12 +384,14 @@ function penduinOBJ(obj, cb) {
 
 	//flip x/y
 	this.flip = function flip(x, y) {
+		dirty = true;
 		obj.flipx = x;
 		obj.flipy = y;
 	};
 
 	// animate to a pose specified by name
 	this.setPose = function setPose(name, transtime) {
+		dirty = true;
 		pose = name || "_default";
 		if(isNaN(transtime)) {
 			transtime = 500;
@@ -401,6 +410,7 @@ function penduinOBJ(obj, cb) {
 		return capturePose(true);
 	};
 	this.setPoseData = function setPoseData(data) {
+		dirty = true;
 		return applyPose(data, true);
 	};
 
@@ -408,6 +418,7 @@ function penduinOBJ(obj, cb) {
 	// TODO: implement animations :^)
 	// set an animation
 	this.setAnimation = function setAnimation(name, transtime, now) {
+		dirty = true;
 		if(isNaN(transtime)) {
 			transtime = 500;
 		}
@@ -415,6 +426,17 @@ function penduinOBJ(obj, cb) {
 		animstart = now || new Date();
 		frompose = capturePose();
 	},
+
+	/* API: MISC */
+
+	// check (and clear) if object is dirty (changed since last checked)
+	this.wasDirty = function wasDirty() {
+		if(dirty) {
+			dirty = false;
+			return true;
+		}
+		return false;
+	};
 
 	// draw the object
 	this.draw = function draw(ctx, scale, displayx, displayy, time) {
@@ -519,7 +541,10 @@ function penduinSCENE(canvas, logicWidth, logicHeight,
 	logicWidth = logicWidth || canvas.width || 320;
 	logicHeight = logicHeight || canvas.height || 240;
 	var scale = 1.0;
-	var objects = [];
+	var redrawbg = false;
+	var bgcanv = {};
+	var backgrounds = {};
+	var objects = {};
 	logicTickFunc = logicTickFunc || function() {};
 	logicTicksPerSec = logicTicksPerSec || 60;
 	var logicTickWait = Math.floor(1000 / logicTicksPerSec);
@@ -543,6 +568,7 @@ function penduinSCENE(canvas, logicWidth, logicHeight,
 	};
 
 	this.resize = function resize() {
+		redrawbg = true;
 		canvas.width = 0;
 		canvas.height = 0;
 
@@ -589,6 +615,32 @@ function penduinSCENE(canvas, logicWidth, logicHeight,
 
 		ctx.fillStyle = bg;
 		ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+		// update backgrounds if necessary then draw
+		var bgctx = null;
+		Object.keys(backgrounds).every(function(key) {
+			if(backgrounds[key].wasDirty()) {
+				console.log("dirty bg '" + key + "'");
+				redrawbg = true;
+				return false;
+			}
+			return true;
+		});
+		if(redrawbg) {
+			Object.keys(backgrounds).every(function(key) {
+				bgcanv[key] = bgcanv[key] || document.createElement("canvas");
+				bgcanv[key].width = canvas.width;
+				bgcanv[key].height = canvas.height;
+				bgctx = bgcanv[key].getContext("2d");
+				backgrounds[key].draw(bgctx, scale, undefined, undefined, time);
+				return true;
+			});
+		}
+		Object.keys(backgrounds).every(function(key) {
+			// TODO: background offset and scrolling support
+			ctx.drawImage(bgcanv[key], 0, 0);
+			return true;
+		});
 
 		// draw objects ordered by obj.y coordinate
 		var ordered = Object.keys(objects).sort(function(a, b) {
@@ -641,8 +693,32 @@ function penduinSCENE(canvas, logicWidth, logicHeight,
 		var obj = objects[name] || null;
 		if(obj) {
 			delete objects[name];
+			obj.scene = null;
 		}
 		return obj;
+	};
+
+	// add a named penduinOBJ to the scene as a background layer
+	this.addBG = function addBG(bg, name) {
+		if(!name) {
+			name = bg.name || "anonymous" + (uniq++);
+		}
+		backgrounds[name] = bg;
+		bg.scene = this;
+		return bg;
+	};
+	// remove (and return) a scene background
+	this.removeBG = function removeBG(name) {
+		var bg = backgrounds[name] || null;
+		if(bg) {
+			delete backgrounds[name];
+			bg.scene = null;
+		}
+		bg = bgcanv[name] || null;
+		if(bg) {
+			delete bgcanv[name];
+		}
+		return bg;
 	};
 
 	// set the scene's background color
