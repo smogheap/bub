@@ -13,6 +13,7 @@ function penduinOBJ(obj, cb) {
 	this.$ = {};  // hash of part names for direct manipulation
 
 	/* internal stuff */
+	var TO_RADIANS = Math.PI / 180;
 	var tags = [];
 	var pose = null;
 	var anim = null;
@@ -95,7 +96,6 @@ function penduinOBJ(obj, cb) {
 			return;
 		}
 
-		var TO_RADIANS = Math.PI/180;
 		var offx = 0;
 		var offy = 0;
 		ctx.save();
@@ -145,11 +145,17 @@ function penduinOBJ(obj, cb) {
 			ctx.rotate(part._rotate * TO_RADIANS);
 		}
 
+		part.below && part.below.every(function partbelow(part) {
+			drawPart(ctx, part, 1, offx, offy);
+			return true;
+		});
+/*
 		if(part.below) {
 			for(i in part.below) {
 				drawPart(ctx, part.below[i], 1, offx, offy);
 			}
 		}
+*/
 
 		if(part.image) {
 			var img = obj._img[part.image];
@@ -161,11 +167,17 @@ function penduinOBJ(obj, cb) {
 			}
 		}
 
+		part.above && part.above.every(function partabove(part) {
+			drawPart(ctx, part, 1, offx, offy);
+			return true;
+		});
+/*
 		if(part.above) {
 			for(i in part.above) {
 				drawPart(ctx, part.above[i], 1, offx, offy);
 			}
 		}
+		*/
 
 		ctx.restore();
 	}.bind(this);
@@ -545,6 +557,7 @@ function penduinSCENE(canvas, logicWidth, logicHeight,
 	var scale = 1.0;
 	var redrawbg = false;
 	var bgcanv = {};
+	var bgcompcanv = null;
 	var backgrounds = {};
 	var objects = {};
 	logicTickFunc = logicTickFunc || function() {};
@@ -629,20 +642,30 @@ function penduinSCENE(canvas, logicWidth, logicHeight,
 			return true;
 		});
 		if(redrawbg) {
+			redrawbg = false;
+			bgcompcanv = bgcompcanv || document.createElement("canvas");
+			bgcompcanv.width = canvas.width;
+			bgcompcanv.height = canvas.height;
 			Object.keys(backgrounds).every(function(key) {
 				bgcanv[key] = bgcanv[key] || document.createElement("canvas");
 				bgcanv[key].width = canvas.width;
 				bgcanv[key].height = canvas.height;
 				bgctx = bgcanv[key].getContext("2d");
 				backgrounds[key].draw(bgctx, scale, undefined, undefined, time);
+
+				bgctx = bgcompcanv.getContext("2d");
+				backgrounds[key].draw(bgctx, scale, undefined, undefined, time);
 				return true;
 			});
 		}
+		ctx.drawImage(bgcompcanv, 0, 0);
+/*
+		// TODO: background offset and layered scrolling support
 		Object.keys(backgrounds).every(function(key) {
-			// TODO: background offset and scrolling support
 			ctx.drawImage(bgcanv[key], 0, 0);
 			return true;
 		});
+*/
 
 		// draw objects ordered by obj.y coordinate
 		var ordered = Object.keys(objects).sort(function(a, b) {

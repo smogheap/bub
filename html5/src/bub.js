@@ -23,7 +23,11 @@ BUB = {
 
 	level: null,
 	pos: {
-		x: 1,
+		x: 0,
+		y: 7
+	},
+	flag: {
+		x: 7,
 		y: 7
 	},
 	anim: null,
@@ -174,6 +178,81 @@ function transitionEnd() {
 	BUB.acceptinput = true;
 }
 
+function loadlevel(data) {
+	var walls = [];
+	var bubbles = [];
+	var lefts = [];
+	var rights = [];
+	var i;
+	var c;
+
+	var quick = {
+		"_": "",
+		"E": "wall",
+		"H": "ladder",
+		"o": "bubble",
+		"-": "key",
+		"X": "door",
+		"4": "flag",
+		"l": "left",
+		"r": "right",
+		"c": "crate",
+		"O": "ork",
+	};
+
+	// top border
+	for(i = 0; i < 10; i++) {
+		walls.push({x: 3 + (i * 119), y: 52});
+	}
+
+	BUB.level = [];
+	// level data
+	data.split("0").every(function(line, y) {
+		BUB.level.push(line);
+
+		// left border
+		walls.push({x: 3, y: 52 + ((y + 1) * 122)});
+
+		for(i = 0; i < line.length; i++) {
+			c = line[i];
+			if(c === "O") {
+				BUB.pos.x = i;
+				BUB.pos.y = y;
+			} else if(c === "4") {
+				BUB.flag.x = i;
+				BUB.flag.y = y;
+			} else if(c === "E") {
+				walls.push({x: 3 + ((i + 1) * 119), y: 52 + ((y + 1) * 122)});
+			} else if(c === "o") {
+				bubbles.push({x: 3 + ((i + 1) * 119), y: 52 + ((y + 1) * 122)});
+			} else if(c === "l") {
+				lefts.push({x: 3 + ((i + 1) * 119), y: 52 + ((y + 1) * 122)});
+			} else if(c === "r") {
+				rights.push({x: 3 + ((i + 1) * 119), y: 52 + ((y + 1) * 122)});
+			}
+		}
+
+		// right border
+		walls.push({x: 3 + (9 * 119), y: 52 + ((y + 1) * 122)});
+
+		return true;
+	});
+
+	// bottom border
+	for(i = 0; i < 10; i++) {
+		walls.push({x: 3 + (i * 119), y: 52 + (9 * 122)});
+	}
+
+	walls.reverse();
+//	BUB.thing.bg.setInstances(walls, "wall");
+	BUB.thing.wall.setInstances(walls);
+	bubbles.reverse();
+//	BUB.thing.bg.setInstances(bubbles, "bubble");
+	BUB.thing.bubble.setInstances(bubbles);
+	BUB.thing.left.setInstances(lefts);
+	BUB.thing.right.setInstances(rights);
+}
+
 function start() {
 	console.log("start");
 	BUB.acceptinput = true;
@@ -188,11 +267,6 @@ function start() {
 	BUB.thing.ork.$["pupil1"]._offset = BUB.thing.ork.$["pupil1"]._offset || {};
 	BUB.thing.ork.$["pupil2"]._offset = BUB.thing.ork.$["pupil2"]._offset || {};
 
-	BUB.thing.ork.x = 128 + (119 * BUB.pos.x);
-	BUB.thing.ork.y = 178 + (122 * BUB.pos.y);
-	BUB.thing.flag.x = 128 + (119 * 6);
-	BUB.thing.flag.y = (178 + (122 * 7)) - 1;
-
 	BUB.thing.flag.$["shade"]._offset = BUB.thing.flag.$["shade"]._offset || {};
 
 
@@ -200,37 +274,20 @@ function start() {
 	BUB.thing.bg.y = 0;
 	BUB.thing.bg.x = BUB.width / 2;
 
-	BUB.thing.wall.x = 0;
-	BUB.thing.wall.y = 0;
-	BUB.scene.addBG(BUB.thing.wall, "wall");
-	var walls = [];
-	var i;
-	for(i = 0; i < 10; i++) {
-		walls.push({x: 3 + (i * 119), y: 52 + (9 * 122)});
-	}
-	for(i = 8; i > 0; i--) {
-		walls.push({x: 3, y: 56 + (i * 122)});
-		walls.push({x: 3 + (9 * 119), y: 52 + (i * 122)});
-	}
-	for(i = 0; i < 10; i++) {
-		walls.push({x: 3 + (i * 119), y: 52});
-	}
-/*
-	for(i = 0; i < 8; i++) {
-		for(j = 8; j > 0; j--) {
-			walls.push({x: 128 + (i * 119), y: 56 + (j * 122)});
-		}
-	}
-*/
-	BUB.thing.wall.setInstances(walls);
+	["wall", "bubble", "left", "right"].every(function(block) {
+		BUB.thing[block].x = 0;
+		BUB.thing[block].y = 0;
+		BUB.scene.addBG(BUB.thing[block], "bg" + block);
+		return true;
+	});
 
+	loadlevel("________0_r______0EEE_____0_______40______EE0oo_O_EEE0EEEEEEEE0EEEEEEEE");
 
-//	BUB.thing.ork.setTags(["straight", "straightb", "pupil", "pupilb"]);
-//	BUB.thing.flag.setTags("8bit");
+	BUB.thing.ork.x = 128 + (119 * BUB.pos.x);
+	BUB.thing.ork.y = 178 + (122 * BUB.pos.y);
+	BUB.thing.flag.x = 128 + (119 * BUB.flag.x);
+	BUB.thing.flag.y = (178 + (122 * BUB.flag.y)) - 1;
 
-
-
-//	BUB.thing.ork.flip(true, false);
 /*
 	BUB.thing.ork.$["ork-leg1"].flipx = true;
 	BUB.thing.ork.$["ork-leg2"].flipx = true;

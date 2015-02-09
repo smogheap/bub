@@ -1,21 +1,20 @@
 LOAD({
 	"name": "bubble",
-	"scale": 1,
+	"scale": 0.6,
 	"above": [
 		{
-			"tag": "8bit",
-			"name": "bub8bit",
-			"image": "image/8bit/bubble01.png",
+			"name": "bubble1",
+			"image": "image/scribble/bubble.png",
 			"pivot": {
-				"x": 8,
-				"y": 8
+				"x": 117,
+				"y": 146
 			},
 			"rotate": 0,
-			"scale": 8,
+			"scale": 1,
 			"alpha": 1,
 			"offset": {
-				"x": -8,
-				"y": -16
+				"x": 2,
+				"y": -73
 			}
 		}
 	]
