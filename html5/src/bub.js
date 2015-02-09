@@ -258,7 +258,7 @@ function start() {
 	BUB.acceptinput = true;
 	BUB.scene = new penduinSCENE(BUB.canvas, BUB.width, BUB.height,
 								 tick, 60);
-	BUB.scene.showFPS(true);
+//	BUB.scene.showFPS(true);
 	BUB.scene.addOBJ(BUB.thing.ork, "ork");
 	BUB.scene.addOBJ(BUB.thing.flag, "flag");
 	BUB.scene.setBG("silver");
