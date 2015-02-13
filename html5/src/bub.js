@@ -161,7 +161,7 @@ function climbdown(ork, time) {
 
 	ork.$["leg1"]._rotate = -70 + (sin50 * 20);
 	ork.$["foot1"]._rotate = 10 + (cos50 * -20);
-	ork.$["leg2"]._rotate = -40 + (sin50 * -20);
+	ork.$["leg2"]._rotate = -40 + (sin50 * -10);
 	ork.$["foot2"]._rotate = 10 + (cos50 * 20);
 
 	ork.$["hair1"]._rotate = 20 + (cos50 * -6);
@@ -210,18 +210,18 @@ function animate(time) {
 	} else if(BUB.anim === "climbup") {
 		climbup(BUB.thing.ork, time);
 		BUB.thing.ork.y -= 8;
-		if(BUB.thing.ork.y < (52 + ((BUB.pos.y + 0)* 122))) {
+		if(BUB.thing.ork.y < (178 + ((BUB.pos.y - 1)* 122))) {
 			BUB.actiondone = true;
 			BUB.pos.y--;
-			BUB.thing.ork.y = 52 + ((BUB.pos.y + 1) * 122);
+			BUB.thing.ork.y = 178 + ((BUB.pos.y) * 122);
 		}
 	} else if(BUB.anim === "climbdown") {
 		climbdown(BUB.thing.ork, time);
 		BUB.thing.ork.y += 8;
-		if(BUB.thing.ork.y > (52 + ((BUB.pos.y + 2)* 122))) {
+		if(BUB.thing.ork.y > (178 + ((BUB.pos.y + 1)* 122))) {
 			BUB.actiondone = true;
 			BUB.pos.y++;
-			BUB.thing.ork.y = 52 + ((BUB.pos.y + 1) * 122);
+			BUB.thing.ork.y = 178 + ((BUB.pos.y) * 122);
 		}
 	} else {
 		idle(BUB.thing.ork, time);
@@ -344,6 +344,7 @@ function loadlevel(data) {
 	BUB.thing.bubble.setInstances(bubbles);
 	BUB.thing.left.setInstances(lefts);
 	BUB.thing.right.setInstances(rights);
+//	ladders.reverse();
 	BUB.thing.ladder.setInstances(ladders);
 }
 
@@ -377,7 +378,7 @@ function start() {
 		return true;
 	});
 
-	loadlevel("________0_r______0EEE_____0_______40____H_EE0oo_OHEEE0EEEEEEEE0EEEEEEEE");
+	loadlevel("________0_rH_____0EEE_HE__0____H__40____H_EE0oo_OHEEE0EEEEEEEE0EEEEEEEE");
 
 	BUB.thing.ork.x = 128 + (119 * BUB.pos.x);
 	BUB.thing.ork.y = 178 + (122 * BUB.pos.y);
