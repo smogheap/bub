@@ -61,46 +61,116 @@ function idle(ork, time) {
 	var cos150 = Math.cos(time / 150);
 	var sin300 = Math.sin(time / 300);
 
-	ork.$["body"]._offset.x =  cos300 * 14;
-	ork.$["body"]._offset.y = cos150;
-	ork.$["body"]._rotate = 0;
-	ork.$["snout"]._rotate = sin300 * -2;
-	ork.$["mouth"]._rotate = cos300 * 2;
+	ork.$.body._offset.x =  cos300 * 14;
+	ork.$.body._offset.y = cos150;
+	ork.$.body._rotate = 0;
+	ork.$.snout._rotate = sin300 * -2;
+	ork.$.mouth._rotate = cos300 * 2;
 
-	ork.$["leg1"]._rotate = cos300 * 5;
-	ork.$["foot1"]._rotate = cos300 * -5;
-	ork.$["leg2"]._rotate = cos300 * 5;
-	ork.$["foot2"]._rotate = cos300 * -5;
+	ork.$.leg1._offset.x = 0;
+	ork.$.leg1._offset.y = 0;
+	ork.$.leg2._offset.x = 0;
+	ork.$.leg2._offset.y = 0;
+	ork.$.leg1._rotate = cos300 * 5;
+	ork.$.foot1._rotate = cos300 * -5;
+	ork.$.leg2._rotate = cos300 * 5;
+	ork.$.foot2._rotate = cos300 * -5;
 
-	ork.$["hair1"]._rotate = sin300 * 3;
-	ork.$["hair2"]._rotate = sin300 * 6;
+	ork.$.hair1._rotate = sin300 * 3;
+	ork.$.hair2._rotate = sin300 * 6;
 
-	ork.$["pupil1"]._offset.x = 0;
-	ork.$["pupil1"]._offset.y = 0;
-	ork.$["pupil2"]._offset.x = 0;
-	ork.$["pupil2"]._offset.y = 0;
+	ork.$.pupil1._offset.x = 0;
+	ork.$.pupil1._offset.y = 0;
+	ork.$.pupil2._offset.x = 0;
+	ork.$.pupil2._offset.y = 0;
 }
 
 //walk animation
 function walk(ork, time) {
-	ork.$["body"]._offset.y = -25 - (Math.sin(time / 50) * 15);
+	var sin50 = Math.sin(time / 50);
+	var cos50 = Math.cos(time / 50);
+	var sin100 = Math.sin(time / 100);
+	var cos100 = Math.cos(time / 100);
+
+	ork.$["body"]._offset.y = -25 - (sin50 * 15);
 	ork.$["body"]._offset.x = 0;
-	ork.$["body"]._rotate = (Math.sin(time / 100) * 3);
-	ork.$["snout"]._rotate = (Math.cos(time / 100) * -3);
-	ork.$["mouth"]._rotate = (Math.sin(time / 100) * -3);
+	ork.$["body"]._rotate = sin100 * 3;
+	ork.$["snout"]._rotate = cos100 * -3;
+	ork.$["mouth"]._rotate = sin100 * -3;
 
-	ork.$["leg1"]._rotate = Math.sin(time / 100) * 50;
-	ork.$["foot1"]._rotate = Math.cos(time / 100) * 30;
-	ork.$["leg2"]._rotate = Math.sin(time / 100) * -50;
-	ork.$["foot2"]._rotate = Math.cos(time / 100) * -30;
+	ork.$["leg1"]._offset.x = 0;
+	ork.$["leg1"]._offset.y = 0;
+	ork.$["leg2"]._offset.x = 0;
+	ork.$["leg2"]._offset.y = 0;
+	ork.$["leg1"]._rotate = sin100 * 50;
+	ork.$["foot1"]._rotate = cos100 * 30;
+	ork.$["leg2"]._rotate = sin100 * -50;
+	ork.$["foot2"]._rotate = cos100 * -30;
 
-	ork.$["hair1"]._rotate = (Math.cos(time / 50) * -6);
-	ork.$["hair2"]._rotate = (Math.cos(time / 50) * -9);
+	ork.$["hair1"]._rotate = cos50 * -6;
+	ork.$["hair2"]._rotate = cos50 * -9;
 
 	ork.$["pupil1"]._offset.x = 5;
 	ork.$["pupil1"]._offset.y = -5;
 	ork.$["pupil2"]._offset.x = 5;
 	ork.$["pupil2"]._offset.y = 10;
+}
+
+function climbup(ork, time) {
+	var sin50 = Math.sin(time / 50);
+	var cos50 = Math.cos(time / 50);
+
+	ork.$["body"]._offset.y = 0;
+	ork.$["body"]._offset.x = 0;
+	ork.$.body._rotate = -45 - sin50 * 3;
+	ork.$["snout"]._rotate = cos50 * -3;
+	ork.$["mouth"]._rotate = sin50 * -3;
+
+	ork.$["leg1"]._offset.x = -20 + (sin50 * 40);
+	ork.$["leg2"]._offset.y = 0;
+	ork.$["leg2"]._offset.x = 10 + (sin50 * -40);
+	ork.$["leg2"]._offset.y = -20 + (sin50 * 20);
+
+	ork.$["leg1"]._rotate = 70 + (sin50 * 20);
+	ork.$["foot1"]._rotate = 10 + (cos50 * 30);
+	ork.$["leg2"]._rotate = 50 + (sin50 * -20);
+	ork.$["foot2"]._rotate = 30 + (cos50 * -30);
+
+	ork.$["hair1"]._rotate = -20 + (cos50 * -6);
+	ork.$["hair2"]._rotate = -20 + (sin50 * -9);
+
+	ork.$["pupil1"]._offset.x = 5;
+	ork.$["pupil1"]._offset.y = -15;
+	ork.$["pupil2"]._offset.x = 5;
+	ork.$["pupil2"]._offset.y = -5;
+}
+function climbdown(ork, time) {
+	var sin50 = Math.sin(time / 50);
+	var cos50 = Math.cos(time / 50);
+
+	ork.$["body"]._offset.y = 0;
+	ork.$["body"]._offset.x = 0;
+	ork.$.body._rotate = 45 - sin50 * 3;
+	ork.$["snout"]._rotate = cos50 * -3;
+	ork.$["mouth"]._rotate = sin50 * -3;
+
+	ork.$["leg1"]._offset.x = -20 + (sin50 * 40);
+	ork.$["leg2"]._offset.y = 0;
+	ork.$["leg2"]._offset.x = 10 + (sin50 * -20);
+	ork.$["leg2"]._offset.y = -20 + (sin50 * -20);
+
+	ork.$["leg1"]._rotate = -70 + (sin50 * 20);
+	ork.$["foot1"]._rotate = 10 + (cos50 * -20);
+	ork.$["leg2"]._rotate = -40 + (sin50 * -20);
+	ork.$["foot2"]._rotate = 10 + (cos50 * 20);
+
+	ork.$["hair1"]._rotate = 20 + (cos50 * -6);
+	ork.$["hair2"]._rotate = 20 + (sin50 * -9);
+
+	ork.$["pupil1"]._offset.x = 5;
+	ork.$["pupil1"]._offset.y = 5;
+	ork.$["pupil2"]._offset.x = 10;
+	ork.$["pupil2"]._offset.y = 15;
 }
 
 //wave the flag
@@ -137,6 +207,22 @@ function animate(time) {
 				BUB.thing.ork.x = 128 + (119 * BUB.pos.x)
 			}
 		}
+	} else if(BUB.anim === "climbup") {
+		climbup(BUB.thing.ork, time);
+		BUB.thing.ork.y -= 8;
+		if(BUB.thing.ork.y < (52 + ((BUB.pos.y + 0)* 122))) {
+			BUB.actiondone = true;
+			BUB.pos.y--;
+			BUB.thing.ork.y = 52 + ((BUB.pos.y + 1) * 122);
+		}
+	} else if(BUB.anim === "climbdown") {
+		climbdown(BUB.thing.ork, time);
+		BUB.thing.ork.y += 8;
+		if(BUB.thing.ork.y > (52 + ((BUB.pos.y + 2)* 122))) {
+			BUB.actiondone = true;
+			BUB.pos.y++;
+			BUB.thing.ork.y = 52 + ((BUB.pos.y + 1) * 122);
+		}
 	} else {
 		idle(BUB.thing.ork, time);
 	}
@@ -157,7 +243,11 @@ function handleinput(time) {
 			BUB.thing.ork.flip(false, false);
 			BUB.action = "right";
 		} else if(BUB.input.down) {
-		} else if(BUB.input.right) {
+			BUB.anim = "climbdown";
+			BUB.action = "climbdown";
+		} else if(BUB.input.up) {
+			BUB.anim = "climbup";
+			BUB.action = "climbup";
 		} else {
 			BUB.action = null;
 			BUB.anim = null;
@@ -183,6 +273,7 @@ function loadlevel(data) {
 	var bubbles = [];
 	var lefts = [];
 	var rights = [];
+	var ladders = [];
 	var i;
 	var c;
 
@@ -229,6 +320,8 @@ function loadlevel(data) {
 				lefts.push({x: 3 + ((i + 1) * 119), y: 52 + ((y + 1) * 122)});
 			} else if(c === "r") {
 				rights.push({x: 3 + ((i + 1) * 119), y: 52 + ((y + 1) * 122)});
+			} else if(c === "H") {
+				ladders.push({x: 3 + ((i + 1) * 119), y: 52 + ((y + 1) * 122)});
 			}
 		}
 
@@ -251,6 +344,7 @@ function loadlevel(data) {
 	BUB.thing.bubble.setInstances(bubbles);
 	BUB.thing.left.setInstances(lefts);
 	BUB.thing.right.setInstances(rights);
+	BUB.thing.ladder.setInstances(ladders);
 }
 
 function start() {
@@ -264,6 +358,8 @@ function start() {
 	BUB.scene.setBG("silver");
 
 	BUB.thing.ork.$["body"]._offset = BUB.thing.ork.$["body"]._offset || {};
+	BUB.thing.ork.$["leg1"]._offset = BUB.thing.ork.$["leg1"]._offset || {};
+	BUB.thing.ork.$["leg2"]._offset = BUB.thing.ork.$["leg2"]._offset || {};
 	BUB.thing.ork.$["pupil1"]._offset = BUB.thing.ork.$["pupil1"]._offset || {};
 	BUB.thing.ork.$["pupil2"]._offset = BUB.thing.ork.$["pupil2"]._offset || {};
 
@@ -274,14 +370,14 @@ function start() {
 	BUB.thing.bg.y = 0;
 	BUB.thing.bg.x = BUB.width / 2;
 
-	["wall", "bubble", "left", "right"].every(function(block) {
+	["wall", "bubble", "left", "right", "ladder"].every(function(block) {
 		BUB.thing[block].x = 0;
 		BUB.thing[block].y = 0;
 		BUB.scene.addBG(BUB.thing[block], "bg" + block);
 		return true;
 	});
 
-	loadlevel("________0_r______0EEE_____0_______40______EE0oo_O_EEE0EEEEEEEE0EEEEEEEE");
+	loadlevel("________0_r______0EEE_____0_______40____H_EE0oo_OHEEE0EEEEEEEE0EEEEEEEE");
 
 	BUB.thing.ork.x = 128 + (119 * BUB.pos.x);
 	BUB.thing.ork.y = 178 + (122 * BUB.pos.y);
