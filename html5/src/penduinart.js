@@ -560,6 +560,9 @@ function penduinSCENE(canvas, logicWidth, logicHeight,
 	var bgcompcanv = null;
 	var backgrounds = {};
 	var objects = {};
+	var vignette = null;
+	var ghostAmount = 0;
+	var ghostCtx = document.createElement("canvas").getContext("2d");
 	logicTickFunc = logicTickFunc || function() {};
 	logicTicksPerSec = logicTicksPerSec || 60;
 	var logicTickWait = Math.floor(1000 / logicTicksPerSec);
@@ -628,6 +631,16 @@ function penduinSCENE(canvas, logicWidth, logicHeight,
 
 		ctx.save();
 
+		// prepare any ghosting
+		if(ghostAmount) {
+			ghostCtx.canvas.width = canvas.width;
+			ghostCtx.canvas.height = canvas.height;
+			ghostCtx.mozImageSmoothingEnabled = ctx.mozImageSmoothingEnabled;
+			ghostCtx.webkitImageSmoothingEnabled =ctx.webkitImageSmoothingEnabled;
+			ghostCtx.imageSmoothingEnabled = ctx.imageSmoothingEnabled;
+			ghostCtx.drawImage(ctx.canvas, 0, 0, ghostCtx.canvas.width, ghostCtx.canvas.height);
+		}
+
 		ctx.fillStyle = bg;
 		ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -673,6 +686,18 @@ function penduinSCENE(canvas, logicWidth, logicHeight,
 		});
 		for(i in ordered) {
 			objects[ordered[i]].draw(ctx, scale, undefined, undefined, time);
+		}
+
+		// draw any vignette
+		if(vignette) {
+			ctx.drawImage(vignette, 0, 0, canvas.width, canvas.height);
+		}
+
+		// draw any ghosting
+		if(ghostAmount) {
+			ctx.globalAlpha = ghostAmount;
+			ctx.drawImage(ghostCtx.canvas, 0, 0, canvas.width, canvas.height);
+			ctx.globalAlpha = 1;
 		}
 
 		// draw any active transition
@@ -749,6 +774,39 @@ function penduinSCENE(canvas, logicWidth, logicHeight,
 	// set the scene's background color
 	this.setBG = function setBG(color) {
 		bg = color;
+	};
+
+	// set the scene's vignette (or null, or default)
+	this.setVignette = function setVignette(img) {
+		if(img === null) {
+			vignette = null;
+			return;
+		} else if(img) {
+			vignette = img;
+		} else {
+			vignette = document.createElement("img");
+			vignette.src = [
+				"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAA",
+				"ABzenr0AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3wINFwMGfDHM",
+				"5AAAAfdJREFUWMPFV9FuwzAIPBy3/cn9/z9sbcxe7IqgA7PtYZZQoybKHYe",
+				"5GAHwAeALwOf8XfEC8Jy/p4kBQE0AgJhoAA4THcBt/t5NPADcOwF/OvCXA9",
+				"8RUHIf5rnL6gTcxkkI6IbAmCrY+57IhYAF/ypmP4LsWqCCfVYZgedGektgm",
+				"Bd5BVj2bAkj4MFfBjirPxwJJfIzMgpAuwFj4J6AFghItf4ApCfATPoqAQlq",
+				"Lv66k53uQUdB/gXECFhypyfbg6wr2e96fGw24ZtANfNRqK06RxxBiU5PYCf",
+				"3LnsL7muvJgFvWGcnWTLwEbSXl1VdCRp5j1VHGgFBwcUiBUCeZ8SH9QFNgJ",
+				"mZ7BQQ55DpO1sCgIKR7JYmKilmLf51NdciCEzktyt6l1gnFHLD+7q4VtOAm",
+				"AQJMZuW1QXivuWZr0uiigR+z4CbNaJmWsO2pSSulingE/L/NXvd58FRiWlo",
+				"sjck+RZIEI3EYQlkdstcDZvPcQR6OTX3uRG1cIwahe6IwI8gOlMACaGfHEj",
+				"SzGfixxoakJxc5Q8EjgB4xc2WYGcmUjyUisu4MeB1vcYlSWp6kqN3dCzHRv",
+				"IF/o5FoPLh8Z6QDSaegM98Ebh7ApmTnab/WzKaCQE/fOZrSO1zSq3UX4rDa",
+				"Zb9BRzAgymAZIOdwfRTHc9vfjz/BqyPaNTRmnliAAAAAElFTkSuQmCC"
+			].join("");
+		}
+	};
+
+	// set scene ghosting amount
+	this.setGhost = function setGhost(amount) {
+		ghostAmount = amount;
 	};
 
 	// set whether the scaling is jaggy or smooth

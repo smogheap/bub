@@ -353,7 +353,7 @@ function start() {
 	BUB.acceptinput = true;
 	BUB.scene = new penduinSCENE(BUB.canvas, BUB.width, BUB.height,
 								 tick, 60);
-//	BUB.scene.showFPS(true);
+	BUB.scene.showFPS(true);
 	BUB.scene.addOBJ(BUB.thing.ork, "ork");
 	BUB.scene.addOBJ(BUB.thing.flag, "flag");
 	BUB.scene.setBG("silver");
@@ -398,6 +398,8 @@ function start() {
 	BUB.thing.ork.addTags("bubble");
 	*/
 
+	BUB.scene.setVignette();
+	//BUB.scene.setGhost(0.75);
 	BUB.scene.transition(BUB.mask.ork, BUB.maskout);
 	BUB.ready = true;
 }
