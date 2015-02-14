@@ -46,7 +46,40 @@ LOAD({
 								"x": 198,
 								"y": 50
 							},
-							"above": [],
+							"above": [
+								{
+									"name": "bubble",
+									"image": "image/scribble/bubble.png",
+									"tag": "bubble",
+									"pivot": {
+										"x": 70,
+										"y": 90
+									},
+									"rotate": 0,
+									"scale": 1.5,
+									"alpha": 1,
+									"offset": {
+										"x": 70,
+										"y": 80
+									}
+								},
+								{
+									"name": "key",
+									"image": "image/scribble/key.png",
+									"tag": "key",
+									"pivot": {
+										"x": 70,
+										"y": 90
+									},
+									"rotate": 0,
+									"scale": 1.2,
+									"alpha": 1,
+									"offset": {
+										"x": 70,
+										"y": 80
+									}
+								}
+							],
 							"below": []
 						}
 					],

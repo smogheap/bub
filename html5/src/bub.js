@@ -21,6 +21,7 @@ BUB = {
 	maskout: false,
 	acceptinput: false,
 
+	prop: ["wall", "bubble", "left", "right", "ladder", "key", "crate", "door"],
 	level: null,
 	pos: {
 		x: 0,
@@ -64,7 +65,9 @@ function idle(ork, time) {
 	ork.$.body._offset.x =  cos300 * 14;
 	ork.$.body._offset.y = cos150;
 	ork.$.body._rotate = 0;
+	ork.$.snout._scale = 1;
 	ork.$.snout._rotate = sin300 * -2;
+	ork.$.mouth._scale = 1;
 	ork.$.mouth._rotate = cos300 * 2;
 
 	ork.$.leg1._offset.x = 0;
@@ -95,7 +98,9 @@ function walk(ork, time) {
 	ork.$["body"]._offset.y = -25 - (sin50 * 15);
 	ork.$["body"]._offset.x = 0;
 	ork.$["body"]._rotate = sin100 * 3;
+	ork.$.snout._scale = 1;
 	ork.$["snout"]._rotate = cos100 * -3;
+	ork.$.mouth._scale = 1;
 	ork.$["mouth"]._rotate = sin100 * -3;
 
 	ork.$["leg1"]._offset.x = 0;
@@ -123,7 +128,9 @@ function climbup(ork, time) {
 	ork.$["body"]._offset.y = 0;
 	ork.$["body"]._offset.x = 0;
 	ork.$.body._rotate = -45 - sin50 * 3;
+	ork.$.snout._scale = 1;
 	ork.$["snout"]._rotate = cos50 * -3;
+	ork.$.mouth._scale = 1;
 	ork.$["mouth"]._rotate = sin50 * -3;
 
 	ork.$["leg1"]._offset.x = -20 + (sin50 * 40);
@@ -151,7 +158,9 @@ function climbdown(ork, time) {
 	ork.$["body"]._offset.y = 0;
 	ork.$["body"]._offset.x = 0;
 	ork.$.body._rotate = 45 - sin50 * 3;
+	ork.$.snout._scale = 1;
 	ork.$["snout"]._rotate = cos50 * -3;
+	ork.$.mouth._scale = 1;
 	ork.$["mouth"]._rotate = sin50 * -3;
 
 	ork.$["leg1"]._offset.x = -20 + (sin50 * 40);
@@ -171,6 +180,48 @@ function climbdown(ork, time) {
 	ork.$["pupil1"]._offset.y = 5;
 	ork.$["pupil2"]._offset.x = 10;
 	ork.$["pupil2"]._offset.y = 15;
+}
+
+//slurp animation
+function slurp(ork, time) {
+	var sin75 = Math.sin(time / 75);
+	var cos75 = Math.cos(time / 75);
+	var cos150 = Math.cos(time / 150);
+	var sin150 = Math.sin(time / 150);
+	var cos300 = Math.cos(time / 300);
+	var sin300 = Math.sin(time / 300);
+
+	ork.$.body._offset.x = sin75 * 80;
+	ork.$.body._offset.y = 0;//sin150 * -10;
+	ork.$.body._rotate = 0;
+	ork.$.snout._rotate = 0;
+	ork.$.snout._scale = 1 + (sin75 / 4);
+	ork.$.mouth._scale = 1 + (sin150 / 3);
+	ork.$.mouth._rotate = 0;
+
+	ork.$.leg1._offset.x = 0;
+	ork.$.leg1._offset.y = 0;
+	ork.$.leg2._offset.x = 0;
+	ork.$.leg2._offset.y = 0;
+//	ork.$.leg1._rotate = sin150 * -30;
+//	ork.$.foot1._rotate = sin150 * -30;
+//	ork.$.leg2._rotate = sin150 * -30;
+//	ork.$.foot2._rotate = sin150 * -30;
+	ork.$.leg1._rotate = sin75 * 30;
+	ork.$.foot1._rotate = -Math.abs(sin75 * 20);
+	ork.$.leg2._rotate = sin75 * 30;
+	ork.$.foot2._rotate = -Math.abs(sin75 * 20);
+
+	ork.$.hair1._rotate = sin75 * -24;
+	ork.$.hair2._rotate = sin75 * -32;
+
+	ork.$["pupil1"]._offset.x = 5;
+	ork.$["pupil1"]._offset.y = -5;
+	ork.$["pupil2"]._offset.x = 5;
+	ork.$["pupil2"]._offset.y = 10;
+
+	ork.$.bubble._scale = 1 - (time / 450);
+	ork.$.key._scale = 1 - (time / 450);
 }
 
 //wave the flag
@@ -208,7 +259,7 @@ function animate(time) {
 			}
 		}
 	} else if(BUB.anim === "climbup") {
-		climbup(BUB.thing.ork, time);
+		climbup(BUB.thing.ork, time - BUB.animstart);
 		BUB.thing.ork.y -= 8;
 		if(BUB.thing.ork.y < (178 + ((BUB.pos.y - 1)* 122))) {
 			BUB.actiondone = true;
@@ -216,12 +267,26 @@ function animate(time) {
 			BUB.thing.ork.y = 178 + ((BUB.pos.y) * 122);
 		}
 	} else if(BUB.anim === "climbdown") {
-		climbdown(BUB.thing.ork, time);
+		climbdown(BUB.thing.ork, time - BUB.animstart);
 		BUB.thing.ork.y += 8;
 		if(BUB.thing.ork.y > (178 + ((BUB.pos.y + 1)* 122))) {
 			BUB.actiondone = true;
 			BUB.pos.y++;
 			BUB.thing.ork.y = 178 + ((BUB.pos.y) * 122);
+		}
+	} else if(BUB.anim === "slurpbub") {
+		BUB.thing.ork.addTags("bubble");
+		slurp(BUB.thing.ork, time - BUB.animstart);
+		if(time - BUB.animstart > 450) {
+			BUB.actiondone = true;
+			BUB.thing.ork.removeTags("bubble");
+		}
+	} else if(BUB.anim === "slurpkey") {
+		BUB.thing.ork.addTags("key");
+		slurp(BUB.thing.ork, time - BUB.animstart);
+		if(time - BUB.animstart > 450) {
+			BUB.actiondone = true;
+			BUB.thing.ork.removeTags("key");
 		}
 	} else {
 		idle(BUB.thing.ork, time);
@@ -248,6 +313,10 @@ function handleinput(time) {
 		} else if(BUB.input.up) {
 			BUB.anim = "climbup";
 			BUB.action = "climbup";
+		} else if(BUB.input.restart) {
+			BUB.animstart = time;
+			BUB.anim = BUB.action = "slurpbub";
+//			BUB.anim = BUB.action = "slurpkey";
 		} else {
 			BUB.action = null;
 			BUB.anim = null;
@@ -269,11 +338,7 @@ function transitionEnd() {
 }
 
 function loadlevel(data) {
-	var walls = [];
-	var bubbles = [];
-	var lefts = [];
-	var rights = [];
-	var ladders = [];
+	var prop = {};
 	var i;
 	var c;
 
@@ -290,10 +355,14 @@ function loadlevel(data) {
 		"c": "crate",
 		"O": "ork",
 	};
+	BUB.prop.every(function(key) {
+		prop[key] = [];
+		return true;
+	});
 
 	// top border
 	for(i = 0; i < 10; i++) {
-		walls.push({x: 3 + (i * 119), y: 52});
+		prop.wall.push({x: 3 + (i * 119), y: 52});
 	}
 
 	BUB.level = [];
@@ -302,50 +371,45 @@ function loadlevel(data) {
 		BUB.level.push(line);
 
 		// left border
-		walls.push({x: 3, y: 52 + ((y + 1) * 122)});
+		prop.wall.push({x: 3, y: 52 + ((y + 1) * 122)});
 
 		for(i = 0; i < line.length; i++) {
 			c = line[i];
-			if(c === "O") {
+			switch(c) {
+			case "O":
 				BUB.pos.x = i;
 				BUB.pos.y = y;
-			} else if(c === "4") {
+				break;
+			case "4":
 				BUB.flag.x = i;
 				BUB.flag.y = y;
-			} else if(c === "E") {
-				walls.push({x: 3 + ((i + 1) * 119), y: 52 + ((y + 1) * 122)});
-			} else if(c === "o") {
-				bubbles.push({x: 3 + ((i + 1) * 119), y: 52 + ((y + 1) * 122)});
-			} else if(c === "l") {
-				lefts.push({x: 3 + ((i + 1) * 119), y: 52 + ((y + 1) * 122)});
-			} else if(c === "r") {
-				rights.push({x: 3 + ((i + 1) * 119), y: 52 + ((y + 1) * 122)});
-			} else if(c === "H") {
-				ladders.push({x: 3 + ((i + 1) * 119), y: 52 + ((y + 1) * 122)});
+				break;
+			default:
+				if(quick[c] && prop[quick[c]]) {
+					prop[quick[c]].push({
+						x: 3 + ((i + 1) * 119),
+						y: 52 + ((y + 1) * 122)
+					});
+				}
+				break;
 			}
 		}
 
 		// right border
-		walls.push({x: 3 + (9 * 119), y: 52 + ((y + 1) * 122)});
+		prop.wall.push({x: 3 + (9 * 119), y: 52 + ((y + 1) * 122)});
 
 		return true;
 	});
 
 	// bottom border
 	for(i = 0; i < 10; i++) {
-		walls.push({x: 3 + (i * 119), y: 52 + (9 * 122)});
+		prop.wall.push({x: 3 + (i * 119), y: 52 + (9 * 122)});
 	}
 
-	walls.reverse();
-//	BUB.thing.bg.setInstances(walls, "wall");
-	BUB.thing.wall.setInstances(walls);
-	bubbles.reverse();
-//	BUB.thing.bg.setInstances(bubbles, "bubble");
-	BUB.thing.bubble.setInstances(bubbles);
-	BUB.thing.left.setInstances(lefts);
-	BUB.thing.right.setInstances(rights);
-//	ladders.reverse();
-	BUB.thing.ladder.setInstances(ladders);
+	Object.keys(prop).every(function(key) {
+		BUB.thing[key].setInstances(prop[key].reverse());
+		return true;
+	});
 }
 
 function start() {
@@ -371,14 +435,14 @@ function start() {
 	BUB.thing.bg.y = 0;
 	BUB.thing.bg.x = BUB.width / 2;
 
-	["wall", "bubble", "left", "right", "ladder"].every(function(block) {
+	BUB.prop.every(function(block) {
 		BUB.thing[block].x = 0;
 		BUB.thing[block].y = 0;
 		BUB.scene.addBG(BUB.thing[block], "bg" + block);
 		return true;
 	});
 
-	loadlevel("________0_rH_____0EEE_HE__0____H__40____H_EE0oo_OHEEE0EEEEEEEE0EEEEEEEE");
+	loadlevel("_____-__0_rH__-__0EEE_HE__0____H__40____H_EE0oo_OHEEE0EEEEEEEE0EEEEEEEE");
 
 	BUB.thing.ork.x = 128 + (119 * BUB.pos.x);
 	BUB.thing.ork.y = 178 + (122 * BUB.pos.y);

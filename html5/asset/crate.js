@@ -1,9 +1,9 @@
 LOAD({
 	"name": "crate",
-	"scale": 1,
+	"scale": 0.3,
 	"above": [
 		{
-			"name": "crate",
+			"name": "crate1",
 			"image": "image/scribble/crate.png",
 			"pivot": {
 				"x": 236,
