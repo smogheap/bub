@@ -1,6 +1,6 @@
 LOAD({
 	"name": "door",
-	"scale": 0.3,
+	"scale": 0.4,
 	"above": [
 		{
 			"name": "door1",
