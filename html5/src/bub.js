@@ -23,6 +23,10 @@ BUB = {
 
 	prop: ["wall", "left", "right", "ladder", "door", "crate", "key", "bubble"],
 	level: null,
+	inv: {
+		key: 0,
+		bub: 0
+	},
 	pos: {
 		x: 0,
 		y: 7
@@ -225,22 +229,31 @@ function slurp(ork, time) {
 
 	ork.$.bubble._scale = 1 - (time / 450);
 	ork.$.bubble._rotate = 0;
+	ork.$.bubble._offset.x = (1 - (time / 450)) * 20;
+	ork.$.bubble._offset.y = (1 - (time / 450)) * -30;
+
 	ork.$.key._scale = 1 - (time / 450);
-	ork.$.key._rotate = 0;
+	if(ork.$.key.flipx) {
+		ork.$.key._rotate = -5;
+	} else {
+		ork.$.key._rotate = 5;
+	}
+	ork.$.key._offset.x = (1 - (time / 450)) * 20;
+	ork.$.key._offset.y = (1 - (time / 450)) * -80;
 }
 
 //spit animation
 function spit(ork, time) {
-	var time250 = time / 250;
+	var time350 = time / 350;
 	var sin40 = Math.sin(time / 40);
 
 	ork.$.body._offset.x = 0;
-	ork.$.body._offset.y = time250 * (-122 / 0.3);
+	ork.$.body._offset.y = Math.sin(time / 250) * (-122 / 0.3);
 	ork.$.body._rotate = 50;
 	ork.$.snout._rotate = 30;
 	ork.$.snout._scale = 1;
 	ork.$.mouth._scale = 1;
-	ork.$.mouth._rotate = 0;
+	ork.$.mouth._rotate = 10;
 
 	ork.$.leg1._offset.x = 30;
 	ork.$.leg1._offset.y = -40;
@@ -259,12 +272,19 @@ function spit(ork, time) {
 	ork.$.pupil2._offset.x = 10;
 	ork.$.pupil2._offset.y = 15;
 
-	ork.$.bubble._scale = (time / 220) + 0.001;
-	ork.$.bubble._rotate = -80;
-	ork.$.bubble._offset.x = (time / 350) * 110;
-	ork.$.bubble._offset.y = (time / 350) * 220;
-	ork.$.key._scale = time / 250;
-	ork.$.key._rotate = -80;
+	ork.$.bubble._scale = time / 220 + 0.001;
+	ork.$.bubble._rotate = -90;
+	ork.$.bubble._offset.x = 0;
+	ork.$.bubble._offset.y = time350 * 50;
+
+	ork.$.key._scale = time / 250 + 0.001;
+	if(ork.$.key.flipx) {
+		ork.$.key._rotate = 85;
+	} else {
+		ork.$.key._rotate = -85;
+	}
+	ork.$.key._offset.x = time350 * -10;
+	ork.$.key._offset.y = time350 * 60;
 }
 
 //wave the flag
@@ -319,6 +339,10 @@ function animate(time) {
 		}
 	} else if(BUB.anim === "slurpbub") {
 		BUB.thing.ork.addTags("bubble");
+		BUB.thing.bubble.removeInstances({
+			x: screenX(BUB.pos.x - 1),
+			y: screenY(BUB.pos.y)
+		});
 		slurp(BUB.thing.ork, time - BUB.animstart);
 		if(time - BUB.animstart > 450) {
 			BUB.actiondone = true;
@@ -326,6 +350,10 @@ function animate(time) {
 		}
 	} else if(BUB.anim === "slurpkey") {
 		BUB.thing.ork.addTags("key");
+		BUB.thing.key.removeInstances({
+			x: screenX(BUB.pos.x - 1),
+			y: screenY(BUB.pos.y)
+		});
 		slurp(BUB.thing.ork, time - BUB.animstart);
 		if(time - BUB.animstart > 450) {
 			BUB.actiondone = true;
@@ -346,11 +374,18 @@ function animate(time) {
 			BUB.thing.ork.$.body._offset.y = 0;
 		}
 	} else if(BUB.anim === "spitkey") {
-		BUB.thing.ork.addTags("key");
 		spit(BUB.thing.ork, time - BUB.animstart);
-		if(time - BUB.animstart > 450) {
+		BUB.thing.ork.addTags("key");
+		if(time - BUB.animstart > 250) {
+			BUB.thing.key.addInstances({
+				x: screenX(BUB.pos.x),
+				y: screenY(BUB.pos.y)
+			});
 			BUB.actiondone = true;
 			BUB.thing.ork.removeTags("key");
+			BUB.pos.y--;
+			BUB.thing.ork.y = screenY(BUB.pos.y);
+			BUB.thing.ork.$.body._offset.y = 0;
 		}
 	} else {
 		idle(BUB.thing.ork, time);
@@ -371,7 +406,7 @@ function handleinput(time) {
 		} else if(BUB.input.right) {
 			BUB.anim = "walk";
 			BUB.thing.ork.flip(false, false);
-			BUB.thing.ork.$.key.flipx = true;
+			BUB.thing.ork.$.key.flipx = false;
 			BUB.action = "right";
 		} else if(BUB.input.down) {
 			BUB.anim = "climbdown";
@@ -384,6 +419,7 @@ function handleinput(time) {
 //			BUB.anim = BUB.action = "slurpbub";
 //			BUB.anim = BUB.action = "slurpkey";
 			BUB.anim = BUB.action = "spitbub";
+//			BUB.anim = BUB.action = "spitkey";
 		} else {
 			BUB.action = null;
 			BUB.anim = null;
@@ -495,7 +531,7 @@ function start() {
 	BUB.thing.ork.$["pupil1"]._offset = BUB.thing.ork.$["pupil1"]._offset || {};
 	BUB.thing.ork.$["pupil2"]._offset = BUB.thing.ork.$["pupil2"]._offset || {};
 	BUB.thing.ork.$["bubble"]._offset = BUB.thing.ork.$["bubble"]._offset || {};
-	BUB.thing.ork.$["key"]._offset = BUB.thing.ork.$["bubble"]._offset || {};
+	BUB.thing.ork.$["key"]._offset = BUB.thing.ork.$["key"]._offset || {};
 
 	BUB.thing.flag.$["shade"]._offset = BUB.thing.flag.$["shade"]._offset || {};
 
@@ -513,10 +549,10 @@ function start() {
 
 	loadlevel([
 		"________",
-		"_r______",
+		"_r-_____",
 		"EEE_____",
 		"_______4",
-		"______EE",
+		"_____-EE",
 		"oo_O_EEE",
 		"EEEEEEEE",
 		"EEEEEEEE"

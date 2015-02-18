@@ -350,6 +350,18 @@ function penduinOBJ(obj, cb) {
 			instances = instances.concat(newInst);
 		}
 	};
+	this.removeInstances = function removeInstances(byeInst) {
+		dirty = true;
+		if(typeof(byeInst) === "object") {
+			byeInst = [byeInst];
+		}
+		byeInst.every(function(inst) {
+			instances = instances.filter(function(item) {
+				return !(item.x === inst.x && item.y === inst.y);
+			});
+			return true;
+		});
+	};
 
 	/* API: TAGS */
 

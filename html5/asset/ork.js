@@ -52,8 +52,8 @@ LOAD({
 									"image": "image/scribble/bubble.png",
 									"tag": "bubble",
 									"pivot": {
-										"x": 70,
-										"y": 90
+										"x": 120,
+										"y": 60
 									},
 									"rotate": 0,
 									"scale": 1.5,
@@ -68,8 +68,8 @@ LOAD({
 									"image": "image/scribble/key.png",
 									"tag": "key",
 									"pivot": {
-										"x": 70,
-										"y": 90
+										"x": 100,
+										"y": 30
 									},
 									"rotate": 0,
 									"scale": 1.2,

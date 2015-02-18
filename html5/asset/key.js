@@ -1,6 +1,6 @@
 LOAD({
 	"name": "key",
-	"scale": 0.48,
+	"scale": 0.49,
 	"above": [
 		{
 			"name": "key1",
