@@ -342,6 +342,14 @@ function penduinOBJ(obj, cb) {
 		dirty = true;
 		instances = arr;
 	};
+	this.addInstances = function addInstances(newInst) {
+		dirty = true;
+		if(typeof(newInst) === "object") {
+			instances.push(newInst);
+		} else {
+			instances = instances.concat(newInst);
+		}
+	};
 
 	/* API: TAGS */
 

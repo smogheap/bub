@@ -224,7 +224,47 @@ function slurp(ork, time) {
 	ork.$["pupil2"]._offset.y = 10;
 
 	ork.$.bubble._scale = 1 - (time / 450);
+	ork.$.bubble._rotate = 0;
 	ork.$.key._scale = 1 - (time / 450);
+	ork.$.key._rotate = 0;
+}
+
+//spit animation
+function spit(ork, time) {
+	var time250 = time / 250;
+	var sin40 = Math.sin(time / 40);
+
+	ork.$.body._offset.x = 0;
+	ork.$.body._offset.y = time250 * (-122 / 0.3);
+	ork.$.body._rotate = 50;
+	ork.$.snout._rotate = 30;
+	ork.$.snout._scale = 1;
+	ork.$.mouth._scale = 1;
+	ork.$.mouth._rotate = 0;
+
+	ork.$.leg1._offset.x = 30;
+	ork.$.leg1._offset.y = -40;
+	ork.$.leg2._offset.x = 50;
+	ork.$.leg2._offset.y = 10;
+	ork.$.leg1._rotate = -50;
+	ork.$.foot1._rotate = 0;
+	ork.$.leg2._rotate = -50;
+	ork.$.foot2._rotate = 0;
+
+	ork.$.hair1._rotate = (sin40 * 10) - 20;
+	ork.$.hair2._rotate = (sin40 * 5) - 90;
+
+	ork.$.pupil1._offset.x = 5;
+	ork.$.pupil1._offset.y = 5;
+	ork.$.pupil2._offset.x = 10;
+	ork.$.pupil2._offset.y = 15;
+
+	ork.$.bubble._scale = (time / 220) + 0.001;
+	ork.$.bubble._rotate = -80;
+	ork.$.bubble._offset.x = (time / 350) * 110;
+	ork.$.bubble._offset.y = (time / 350) * 220;
+	ork.$.key._scale = time / 250;
+	ork.$.key._rotate = -80;
 }
 
 //wave the flag
@@ -291,6 +331,27 @@ function animate(time) {
 			BUB.actiondone = true;
 			BUB.thing.ork.removeTags("key");
 		}
+	} else if(BUB.anim === "spitbub") {
+		spit(BUB.thing.ork, time - BUB.animstart);
+		BUB.thing.ork.addTags("bubble");
+		if(time - BUB.animstart > 250) {
+			BUB.thing.bubble.addInstances({
+				x: screenX(BUB.pos.x),
+				y: screenY(BUB.pos.y)
+			});
+			BUB.actiondone = true;
+			BUB.thing.ork.removeTags("bubble");
+			BUB.pos.y--;
+			BUB.thing.ork.y = screenY(BUB.pos.y);
+			BUB.thing.ork.$.body._offset.y = 0;
+		}
+	} else if(BUB.anim === "spitkey") {
+		BUB.thing.ork.addTags("key");
+		spit(BUB.thing.ork, time - BUB.animstart);
+		if(time - BUB.animstart > 450) {
+			BUB.actiondone = true;
+			BUB.thing.ork.removeTags("key");
+		}
 	} else {
 		idle(BUB.thing.ork, time);
 	}
@@ -305,10 +366,12 @@ function handleinput(time) {
 		if(BUB.input.left) {
 			BUB.anim = "walk";
 			BUB.thing.ork.flip(true, false);
+			BUB.thing.ork.$.key.flipx = true;
 			BUB.action = "left";
 		} else if(BUB.input.right) {
 			BUB.anim = "walk";
 			BUB.thing.ork.flip(false, false);
+			BUB.thing.ork.$.key.flipx = true;
 			BUB.action = "right";
 		} else if(BUB.input.down) {
 			BUB.anim = "climbdown";
@@ -318,8 +381,9 @@ function handleinput(time) {
 			BUB.action = "climbup";
 		} else if(BUB.input.restart) {
 			BUB.animstart = time;
-			BUB.anim = BUB.action = "slurpbub";
+//			BUB.anim = BUB.action = "slurpbub";
 //			BUB.anim = BUB.action = "slurpkey";
+			BUB.anim = BUB.action = "spitbub";
 		} else {
 			BUB.action = null;
 			BUB.anim = null;
@@ -430,6 +494,8 @@ function start() {
 	BUB.thing.ork.$["leg2"]._offset = BUB.thing.ork.$["leg2"]._offset || {};
 	BUB.thing.ork.$["pupil1"]._offset = BUB.thing.ork.$["pupil1"]._offset || {};
 	BUB.thing.ork.$["pupil2"]._offset = BUB.thing.ork.$["pupil2"]._offset || {};
+	BUB.thing.ork.$["bubble"]._offset = BUB.thing.ork.$["bubble"]._offset || {};
+	BUB.thing.ork.$["key"]._offset = BUB.thing.ork.$["bubble"]._offset || {};
 
 	BUB.thing.flag.$["shade"]._offset = BUB.thing.flag.$["shade"]._offset || {};
 
