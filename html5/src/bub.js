@@ -27,6 +27,10 @@ BUB = {
 		key: 0,
 		bub: 0
 	},
+	grow: {
+		eye1: false,
+		eye2: false
+	},
 	pos: {
 		x: 0,
 		y: 7
@@ -67,10 +71,59 @@ function screenY(y) {
 	return (y * 122) + 188;
 }
 
+function inventory() {
+	var slots = 2;
+	var bub = BUB.inv.bub;
+	var key = BUB.inv.key;
+	BUB.thing.ork.setTags(["pupil1", "pupil2"]);
+	BUB.grow.eye1 = BUB.grow.eye2 = false;
+	while(slots && bub) {
+		if(slots > 1) {
+			BUB.thing.ork.removeTags("pupil2");
+			BUB.thing.ork.addTags("bubble2");
+			BUB.grow.eye2 = true;
+		} else {
+			BUB.thing.ork.removeTags("pupil1");
+			BUB.thing.ork.addTags("bubble1");
+			BUB.grow.eye1 = true;
+		}
+		slots--;
+		bub--;
+	}
+	while(slots && key) {
+		if(slots > 1) {
+			BUB.thing.ork.removeTags("pupil2");
+			BUB.thing.ork.addTags("key2");
+			BUB.grow.eye2 = true;
+		} else {
+			BUB.thing.ork.removeTags("pupil1");
+			BUB.thing.ork.addTags("key1");
+			BUB.grow.eye1 = true;
+		}
+		slots--;
+		key--;
+	}
+}
+
 function animate(time) {
 	// flag
 	wave(BUB.thing.flag, time);
 
+	// ork inventory
+	if(BUB.grow.eye1) {
+		if(BUB.thing.ork.$.eye1.scale < 1.6) {
+			BUB.thing.ork.$.eye1.scale += 0.1;
+		}
+	} else if(BUB.thing.ork.$.eye1.scale > 0.6) {
+		BUB.thing.ork.$.eye1.scale -= 0.1;
+	}
+	if(BUB.grow.eye2) {
+		if(BUB.thing.ork.$.eye2.scale < 1.6) {
+			BUB.thing.ork.$.eye2.scale += 0.1;
+		}
+	} else if(BUB.thing.ork.$.eye2.scale > 0.6) {
+		BUB.thing.ork.$.eye2.scale -= 0.1;
+	}
 	// ork
 	if(BUB.anim === "walk") {
 		walk(BUB.thing.ork, time - BUB.animstart - 300);
@@ -187,13 +240,14 @@ function handleinput(time) {
 		} else if(BUB.input.up) {
 			BUB.anim = "climbup";
 			BUB.action = "climbup";
-		} else if(BUB.input.restart) {
+		} else if(BUB.input.menu) {
 			BUB.animstart = time;
 //			BUB.anim = BUB.action = "slurpbub";
 //			BUB.anim = BUB.action = "slurpkey";
 //			BUB.anim = BUB.action = "spitbub";
 //			BUB.anim = BUB.action = "spitkey";
 			BUB.anim = BUB.action = "bonk";
+//			BUB.action = "restart";
 		} else {
 			BUB.action = null;
 			BUB.anim = null;
@@ -204,6 +258,37 @@ function handleinput(time) {
 function tick(scene, time) {
 	handleinput(time);
 	animate(time);
+
+	if(BUB.action === "restart") {
+		if(!BUB.input.restart) {
+			BUB.thing.restart.$.red._rotate = 0;
+			BUB.thing.restart.$.white._rotate = 0;
+			BUB.thing.restart.setTags([]);
+			BUB.input.restart = false;
+			BUB.action = null;
+			// TODO: restart
+		} else if(BUB.thing.restart.getTags().indexOf("red") >= 0) {
+			BUB.thing.restart.$.red._rotate-=4;
+			if(BUB.thing.restart.$.red._rotate < -180) {
+				BUB.thing.restart.$.red._rotate = 0;
+				BUB.thing.restart.$.white._rotate = 0;
+				BUB.thing.restart.setTags([]);
+				BUB.input.restart = false;
+				BUB.action = null;
+				// TODO: restart
+			}
+		} else if(BUB.thing.restart.getTags().indexOf("white") >= 0) {
+			BUB.thing.restart.$.white._rotate-=4;
+			if(BUB.thing.restart.$.white._rotate < -180) {
+				BUB.thing.restart.$.white._rotate = 0;
+				BUB.thing.restart.setTags(["red", "active"]);
+			}
+		} else {
+			BUB.thing.restart.$.red._rotate = 0;
+			BUB.thing.restart.$.white._rotate = 0;
+			BUB.thing.restart.setTags(["white", "active"]);
+		}
+	}
 }
 
 function transitionEnd() {
@@ -306,6 +391,7 @@ function start() {
 	BUB.thing.ork.$["pupil2"]._offset = BUB.thing.ork.$["pupil2"]._offset || {};
 	BUB.thing.ork.$["bubble"]._offset = BUB.thing.ork.$["bubble"]._offset || {};
 	BUB.thing.ork.$["key"]._offset = BUB.thing.ork.$["key"]._offset || {};
+	BUB.thing.ork.setTags(["pupil1", "pupil2"]);
 
 	BUB.thing.flag.$["shade"]._offset = BUB.thing.flag.$["shade"]._offset || {};
 
@@ -313,6 +399,12 @@ function start() {
 	BUB.scene.addBG(BUB.thing.bg, "bg");
 	BUB.thing.bg.y = 0;
 	BUB.thing.bg.x = BUB.width / 2;
+
+	BUB.scene.addOBJ(BUB.thing.restart, "restart");
+	BUB.thing.restart.x = BUB.width / 2;
+	BUB.thing.restart.y = BUB.height / 2;
+	BUB.thing.restart.$.white._rotate = 0;
+	BUB.thing.restart.$.red._rotate = 0;
 
 	BUB.prop.every(function(block) {
 		BUB.thing[block].x = 0;
@@ -323,7 +415,7 @@ function start() {
 
 	loadlevel([
 		"________",
-		"_r-_____",
+		"_rc_____",
 		"EEE_____",
 		"_______4",
 		"_____-EE",
@@ -475,7 +567,8 @@ function handlekey(event, down) {
 		BUB.input.right = down;
 		break;
 	case 32:  //space
-		BUB.input.restart = down;
+//		BUB.input.restart = down;
+		BUB.input.menu = down;
 		break;
 	case 27:  //esc
 		BUB.input.menu = down;

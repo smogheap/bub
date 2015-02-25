@@ -103,6 +103,7 @@ LOAD({
 						{
 							"name": "pupil1",
 							"image": "image/scribble/ork-pupil.png",
+							"tag": "pupil1",
 							"pivot": {
 								"x": 22,
 								"y": 22
@@ -116,6 +117,38 @@ LOAD({
 							},
 							"above": [],
 							"below": []
+						},
+						{
+							"name": "bubble1",
+							"image": "image/scribble/bubble.png",
+							"tag": "bubble1",
+							"pivot": {
+								"x": 118,
+								"y": 121
+							},
+							"rotate": 0,
+							"scale": 0.3,
+							"alpha": 1,
+							"offset": {
+								"x": 70,
+								"y": 70
+							}
+						},
+						{
+							"name": "key1",
+							"image": "image/scribble/key.png",
+							"tag": "key1",
+							"pivot": {
+								"x": 102,
+								"y": 143
+							},
+							"rotate": 0,
+							"scale": 0.3,
+							"alpha": 1,
+							"offset": {
+								"x": 70,
+								"y": 70
+							}
 						}
 					],
 					"below": []
@@ -140,6 +173,7 @@ LOAD({
 						{
 							"name": "pupil2",
 							"image": "image/scribble/ork-pupil.png",
+							"tag": "pupil2",
 							"pivot": {
 								"x": 22,
 								"y": 22
@@ -153,6 +187,38 @@ LOAD({
 							},
 							"above": [],
 							"below": []
+						},
+						{
+							"name": "bubble2",
+							"image": "image/scribble/bubble.png",
+							"tag": "bubble2",
+							"pivot": {
+								"x": 118,
+								"y": 121
+							},
+							"rotate": 0,
+							"scale": 0.3,
+							"alpha": 1,
+							"offset": {
+								"x": 72,
+								"y": 52
+							}
+						},
+						{
+							"name": "key2",
+							"image": "image/scribble/key.png",
+							"tag": "key2",
+							"pivot": {
+								"x": 102,
+								"y": 143
+							},
+							"rotate": 0,
+							"scale": 0.3,
+							"alpha": 1,
+							"offset": {
+								"x": 72,
+								"y": 52
+							}
 						}
 					],
 					"below": []

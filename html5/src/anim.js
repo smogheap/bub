@@ -221,7 +221,7 @@ function spit(ork, time) {
 
 // ork bonk
 function bonk(ork, time) {
-	var sin = Math.sin(time / (Math.PI * 20));
+	var sin = Math.sin(time / (Math.PI * 21));
 	if(sin < 0) {
 		sin *= 2;
 	} else {
