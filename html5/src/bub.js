@@ -21,7 +21,7 @@ BUB = {
 	maskout: false,
 	acceptinput: false,
 
-	prop: ["wall", "left", "right", "ladder", "door", "crate", "key", "bubble"],
+	prop: ["wall", "left", "right", "ladder", "door", "crate", "bubble", "key"],
 	level: null,
 	inv: {
 		key: 0,
@@ -63,6 +63,19 @@ if(!console) {
 		error: function() {}
 	}
 }
+QUICK = {
+	"_": "",
+	"E": "wall",
+	"H": "ladder",
+	"o": "bubble",
+	"-": "key",
+	"X": "door",
+	"4": "flag",
+	"l": "left",
+	"r": "right",
+	"c": "crate",
+	"O": "ork",
+};
 
 function screenX(x) {
 	return (119 * x) + 122;
@@ -103,6 +116,28 @@ function inventory() {
 		slots--;
 		key--;
 	}
+}
+
+function isempty(x, y) {
+	if(x < 0 || x > 7 || y < 0 || y > 7) {
+		return false;
+	}
+	return (0 <= ["_", "4"].indexOf(BUB.level[y][x]));
+}
+function emptyout(x, y, item) {
+	item = item || "_";
+	if(BUB.thing[QUICK[BUB.level[y][x]]] &&
+	   BUB.thing[QUICK[BUB.level[y][x]]].instances) {
+		BUB.thing[QUICK[BUB.level[y][x]]].removeInstances({
+			x: screenX(x),
+			y: screenY(y)
+		});
+	}
+	BUB.level[y] = [
+		BUB.level[y].substring(0, x),
+		item,
+		BUB.level[y].substring(x + 1)
+	].join("");
 }
 
 function animate(time) {
@@ -160,25 +195,23 @@ function animate(time) {
 		}
 	} else if(BUB.anim === "slurpbub") {
 		BUB.thing.ork.addTags("bubble");
-		BUB.thing.bubble.removeInstances({
-			x: screenX(BUB.pos.x - 1),
-			y: screenY(BUB.pos.y)
-		});
 		slurp(BUB.thing.ork, time - BUB.animstart);
 		if(time - BUB.animstart > 450) {
 			BUB.actiondone = true;
+			BUB.action = null;
 			BUB.thing.ork.removeTags("bubble");
+			BUB.inv.bub++;
+			inventory();
 		}
 	} else if(BUB.anim === "slurpkey") {
 		BUB.thing.ork.addTags("key");
-		BUB.thing.key.removeInstances({
-			x: screenX(BUB.pos.x - 1),
-			y: screenY(BUB.pos.y)
-		});
 		slurp(BUB.thing.ork, time - BUB.animstart);
 		if(time - BUB.animstart > 450) {
 			BUB.actiondone = true;
+			BUB.action = null;
 			BUB.thing.ork.removeTags("key");
+			BUB.inv.key++;
+			inventory();
 		}
 	} else if(BUB.anim === "spitbub") {
 		spit(BUB.thing.ork, time - BUB.animstart);
@@ -188,7 +221,9 @@ function animate(time) {
 				x: screenX(BUB.pos.x),
 				y: screenY(BUB.pos.y)
 			});
+			emptyout(BUB.pos.x, BUB.pos.y, "o");
 			BUB.actiondone = true;
+			BUB.action = null;
 			BUB.thing.ork.removeTags("bubble");
 			BUB.pos.y--;
 			BUB.thing.ork.y = screenY(BUB.pos.y);
@@ -202,7 +237,9 @@ function animate(time) {
 				x: screenX(BUB.pos.x),
 				y: screenY(BUB.pos.y)
 			});
+			emptyout(BUB.pos.x, BUB.pos.y, "-");
 			BUB.actiondone = true;
+			BUB.action = null;
 			BUB.thing.ork.removeTags("key");
 			BUB.pos.y--;
 			BUB.thing.ork.y = screenY(BUB.pos.y);
@@ -218,6 +255,20 @@ function animate(time) {
 	}
 }
 
+function spititem() {
+	if(isempty(BUB.pos.x, BUB.pos.y) && isempty(BUB.pos.x, BUB.pos.y - 1)) {
+		if(BUB.inv.bub) {
+			BUB.inv.bub--;
+			inventory();
+			BUB.anim = BUB.action = "spitbub";
+		} else if(BUB.inv.key) {
+			BUB.inv.key--;
+			inventory();
+			BUB.anim = BUB.action = "spitkey";
+		}
+	}
+}
+
 function handleinput(time) {
 	if(!BUB.action || BUB.actiondone) {
 		BUB.actiondone = false;
@@ -225,18 +276,117 @@ function handleinput(time) {
 			BUB.animstart = time;
 		}
 		if(BUB.input.left) {
-			BUB.anim = "walk";
 			BUB.thing.ork.flip(true, false);
 			BUB.thing.ork.$.key.flipx = true;
-			BUB.action = "left";
+			if(BUB.pos.x === 0) {
+				BUB.anim = BUB.action = "bonk";
+				BUB.animstart = time;
+			} else {
+				console.log(BUB.level[BUB.pos.y][BUB.pos.x - 1]);
+				switch(BUB.level[BUB.pos.y][BUB.pos.x - 1]) {
+				case "o":
+					if(BUB.inv.bub + BUB.inv.key < 2) {
+						BUB.thing.bubble.removeInstances({
+							x: screenX(BUB.pos.x - 1),
+							y: screenY(BUB.pos.y)
+						});
+						emptyout(BUB.pos.x - 1, BUB.pos.y);
+						BUB.anim = BUB.action = "slurpbub";
+					} else {
+						BUB.anim = BUB.action = "bonk";
+					}
+					BUB.animstart = time;
+					break;
+				case "-":
+					if(BUB.inv.bub + BUB.inv.key < 2) {
+						BUB.thing.key.removeInstances({
+							x: screenX(BUB.pos.x - 1),
+							y: screenY(BUB.pos.y)
+						});
+						emptyout(BUB.pos.x - 1, BUB.pos.y);
+						BUB.anim = BUB.action = "slurpkey";
+					} else {
+						BUB.anim = BUB.action = "bonk";
+					}
+					BUB.animstart = time;
+					break;
+				case "_":
+				case "H":
+				case "O":
+				case "4":
+				case "l":
+					BUB.anim = "walk";
+					BUB.action = "left";
+					break;
+				default:
+					BUB.anim = BUB.action = "bonk";
+					BUB.animstart = time;
+					break;
+				}
+			}
 		} else if(BUB.input.right) {
-			BUB.anim = "walk";
 			BUB.thing.ork.flip(false, false);
 			BUB.thing.ork.$.key.flipx = false;
-			BUB.action = "right";
+			if(BUB.pos.x === 7) {
+				BUB.anim = BUB.action = "bonk";
+				BUB.animstart = time;
+			} else {
+				console.log(BUB.level[BUB.pos.y][BUB.pos.x - 1]);
+				switch(BUB.level[BUB.pos.y][BUB.pos.x + 1]) {
+				case "o":
+					if(BUB.inv.bub + BUB.inv.key < 2) {
+						BUB.thing.bubble.removeInstances({
+							x: screenX(BUB.pos.x + 1),
+							y: screenY(BUB.pos.y)
+						});
+						emptyout(BUB.pos.x + 1, BUB.pos.y);
+						BUB.anim = BUB.action = "slurpbub";
+					} else {
+						BUB.anim = BUB.action = "bonk";
+					}
+					BUB.animstart = time;
+					break;
+				case "-":
+					if(BUB.inv.bub + BUB.inv.key < 2) {
+						BUB.thing.key.removeInstances({
+							x: screenX(BUB.pos.x + 1),
+							y: screenY(BUB.pos.y)
+						});
+						emptyout(BUB.pos.x + 1, BUB.pos.y);
+						BUB.anim = BUB.action = "slurpkey";
+					} else {
+						BUB.anim = BUB.action = "bonk";
+					}
+					BUB.animstart = time;
+					break;
+				case "_":
+				case "H":
+				case "O":
+				case "4":
+				case "r":
+					BUB.anim = "walk";
+					BUB.action = "right";
+					break;
+				default:
+					BUB.anim = BUB.action = "bonk";
+					BUB.animstart = time;
+					break;
+				}
+			}
 		} else if(BUB.input.down) {
-			BUB.anim = "climbdown";
-			BUB.action = "climbdown";
+			if(BUB.pos.y === 7) {
+				spititem();
+			} else {
+				switch(BUB.level[BUB.pos.y + 1][BUB.pos.x]) {
+				case "H":
+				case "_":
+					BUB.anim = BUB.action = "climbdown";
+					break;
+				default:
+					spititem();
+					break;
+				}
+			}
 		} else if(BUB.input.up) {
 			BUB.anim = "climbup";
 			BUB.action = "climbup";
@@ -304,19 +454,6 @@ function loadlevel(data) {
 	var i;
 	var c;
 
-	var quick = {
-		"_": "",
-		"E": "wall",
-		"H": "ladder",
-		"o": "bubble",
-		"-": "key",
-		"X": "door",
-		"4": "flag",
-		"l": "left",
-		"r": "right",
-		"c": "crate",
-		"O": "ork",
-	};
 	BUB.prop.every(function(key) {
 		prop[key] = [];
 		return true;
@@ -330,7 +467,7 @@ function loadlevel(data) {
 	BUB.level = [];
 	// level data
 	data.split("0").every(function(line, y) {
-		BUB.level.push(line);
+		BUB.level.push(line.replace("O", "_"));
 
 		// left border
 		prop.wall.push({ x: screenX(-1), y: screenY(y) });
@@ -347,8 +484,8 @@ function loadlevel(data) {
 				BUB.flag.y = y;
 				break;
 			default:
-				if(quick[c] && prop[quick[c]]) {
-					prop[quick[c]].push({
+				if(QUICK[c] && prop[QUICK[c]]) {
+					prop[QUICK[c]].push({
 						x: screenX(i),
 						y: screenY(y)
 					});
