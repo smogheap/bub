@@ -583,6 +583,9 @@ function penduinSCENE(canvas, logicWidth, logicHeight,
 	var vignette = null;
 	var ghostAmount = 0;
 	var ghostCtx = document.createElement("canvas").getContext("2d");
+	var glowAmount = 0;
+	var glowFactor = 1;
+	var glowCtx = document.createElement("canvas").getContext("2d");
 	logicTickFunc = logicTickFunc || function() {};
 	logicTicksPerSec = logicTicksPerSec || 60;
 	var logicTickWait = Math.floor(1000 / logicTicksPerSec);
@@ -719,6 +722,17 @@ function penduinSCENE(canvas, logicWidth, logicHeight,
 			ctx.drawImage(ghostCtx.canvas, 0, 0, canvas.width, canvas.height);
 			ctx.globalAlpha = 1;
 		}
+		if(glowAmount) {
+			ctx.save();
+			ctx.globalCompositeOperation = "overlay";
+			ctx.globalAlpha = glowAmount;
+			glowCtx.canvas.width = canvas.width / glowFactor;
+			glowCtx.canvas.height = canvas.height / glowFactor;
+			glowCtx.drawImage(canvas, 0, 0,
+							  glowCtx.canvas.width, glowCtx.canvas.height);
+			ctx.drawImage(glowCtx.canvas, 0, 0, canvas.width, canvas.height);
+			ctx.restore();
+		}
 
 		// draw any active transition
 		if(trans.fx) {
@@ -824,9 +838,15 @@ function penduinSCENE(canvas, logicWidth, logicHeight,
 		}
 	};
 
-	// set scene ghosting amount
+	// set scene ghost effect amount
 	this.setGhost = function setGhost(amount) {
 		ghostAmount = amount;
+	};
+	// set scene glow effect amount
+	this.setGlow = function setGlow(amount, factor) {
+		glowAmount = amount;
+		glowFactor = factor || 8;
+		glowFactor = Math.max(glowFactor, 1);
 	};
 
 	// set whether the scaling is jaggy or smooth

@@ -21,7 +21,7 @@ BUB = {
 	maskout: false,
 	acceptinput: false,
 
-	prop: ["wall", "left", "right", "ladder", "door", "crate", "bubble", "key"],
+	prop: ["wall","edge","left","right","ladder","door","crate","bubble","key"],
 	level: null,
 	inv: {
 		key: 0,
@@ -282,7 +282,6 @@ function handleinput(time) {
 				BUB.anim = BUB.action = "bonk";
 				BUB.animstart = time;
 			} else {
-				console.log(BUB.level[BUB.pos.y][BUB.pos.x - 1]);
 				switch(BUB.level[BUB.pos.y][BUB.pos.x - 1]) {
 				case "o":
 					if(BUB.inv.bub + BUB.inv.key < 2) {
@@ -331,7 +330,6 @@ function handleinput(time) {
 				BUB.anim = BUB.action = "bonk";
 				BUB.animstart = time;
 			} else {
-				console.log(BUB.level[BUB.pos.y][BUB.pos.x - 1]);
 				switch(BUB.level[BUB.pos.y][BUB.pos.x + 1]) {
 				case "o":
 					if(BUB.inv.bub + BUB.inv.key < 2) {
@@ -380,6 +378,7 @@ function handleinput(time) {
 				switch(BUB.level[BUB.pos.y + 1][BUB.pos.x]) {
 				case "H":
 				case "_":
+				case "4":
 					BUB.anim = BUB.action = "climbdown";
 					break;
 				default:
@@ -451,6 +450,7 @@ function transitionEnd() {
 
 function loadlevel(data) {
 	var prop = {};
+	var prev = true;
 	var i;
 	var c;
 
@@ -468,6 +468,7 @@ function loadlevel(data) {
 	// level data
 	data.split("0").every(function(line, y) {
 		BUB.level.push(line.replace("O", "_"));
+		prev = true;
 
 		// left border
 		prop.wall.push({ x: screenX(-1), y: screenY(y) });
@@ -491,6 +492,28 @@ function loadlevel(data) {
 					});
 				}
 				break;
+			}
+			if(c === "E") {
+				if(!prev) {
+					prop.edge.push({
+						x: screenX(i),
+						y: screenY(y)
+					});
+				}
+				prev = true;
+			} else {
+				if(prev) {
+					prop.edge.push({
+						x: screenX(i),
+						y: screenY(y)
+					});
+				} else if(i === line.length - 1) {
+					prop.edge.push({
+						x: screenX(i + 1),
+						y: screenY(y)
+					});
+				}
+				prev = false;
 			}
 		}
 
@@ -598,6 +621,7 @@ function start() {
 
 	BUB.scene.setVignette();
 	//BUB.scene.setGhost(0.75);
+	//BUB.scene.setGlow(0.6, 6);
 	BUB.scene.transition(BUB.mask.ork, BUB.maskout);
 	BUB.ready = true;
 }
