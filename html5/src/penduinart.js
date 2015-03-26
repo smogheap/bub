@@ -713,7 +713,10 @@ function penduinSCENE(canvas, logicWidth, logicHeight,
 
 		// draw any vignette
 		if(vignette) {
+			ctx.save();
+			ctx.globalCompositeOperation = "overlay";
 			ctx.drawImage(vignette, 0, 0, canvas.width, canvas.height);
+			ctx.restore();
 		}
 
 		// draw any ghosting
