@@ -2,6 +2,7 @@
 #include <Gamebuino.h>
 Gamebuino gb;
 #include <avr/pgmspace.h>
+#include <EEPROM.h>
 
 extern const byte font3x5[];
 extern const byte font5x7[];
@@ -27,28 +28,6 @@ extern const char PROGMEM levels[];
 /* from sounds */
 extern const int soundfx[][8];
 
-/* menu data */
-prog_char menustring_0[] PROGMEM = "Evil twin levels=OFF";
-prog_char menustring_1[] PROGMEM = "Evil twin levels=ON";
-prog_char menustring_2[] PROGMEM = "Lv  0 (beginner)";
-prog_char menustring_3[] PROGMEM = "Lv 16 (easy)";
-prog_char menustring_4[] PROGMEM = "Lv 44 (intermediate)";
-prog_char menustring_5[] PROGMEM = "Lv 88 (advanced)";
-PROGMEM const char *menutable0[] = {
-  menustring_0,
-  menustring_2,
-  menustring_3,
-  menustring_4,
-  menustring_5
-};
-PROGMEM const char *menutable1[] = {
-  menustring_1,
-  menustring_2,
-  menustring_3,
-  menustring_4,
-  menustring_5
-};
-
 /* game variables */
 uint8_t dir = NOFLIP;
 int TILE_W = 8;
@@ -64,7 +43,12 @@ int maxinv = 2;
 int bubs = 0;
 int keys = 0;
 int gameover = 0;
-int eviltwin = 0;
+byte eviltwin = 0;
+
+static const int NB_LEVELS_DONE = 13;
+byte levelsDone[NB_LEVELS_DONE];
+const byte ok[] PROGMEM = {8,7,0x2,0x4,0x88,0x48,0x50,0x30,0x20,};
+const byte ko[] PROGMEM = {8,7,0x82,0x44,0x28,0x10,0x28,0x44,0x82,};
 
 
 void sfx(int fxno, int channel) {
@@ -325,54 +309,147 @@ void moveright() {
 }
 
 void next() {
-  level++;
+  setLevelDone(level++);
   if(!eviltwin && level % 2) {
     level++;
   }
   if(level >= 99) {
     level = 0;
   }
+  writeLevelsDone();
   loadlevel(level);
 }
 
+
+void setLevelDone(byte level)
+{
+  byte i = level / 8;
+  byte bitShift = level % 8;
+  levelsDone[i] |= 1 << bitShift;
+}
+
+
+boolean isLevelDone(byte level)
+{
+  byte i = level / 8;
+  byte bitShift = level % 8;
+  return (((levelsDone[i] >> bitShift) & 0x01) == 0x01);
+}
+
+
+void loadLevelsDone() 
+{
+  for (byte i = 0; i < NB_LEVELS_DONE; i++)
+    levelsDone[i] = EEPROM.read(i);
+  eviltwin = EEPROM.read(NB_LEVELS_DONE);
+}
+
+
+void writeLevelsDone() 
+{
+  for (byte i = 0; i < NB_LEVELS_DONE; i++)
+    EEPROM.write(i, levelsDone[i]);
+  EEPROM.write(NB_LEVELS_DONE, eviltwin);
+}
+
+
+void menuBackground() {
+  gb.display.clear();
+  gb.display.persistence = true;
+  gb.display.cursorX = 0;
+  gb.display.cursorY = 0;
+  gb.display.setFont(font3x5); 
+  gb.display.print("Level Menu");
+  gb.display.print("\n\nLevel");
+  gb.display.print("\nEvil Twin");
+}
+
+
+void refreshMenu(boolean evilSelected, byte selectedLevel) {
+  gb.display.cursorX = 46;
+  gb.display.cursorY = 12;
+  gb.display.print(!evilSelected ? "\21 " : "  ");
+  if (selectedLevel < 10)
+    gb.display.print(" ");
+  gb.display.print(selectedLevel);
+  gb.display.print(!evilSelected ? "\20" : " ");
+  
+  gb.display.setColor(WHITE);
+  gb.display.fillRect(70, 11, 10, 10);
+  gb.display.setColor(BLACK);
+  gb.display.drawBitmap(70, 11, isLevelDone(selectedLevel) ? ok : ko);
+  
+  
+  gb.display.setColor(WHITE);
+  gb.display.fillRect(46, 18, 20, 10);
+  gb.display.setColor(BLACK);
+  gb.display.cursorX = 46;
+  gb.display.cursorY = 18;
+  gb.display.print(evilSelected ? "\21" : " ");
+  gb.display.print(eviltwin ? " ON" : "OFF");
+  gb.display.print(evilSelected ? "\20" : " ");
+}
+
+
 void showmenu() {
-  int load;
-  int show;
-  PROGMEM const char **m;
-  do {
-    m = eviltwin ? menutable1 : menutable0;
-    show = 0;
-    load = 1;
-    switch(gb.menu(m, 5)) {
-    case 0:
-      eviltwin = !eviltwin;
-      if(!eviltwin && level % 2) {
-        level--;
-        loadlevel(level);
+  
+  boolean evilSelected = false;
+  int selectedLevel = level;
+  
+  menuBackground();
+  refreshMenu(evilSelected, selectedLevel);
+  
+  while (true) {
+    if (gb.update()) {
+      if (gb.buttons.pressed(BTN_C)) {
+        gb.titleScreen(title);
       }
-      show = 1;
-      load = 0;
-      break;
-    case 1:
-      level = 0;
-      break;
-    case 2:
-      level = 16;
-      break;
-    case 3:
-      level = 44;
-      break;
-    case 4:
-      level = 88;
-      break;
-    case -1:
-    default:
-      load = 0;
-      break;
-    }
-  } while(show);
-  if(load) {
-    loadlevel(level);
+      
+      if (gb.buttons.pressed(BTN_A)) {
+        gb.display.clear();
+        gb.display.persistence = false;
+        level = selectedLevel;
+        loadlevel(selectedLevel);
+        break;
+      }
+      
+      if (gb.buttons.pressed(BTN_B)) {
+        gb.display.clear();
+        gb.display.persistence = false;
+        writeLevelsDone();
+        break;
+      }
+      
+      if (gb.buttons.pressed(BTN_RIGHT)) {
+        if (evilSelected) {
+          eviltwin = !eviltwin;
+        } else {
+          selectedLevel++;
+          if (!eviltwin && selectedLevel % 2)
+            selectedLevel++;  
+          if(selectedLevel >= 99)
+            selectedLevel = 0;
+        }
+      }
+      
+      if (gb.buttons.pressed(BTN_LEFT)) {
+        if (evilSelected) {
+          eviltwin = !eviltwin;
+        } else {
+          selectedLevel--;
+          if (!eviltwin && selectedLevel % 2)
+            selectedLevel--;  
+          if(selectedLevel < 0)
+            selectedLevel = 99; 
+        }
+      }
+      
+      if (gb.buttons.pressed(BTN_UP) || gb.buttons.pressed(BTN_DOWN)) {
+        evilSelected = !evilSelected;
+      }
+      
+      refreshMenu(evilSelected, selectedLevel);
+    } 
   }
 }
 
@@ -380,7 +457,14 @@ void showmenu() {
 void setup() {
   gb.begin();
   gb.battery.show = true;
-  loadlevel(0);
+  loadLevelsDone();
+  
+  byte i = 0;
+  while (i < 100 && isLevelDone(i))
+    i += eviltwin ? 1 : 2;
+  level = (100 == i) ? 0 : i;
+  loadlevel(level);
+  
   gb.titleScreen(title);
 }
 
