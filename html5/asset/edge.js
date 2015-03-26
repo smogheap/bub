@@ -6,10 +6,10 @@ LOAD({
 			"name": "line",
 			"image": "image/scribble/edge.png",
 			"pivot": {
-				"x": 210,
-				"y": 390
+				"x": 215,
+				"y": 385
 			},
-			"rotate": 3,
+			"rotate": 4.5,
 			"scale": 1,
 			"alpha": 1,
 			"offset": {

@@ -815,6 +815,9 @@ function penduinSCENE(canvas, logicWidth, logicHeight,
 		if(img === null) {
 			vignette = null;
 			return;
+		} else if(typeof(img) === "string") {
+			vignette = document.createElement("img");
+			vignette.src = img;
 		} else if(img) {
 			vignette = img;
 		} else {

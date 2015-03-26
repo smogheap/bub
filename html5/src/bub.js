@@ -619,7 +619,7 @@ function start() {
 	BUB.thing.ork.addTags("bubble");
 	*/
 
-	BUB.scene.setVignette();
+	BUB.scene.setVignette("image/scribble/vign01.png");
 	//BUB.scene.setGhost(0.75);
 	//BUB.scene.setGlow(0.6, 6);
 	BUB.scene.transition(BUB.mask.ork, BUB.maskout);
