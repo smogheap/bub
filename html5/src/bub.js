@@ -622,7 +622,8 @@ function start() {
 	BUB.scene.setVignette("image/scribble/vign01.png");
 	//BUB.scene.setGhost(0.75);
 	//BUB.scene.setGlow(0.6, 6);
-	BUB.scene.transition(BUB.mask.ork, BUB.maskout);
+	BUB.scene.transition(BUB.mask.ork, BUB.maskout,
+						 screenX(BUB.pos.x), screenY(BUB.pos.y - 0.5));
 	BUB.ready = true;
 }
 
@@ -701,7 +702,8 @@ window.addEventListener("click", function() {
 	BUB.acceptinput = false;
 	var masks = Object.keys(BUB.mask);
 	var which = Math.floor(Math.random() * masks.length);
-	BUB.scene.transition(BUB.mask[masks[which]], BUB.maskout);
+	BUB.scene.transition(BUB.mask[masks[which]], BUB.maskout,
+						 screenX(BUB.pos.x), screenY(BUB.pos.y - 0.5));
 });
 
 
