@@ -736,7 +736,14 @@ function handlekey(event, down) {
 	case 27:  //esc
 		BUB.input.menu = down;
 		break;
+	case 42:  //printscreen
+		if(down) {
+			console.log("screenshot");
+			BUB.scene.screenshot();
+		}
+		break;
 	default:
+//		console.log(event.keyCode);
 		return;
 		break;
 	}

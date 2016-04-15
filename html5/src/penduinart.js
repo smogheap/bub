@@ -75,7 +75,7 @@ function penduinOBJ(obj, cb) {
 		return total === obj._imgLoaded;
 	};
 
-	var drawPart = function drawPart(ctx, part, scale, displayx, displayy,
+	var drawPart = function drawPart(ctx, part, scale, displayx, displayy, rot,
 									 instance) {
 		if((part.tag && tags.indexOf(part.tag) < 0) ||
 		   (part.hidetag && tags.indexOf(part.hidetag) >= 0)) {
@@ -83,13 +83,14 @@ function penduinOBJ(obj, cb) {
 			return;
 		}
 
-		if(instance && instances && instances.length) {
+		if(instance && instances) {
 			instances.every(function(ins) {
 				// FIXME: not quite right if scale/x/y are 0
 				drawPart(ctx, part,
 						 ins.scale || scale,
 						 ins.x || displayx,
 						 ins.y || displayy,
+						 ins.rotate || rot,
 						 false);
 				return true;
 			}, this);
@@ -138,6 +139,9 @@ function penduinOBJ(obj, cb) {
 			offy = -part.pivot.y
 		}
 
+		if(!isNaN(rot)) {
+			ctx.rotate(rot * TO_RADIANS);
+		}
 		if(part.rotate) {
 			ctx.rotate(part.rotate * TO_RADIANS);
 		}
@@ -149,13 +153,6 @@ function penduinOBJ(obj, cb) {
 			drawPart(ctx, part, 1, offx, offy);
 			return true;
 		});
-/*
-		if(part.below) {
-			for(i in part.below) {
-				drawPart(ctx, part.below[i], 1, offx, offy);
-			}
-		}
-*/
 
 		if(part.image) {
 			var img = obj._img[part.image];
@@ -171,13 +168,6 @@ function penduinOBJ(obj, cb) {
 			drawPart(ctx, part, 1, offx, offy);
 			return true;
 		});
-/*
-		if(part.above) {
-			for(i in part.above) {
-				drawPart(ctx, part.above[i], 1, offx, offy);
-			}
-		}
-		*/
 
 		ctx.restore();
 	}.bind(this);
@@ -471,11 +461,63 @@ function penduinOBJ(obj, cb) {
 	};
 
 	// draw the object
-	this.draw = function draw(ctx, scale, displayx, displayy, time) {
+	this.draw = function draw(ctx, scale, displayx, displayy, rot, time) {
 		if(time) {
 			solvePose(time);
 		}
-		drawPart(ctx, obj, scale, displayx, displayy, true);
+		drawPart(ctx, obj, scale, displayx, displayy, rot, true);
+	};
+}
+
+function penduinTEXT(string, size, color, centerx, centery, shadow) {
+	var visible = true;
+	var metric = null;
+	var offx = 0;
+	var offy = 0;
+	size = size || 20;
+	color = color || "white";
+
+	this.x = 0;
+	this.y = 0;
+	this.rotate = 0;
+	this.alpha = 1;
+	this.scale = 1;
+
+	// API
+	this.setVisible = function setVisible(show) {
+		visible = show;
+	};
+	this.setString = function setString(str) {
+		string = str;
+		metric = null;
+	};
+	this.setColor = function setString(col) {
+		color = col;
+	};
+
+	this.draw = function draw(ctx, scale, time) {
+		if(!visible) {
+			return;
+		}
+		ctx.save();
+		ctx.font = ((size * scale) +
+					"px monospace, Monaco, 'Lucida Console'");
+		ctx.textBaseline = "top";
+		if(!metric) {
+			metric = ctx.measureText(string);
+			offx = centerx * metric.width;
+			offy = centery * size * scale;
+		}
+		ctx.globalAlpha = this.alpha;
+		ctx.rotate(this.rotate);
+		ctx.scale(this.scale, this.scale);
+		if(shadow) {
+			ctx.fillStyle = "black";
+			ctx.fillText(string, (this.x * scale) - offx + 1, (this.y * scale) - offy + 1);
+		}
+		ctx.fillStyle = color;
+		ctx.fillText(string, (this.x * scale) - offx, (this.y * scale) - offy);
+		ctx.restore();
 	};
 }
 
@@ -601,6 +643,8 @@ function penduinSCENE(canvas, logicWidth, logicHeight,
 	var bgcompcanv = null;
 	var backgrounds = {};
 	var objects = {};
+	var autoorder = true;
+	var texts = {};
 	var vignette = null;
 	var ghostAmount = 0;
 	var ghostCtx = document.createElement("canvas").getContext("2d");
@@ -708,10 +752,12 @@ function penduinSCENE(canvas, logicWidth, logicHeight,
 				bgcanv[key].width = canvas.width;
 				bgcanv[key].height = canvas.height;
 				bgctx = bgcanv[key].getContext("2d");
-				backgrounds[key].draw(bgctx, scale, undefined, undefined, time);
+				backgrounds[key].draw(bgctx, scale, undefined, undefined,
+									  undefined, time);
 
 				bgctx = bgcompcanv.getContext("2d");
-				backgrounds[key].draw(bgctx, scale, undefined, undefined, time);
+				backgrounds[key].draw(bgctx, scale, undefined, undefined,
+									  undefined, time);
 				return true;
 			});
 		}
@@ -725,11 +771,12 @@ function penduinSCENE(canvas, logicWidth, logicHeight,
 */
 
 		// draw objects ordered by obj.y coordinate
-		var ordered = Object.keys(objects).sort(function(a, b) {
+		var ordered = autoorder ? Object.keys(objects).sort(function(a, b) {
 			return objects[a].y - objects[b].y;
-		});
+		}) : Object.keys(objects);
 		for(i in ordered) {
-			objects[ordered[i]].draw(ctx, scale, undefined, undefined, time);
+			objects[ordered[i]].draw(ctx, scale, undefined, undefined,
+									 undefined, time);
 		}
 
 		// draw any vignette
@@ -767,6 +814,10 @@ function penduinSCENE(canvas, logicWidth, logicHeight,
 				trans.fx = null;
 				trans.start = 0;
 			}
+		}
+
+		for(i in texts) {
+			texts[i].draw(ctx, scale, time);
 		}
 
 		if(showfps) {
@@ -829,6 +880,25 @@ function penduinSCENE(canvas, logicWidth, logicHeight,
 		return bg;
 	};
 
+	// add a named penduinTEXT plate to the scene
+	this.addTEXT = function addTEXT(text, name) {
+		if(!name) {
+			name = text.name || "anonymous" + (uniq++);
+		}
+		texts[name] = text;
+		text.scene = this;
+		return text;
+	};
+	// remove (and return) a scene text plate
+	this.removeTEXT = function removeTEXT(name) {
+		var text = texts[name] || null;
+		if(text) {
+			delete texts[name];
+			text.scene = null;
+		}
+		return text;
+	};
+
 	// set the scene's background color
 	this.setBG = function setBG(color) {
 		bg = color;
@@ -883,6 +953,16 @@ function penduinSCENE(canvas, logicWidth, logicHeight,
 		ctx.webkitImageSmoothingEnabled = !jaggy;
 		ctx.msImageSmoothingEnabled = !jaggy;
 		ctx.imageSmoothingEnabled = !jaggy;
+	};
+
+	// set whether to auto-sort drawing order
+	this.setAutoOrder = function setAutoOrder(auto) {
+		autoorder = auto;
+	};
+
+	// get the scene's scaling factor
+	this.getScale = function getScale() {
+		return scale;
 	};
 
 	// pause the scene
@@ -959,6 +1039,23 @@ function penduinSCENE(canvas, logicWidth, logicHeight,
 		tags = [];
 	};
 
+	// take a screenshot
+	this.screenshot = function screenshot() {
+		var a = document.createElement("a");
+		a.download = "screenshot.png";
+		if(a.download && btoa && canvas.toDataURL) {
+			a.href = canvas.toDataURL();
+			a.style.display = "none";
+			a.addEventListener("click", function(e) {
+				e.stopPropagation();
+			});
+			document.body.appendChild(a);
+			a.click();
+			document.body.removeChild(a);
+		} else {
+			console.error("ERROR: could not take a screenshot");
+		}
+	};
 
 	/* initialize */
 	run = true;
