@@ -151,7 +151,7 @@ iframe {
 }
 </style>
 <style id="style"></style>
-<!--<script src="swipe.js"></script>-->
+<script src="swipe.js"></script>
 </head>
 <body class="dark">
 
@@ -2591,7 +2591,7 @@ function help() {
          "-/+: change level\n",
          "~: editmode on/off\n",
          "\n",
-         "click or tap to play too!"].join(""));
+         "click, tap, or swipe to play too!"].join(""));
 }
 
 function click(e) {
@@ -2818,7 +2818,7 @@ function handleclick(e) {
   return false;
 }
 window.addEventListener("click", handleclick);
-window.addEventListener("touchstart", handleclick);
+//window.addEventListener("touchstart", handleclick);
 
 document.getElementById("music").addEventListener("change", function(e) {
   if(this.value) {
