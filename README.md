@@ -3,5 +3,5 @@ bub
 
 bubble-slurping platform puzzle game
 
-live prototype at:
-http://smogheap.github.io/bub
+play on the web:
+http://bub.penduin.net
