@@ -1,0 +1,292 @@
+<html>
+  <head>
+	<title>
+	  BUB - 3310 Jam Edition
+	</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+	<style>
+	  body {
+		  font-family: sans-serif, sans, helvetica, arial;
+		  background-color: grey;
+		  background-image: url("3310.png");
+		  background-repeat: no-repeat;
+		  background-position: 50% 50%;
+		  background-size: contain;
+		  height: 100%;
+		  border: 0;
+		  margin: 0;
+		  overflow: hidden;
+		  user-select: none; /* supported by Chrome and Opera */
+		  -webkit-user-select: none; /* Safari */
+		  -khtml-user-select: none; /* Konqueror HTML */
+		  -moz-user-select: none; /* Firefox */
+		  -ms-user-select: none; /* Internet Explorer/Edge */
+	  }
+	  a {
+		  color: blue;
+	  }
+	  canvas {
+		  image-rendering: optimizespeed;
+		  image-rendering: pixelated;
+	  }
+	  canvas, img.filter {
+		  position: absolute;
+		  height: 18vh;/*15.5%;*/
+		  width: 26vh;
+		  top: 29%;
+		  margin-left: auto;
+		  margin-right: auto;
+		  left: 0;
+		  right: 0;
+		  outline: none;
+	  }
+	  table.pad {
+		  margin-left: auto;
+		  margin-right: auto;
+		  bottom: 7.5%;
+		  left: 0;
+		  right: 0;
+		  position: absolute;
+		  height: 28vh;
+		  width: 31vh;
+	  }
+	  table.pad td {
+		  width: 33%;
+		  height: 25%;
+		  background: rgba(255,255,255,0.67);
+		  text-align: center;
+		  vertical-align: middle;
+		  border-radius: 0.25em;
+		  cursor: pointer;
+	  }
+	  table.pad td:empty {
+		  background: none;
+		  cursor: default;
+	  }
+	  table.pad tr {
+		  font-size: 4vh;
+	  }
+	  table.pad tr.small {
+		  font-size: 2vh;
+	  }
+
+	  .about, .help {
+		  cursor: pointer;
+		  background: silver;
+		  padding: 0.5em;
+		  top: 10%;
+		  bottom: 10%;
+		  position: absolute;
+		  overflow: hidden;
+		  transition: 0.2s linear width;
+		  white-space: nowrap;
+		  width: 67%;
+	  }
+	  .about {
+		  border-radius: 0 1em 1em 0;
+		  left: 0;
+	  }
+	  .icon {
+		  height: 100%;
+		  text-align: center;
+		  vertical-align: middle;
+		  width: 2.5em;
+	  }
+	  .about .icon {
+		  float: right;
+	  }
+	  .help {
+		  border-radius: 1em 0 0 1em;
+		  right: 0;
+		  width: 50%;
+	  }
+	  .help .icon {
+		  float: left;
+	  }
+	  .help .circle, .about .circle {
+		  border-radius: 1em;
+		  background: white;
+		  width: 1em;
+		  height: 1em;
+		  display: inline-block;
+		  text-align: center;
+		  vertical-align: middle;
+		  padding: 0.15em 0.2em 0.25em 0.2em;
+		  font-weight: bold;
+		  border: thin solid black;
+	  }
+	  .away {
+		  width: 2.5em;
+	  }
+
+	  input {
+		  vertical-align: middle;
+	  }
+	  .text {
+		  white-space: normal;
+		  height: 100%;
+		  overflow: auto;
+	  }
+
+	  .ghost {
+		  opacity: 0;
+	  }
+	  .hidden {
+		  display: none;
+	  }
+	</style>
+  </head>
+  <body onclick="document.querySelector('.help').classList.add('away'); document.querySelector('.about').classList.add('away');">
+
+
+	<canvas id="canvas" width="84" height="48"></canvas>
+	<img class="filter hidden" src="pixelfilter.png">
+
+	<table class="pad">
+	  <tbody>
+		<tr>
+		  <td></td>
+		  <td onmousedown="Buttons.Up().set(true);" onmouseup="Buttons.Up().set(false);" ontouchstart="Buttons.Up().set(true);" ontouchend="Buttons.Up().set(false);">&uarr;</td>
+		  <td></td>
+		</tr>
+		<tr>
+		  <td onmousedown="Buttons.Left().set(true);" onmouseup="Buttons.Left().set(false);" ontouchstart="Buttons.Left().set(true);" ontouchend="Buttons.Left().set(false);">&larr;</td>
+		  <td></td>
+		  <td onmousedown="Buttons.Right().set(true);" onmouseup="Buttons.Right().set(false);" ontouchstart="Buttons.Right().set(true);" ontouchend="Buttons.Right().set(false);">&rarr;</td>
+		</tr>
+		<tr>
+		  <td></td>
+		  <td onmousedown="Buttons.Down().set(true);" onmouseup="Buttons.Down().set(false);"  ontouchstart="Buttons.Down().set(true);" ontouchend="Buttons.Down().set(false);">&darr;</td>
+		  <td></td>
+		</tr>
+		<tr class="small">
+		  <td onmousedown="Buttons.A().set(true);" onmouseup="Buttons.A().set(false);" ontouchstart="Buttons.A().set(true);" ontouchend="Buttons.A().set(false);">start (over)</td>
+		  <td></td>
+		  <td onmousedown="Buttons.B().set(true);" onmouseup="Buttons.B().set(false);" ontouchstart="Buttons.B().set(true);" ontouchend="Buttons.B().set(false);">level menu</td>
+		</tr>
+	  </tbody>
+	</table>
+
+	<div class="about away" onclick="this.classList.toggle('away'); document.querySelector('.help').classList.add('away'); event.stopPropagation();">
+	  <div class="icon">
+		<span class="circle">i</span>
+		<br>
+		INFO
+	  </div>
+	  <div class="icon">&nbsp;</div>
+	  <div class="text">
+		BUB was originally inspired by and developed for the
+		<a href="http://gamebuino.com/">Gamebuino</a> gaming handheld.
+		<br><br>
+		The device used screens from recycled Nokia 3310 phones!
+		<br><br>
+		By wonderful coincedence, the game's controls are four directions
+		plus a "start over" button.  I therefore had no choice but to
+		repackage the game for the Nokia 3100 JAM, whose optional theme is
+		"starting over".
+		<br>
+		<a href="https://itch.io/jam/3310jam">https://itch.io/jam/3310jam</a>
+		<br><br>
+		This version uses a web Gamebuino emulator adapted from the
+		<a href="https://github.com/Myndale/Simbuino">Simbuino project</a>.
+		<br><br>
+		BUB is also playable at:<br>
+		<a href="http://bub.penduin.net">http://bub.penduin.net</a><br>
+		in its original "html prototype" form, including level editing/sharing.
+		<br><br>
+		All source, including this version, is available here:<br>
+		<a href="https://gitlab.com/smogheap/bub">https://gitlab.com/smogheap/bub</a>
+	  </div>
+	</div>
+
+	<div class="help away" onclick="this.classList.toggle('away'); document.querySelector('.about').classList.add('away'); event.stopPropagation();">
+	  <div class="icon">
+		<span class="circle">?</span>
+		<br>
+		HELP
+	  </div>
+	  <div class="icon">&nbsp;</div>
+	  <div class="text">
+		The goal of BUB is to reach the flag.
+		<br><br>
+		Press the "start (over)" button to begin!
+		<br><br>
+		Use the directional buttons to move.
+		<br><br>
+		Experiment!  You can figure it out!
+		<br><br>
+		If you get stuck, hit the "start (over)" button.
+		<br><br>
+		<label onclick="event.stopPropagation();"><input type="checkbox" checked autocomplete="off" onchange="document.querySelector('.pad').classList.toggle('ghost', !this.checked);">Show controls overlay</label>
+		<br>
+		<label onclick="event.stopPropagation();"><input type="checkbox" autocomplete="off" onchange="document.querySelector('.filter').classList.toggle('hidden', !this.checked);">Simulate LCD pixel spacing</label>
+		<br><br>
+		You may also use WASD or arrow keys on your keyboard.
+		<br>
+		Space bar to "start (over)".
+		<br>
+		Enter for "level menu".
+	  </div>
+	</div>
+
+	<script src="Simbuino4Web/Scripts/jquery-1.8.2.js"></script>
+	<script src="Simbuino4Web/Scripts/Views/class.js"></script>
+	<script src="Simbuino4Web/Scripts/Views/Deltas.js"></script>
+	<script src="Simbuino4Web/Scripts/Views/MemoryMappedRegister.js"></script>
+	<script src="Simbuino4Web/Scripts/Views/AtmelRegisters.js"></script>
+	<script src="Simbuino4Web/Scripts/Views/FlagsRegister.js"></script>
+	<script src="Simbuino4Web/Scripts/Views/PortRegister.js"></script>
+	<script src="Simbuino4Web/Scripts/Views/AtmelIO.js"></script>
+	<script src="Simbuino4Web/Scripts/Views/AtmelContext.js"></script>
+	<script src="Simbuino4Web/Scripts/Views/AtmelProcessor.js"></script>
+	<script src="Simbuino4Web/Scripts/Views/ADC.js"></script>
+	<script src="Simbuino4Web/Scripts/Views/Buttons.js"></script>
+	<script src="Simbuino4Web/Scripts/Views/SPI.js"></script>
+	<script src="Simbuino4Web/Scripts/Views/USART.js"></script>
+	<script src="Simbuino4Web/Scripts/Views/EEPROM.js"></script>
+	<script src="Simbuino4Web/Scripts/Views/Lcd.js"></script>
+	<script src="Simbuino4Web/Scripts/Views/SdDevice.js"></script>
+	<script src="Simbuino4Web/Scripts/Views/AudioPlayer.js"></script>
+	<script src="Simbuino4Web/Scripts/Views/HexDecoder.js"></script>
+	<script src="Simbuino4Web/Scripts/Views/Bootloader.js"></script>
+	<script src="Simbuino4Web/Scripts/Views/Loader.js"></script>
+	<script src="Simbuino4Web/Scripts/Views/Simulation.js"></script>
+
+	<script>
+	  function handlekey(keyCode, value) {
+		  switch(keyCode) {
+		  case 87: //W
+		  case 38: //up
+			  Buttons.Up().set(value);
+			  break;
+		  case 65: //A
+		  case 37: //left
+			  Buttons.Left().set(value);
+			  break;
+		  case 83: //S
+		  case 40: //down
+			  Buttons.Down().set(value);
+			  break;
+		  case 68: //D
+		  case 39: //right
+			  Buttons.Right().set(value);
+			  break;
+		  case 32: //space
+			  Buttons.A().set(value);
+			  break;
+		  case 13: //enter
+			  Buttons.B().set(value);
+			  break;
+		  }
+	  }
+	  window.addEventListener("keydown", function(e) {
+		  handlekey(e.keyCode, true);
+	  });
+	  window.addEventListener("keyup", function(e) {
+		  handlekey(e.keyCode, false);
+	  });
+	  
+	</script>
+
+  </body>
+</html>
