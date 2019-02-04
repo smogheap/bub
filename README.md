@@ -1,12 +1,6 @@
-bub
-===
-
-bubble-slurping platform puzzle game
-
-play on the web:  
-http://bub.penduin.net  
-
-play via Smile BASIC on Nintendo 3DS:  
-public key = 83DXN3L4  
-https://web.archive.org/web/20171025045657/https://miiverse.nintendo.net/posts/AYMHAAACAAADVHksVo-stg  
-http://smilebasicsource.com/page?pid=155  
+this project now lives here:  
+  https://gitlab.com/smogheap/bub  
+  
+smogheap projects will no longer be active on github.  
+(our bits feel safer far away from microsoft and nat)  
+many thanks to the pre-acquisition github staff!
